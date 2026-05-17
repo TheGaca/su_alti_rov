@@ -1,0 +1,1 @@
+[SYS] [19:14:38.109] Sistem ve Loglama Başlatıldı.

@@ -1,0 +1,20 @@
+[18:56:09.658] Sistem ve Loglama Başlatıldı.
+[18:57:10.324] HIZLI KOMUT: Sabitle
+[18:57:11.536] HIZLI KOMUT: Torpido Fırlat
+[18:57:12.292] HIZLI KOMUT: MiniROV Fırlat
+[18:57:13.669] HIZLI KOMUT: ACİL DURDURMA!
+[18:57:15.028] YÖN: İleri
+[18:57:15.516] YÖN: Geri
+[18:57:16.428] YÖN: Sola Dön
+[18:57:16.964] YÖN: Sağa Dön
+[18:57:17.812] YÖN: Yukarı (Z+)
+[18:57:18.566] YÖN: Aşağı (Z-)
+[19:02:05.756] YÖN: İleri
+[19:02:06.900] YÖN: İleri
+[19:02:08.515] YÖN: İleri
+[19:02:09.324] YÖN: İleri
+[19:02:10.275] YÖN: İleri
+[19:02:11.661] YÖN: Sola Dön
+[19:02:16.796] YÖN: Yukarı (Z+)
+[19:02:20.660] YÖN: Aşağı (Z-)
+[19:02:26.163] YÖN: İleri

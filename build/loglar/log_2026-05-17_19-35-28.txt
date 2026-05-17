@@ -1,0 +1,2 @@
+[SYS] [19:35:28.812] Sistem ve Loglama Başlatıldı.
+[ANA] [19:35:35.051] Torpido Fırlat

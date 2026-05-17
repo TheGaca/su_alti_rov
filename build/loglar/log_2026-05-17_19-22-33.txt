@@ -1,0 +1,13 @@
+[SYS] [19:22:33.885] Sistem ve Loglama Başlatıldı.
+[ANA] [19:22:39.985] KOL: RB tuşuna basıldı
+[ANA] [19:22:40.543] KOL: LB tuşuna basıldı
+[ANA] [19:22:41.223] KOL: RB tuşuna basıldı
+[ANA] [19:22:41.650] KOL: A tuşuna basıldı
+[ANA] [19:22:42.066] KOL: X tuşuna basıldı
+[ANA] [19:22:42.960] KOL: Start tuşuna basıldı
+[ANA] [19:22:43.924] KOL: Start tuşuna basıldı
+[ANA] [19:22:44.328] KOL: Start tuşuna basıldı
+[ANA] [19:22:44.662] KOL: Start tuşuna basıldı
+[ANA] [19:22:44.967] KOL: Start tuşuna basıldı
+[ANA] [19:22:45.261] KOL: Start tuşuna basıldı
+[ANA] [19:22:45.595] KOL: Start tuşuna basıldı
