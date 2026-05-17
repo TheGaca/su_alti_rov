@@ -1,6 +1,11 @@
 # Su Altı ROV Kontrol Arayüzü
 
 Pixhawk tabanlı su altı ROV (Ana ROV + Mini ROV) için Qt5/C++ kontrol arayüzü. MAVLink üzerinden iki adet Pixhawk ile haberleşir, MJPEG ve WebSocket kamera akışlarını gösterir, Linux joystick'ten anlık komutlar üretir.
+![alt text](<foto/Screenshot from 2026-05-18 00-09-30.png>)
+Şekil 1: Ana Kontrol Arayüzü Beyaz Temaa
+![alt text](<foto/Screenshot from 2026-05-18 00-09-38.png>)
+Şekil 2: Ana Kontrol Arayüzü Siyah Temaa
+
 
 ---
 
