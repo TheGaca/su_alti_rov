@@ -13,15 +13,21 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt5 COMPONENTS Core Gui Widgets Network SerialPort WebSockets REQUIRED)
 find_package(OpenCV REQUIRED)
 
-# Mavlink başlık dosyası yolu
+# MAVLink başlık dosyası yolu
+# Proje klasörüne `mavlink/` klasörünü kopyalaman gerekiyor
+# (https://github.com/mavlink/c_library_v2 → common.h vs.)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/mavlink)
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 # Kaynak dosyalar
 add_executable(su_alti_rov
     main.cpp
     yazilim.cpp
+    yazilim.h
     tasarim.cpp
+    tasarim.h
     algoritma.cpp
+    algoritma.h
 )
 
 target_link_libraries(su_alti_rov

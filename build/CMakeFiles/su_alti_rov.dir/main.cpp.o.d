@@ -1,5 +1,5 @@
 CMakeFiles/su_alti_rov.dir/main.cpp.o: \
- /home/lagaca/Desktop/su-alti/main.cpp /usr/include/stdc-predef.h \
+ /home/lagaca/Desktop/su-alti1/main.cpp /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QApplication \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qapplication.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -257,7 +257,11 @@ CMakeFiles/su_alti_rov.dir/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qhash.h \
  /usr/include/c++/13/variant \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qshareddata.h \
- /home/lagaca/Desktop/su-alti/yazilim.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QFile \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qfile.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qfiledevice.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qiodevice.h \
+ /home/lagaca/Desktop/su-alti1/yazilim.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QMainWindow \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qmainwindow.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
@@ -272,7 +276,6 @@ CMakeFiles/su_alti_rov.dir/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qpolygon.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qregion.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qdatastream.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/qiodevice.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qline.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qtransform.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qimage.h \
@@ -300,12 +303,11 @@ CMakeFiles/su_alti_rov.dir/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qset.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMap \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/QFile \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/qfile.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/qfiledevice.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QTextStream \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qtextstream.h \
- /home/lagaca/Desktop/su-alti/tasarim.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QProcess \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qprocess.h \
+ /home/lagaca/Desktop/su-alti1/tasarim.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QPainter \
@@ -353,7 +355,12 @@ CMakeFiles/su_alti_rov.dir/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qtextformat.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QProgressBar \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qprogressbar.h \
- /home/lagaca/Desktop/su-alti/algoritma.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QColorDialog \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qcolordialog.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtGui/QColor \
+ /usr/include/x86_64-linux-gnu/qt5/QtGui/qcolor.h \
+ /home/lagaca/Desktop/su-alti1/algoritma.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QThread \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qthread.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qdeadlinetimer.h \
@@ -367,6 +374,4 @@ CMakeFiles/su_alti_rov.dir/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QImage \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qimage.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/QProcess \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/qprocess.h
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h

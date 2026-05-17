@@ -11,11 +11,13 @@ class QNetworkAccessManager;
 class QNetworkReply;
 class QWebSocket;
 
-// MAVLink Thread
+// MAVLink Thread - Pixhawk ile haberleşme (UART/USB)
 class MAVLinkThread : public QThread {
     Q_OBJECT
 public:
-    explicit MAVLinkThread(const QString &port = "/dev/ttyACM0", int baudrate = 115200, QObject *parent = nullptr);
+    explicit MAVLinkThread(const QString &port = "/dev/ttyACM0",
+                           int baudrate = 115200,
+                           QObject *parent = nullptr);
     void stop();
     void arm_vehicle();
     void set_servo(int servo_no, int pwm);
@@ -33,17 +35,17 @@ private:
     QString portName;
     int baudRate;
     bool running;
-    // MAVLink vars (we'll handle sysid/compid in cpp)
     int target_system;
     int target_component;
     QSerialPort *serial;
 };
 
-// Joystick Thread
+// Linux joystick driver okuyucu thread
 class JoystickThread : public QThread {
     Q_OBJECT
 public:
-    explicit JoystickThread(const QString &device = "/dev/input/js0", QObject *parent = nullptr);
+    explicit JoystickThread(const QString &device = "/dev/input/js0",
+                            QObject *parent = nullptr);
     void stop();
 
 signals:
@@ -59,11 +61,12 @@ private:
     bool running;
 };
 
-// Camera Thread
+// MJPEG HTTP stream alıcı (MiniROV kamerası)
 class CameraThread : public QThread {
     Q_OBJECT
 public:
-    explicit CameraThread(const QString &ip = "192.168.88.2", QObject *parent = nullptr);
+    explicit CameraThread(const QString &ip = "192.168.88.2",
+                          QObject *parent = nullptr);
     void stop();
 
 signals:
@@ -79,11 +82,12 @@ private:
     bool running;
 };
 
-// AnaRov Thread
+// WebSocket binary JPEG alıcı (AnaROV kamerası)
 class AnaRovThread : public QThread {
     Q_OBJECT
 public:
-    explicit AnaRovThread(const QString &ip = "192.168.1.116", QObject *parent = nullptr);
+    explicit AnaRovThread(const QString &ip = "192.168.1.116",
+                          QObject *parent = nullptr);
     void stop();
 
 signals:

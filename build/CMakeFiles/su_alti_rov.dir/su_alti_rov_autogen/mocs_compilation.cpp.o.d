@@ -1,7 +1,7 @@
 CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o: \
- /home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/mocs_compilation.cpp \
+ /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/mocs_compilation.cpp \
  /usr/include/stdc-predef.h \
- /home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/EWIEGA46WW/moc_algoritma.cpp \
+ /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/EWIEGA46WW/moc_algoritma.cpp \
  /usr/include/c++/13/memory /usr/include/c++/13/bits/memoryfwd.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
@@ -116,7 +116,7 @@ CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o: \
  /usr/include/c++/13/backward/auto_ptr.h \
  /usr/include/c++/13/pstl/glue_memory_defs.h \
  /usr/include/c++/13/pstl/execution_defs.h \
- /home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/EWIEGA46WW/../../../algoritma.h \
+ /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/EWIEGA46WW/../../../algoritma.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QThread \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qthread.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobject.h \
@@ -280,8 +280,8 @@ CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qline.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
- /home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/EWIEGA46WW/moc_tasarim.cpp \
- /home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/EWIEGA46WW/../../../tasarim.h \
+ /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/EWIEGA46WW/moc_tasarim.cpp \
+ /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/EWIEGA46WW/../../../tasarim.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -352,8 +352,13 @@ CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qtextformat.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QProgressBar \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qprogressbar.h \
- /home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/EWIEGA46WW/moc_yazilim.cpp \
- /home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/EWIEGA46WW/../../../yazilim.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QColorDialog \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qcolordialog.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtGui/QColor \
+ /usr/include/x86_64-linux-gnu/qt5/QtGui/qcolor.h \
+ /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/EWIEGA46WW/moc_yazilim.cpp \
+ /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/EWIEGA46WW/../../../yazilim.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QMainWindow \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qmainwindow.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QSet \
@@ -365,7 +370,7 @@ CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qfiledevice.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QTextStream \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qtextstream.h \
- /home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/EWIEGA46WW/../../../tasarim.h \
- /home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/EWIEGA46WW/../../../algoritma.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QProcess \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/qprocess.h
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qprocess.h \
+ /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/EWIEGA46WW/../../../tasarim.h \
+ /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/EWIEGA46WW/../../../algoritma.h

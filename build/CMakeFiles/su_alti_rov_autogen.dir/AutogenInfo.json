@@ -1,17 +1,17 @@
 {
-	"BUILD_DIR" : "/home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen",
-	"CMAKE_BINARY_DIR" : "/home/lagaca/Desktop/su-alti/build",
-	"CMAKE_CURRENT_BINARY_DIR" : "/home/lagaca/Desktop/su-alti/build",
-	"CMAKE_CURRENT_SOURCE_DIR" : "/home/lagaca/Desktop/su-alti",
+	"BUILD_DIR" : "/home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen",
+	"CMAKE_BINARY_DIR" : "/home/lagaca/Desktop/su-alti1/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/lagaca/Desktop/su-alti1/build",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/lagaca/Desktop/su-alti1",
 	"CMAKE_EXECUTABLE" : "/usr/bin/cmake",
 	"CMAKE_LIST_FILES" : 
 	[
-		"/home/lagaca/Desktop/su-alti/CMakeLists.txt",
-		"/home/lagaca/Desktop/su-alti/build/CMakeFiles/3.28.3/CMakeSystem.cmake",
+		"/home/lagaca/Desktop/su-alti1/CMakeLists.txt",
+		"/home/lagaca/Desktop/su-alti1/build/CMakeFiles/3.28.3/CMakeSystem.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeSystemSpecificInitialize.cmake",
 		"/usr/share/cmake-3.28/Modules/Platform/Linux-Initialize.cmake",
-		"/home/lagaca/Desktop/su-alti/build/CMakeFiles/3.28.3/CMakeCCompiler.cmake",
-		"/home/lagaca/Desktop/su-alti/build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake",
+		"/home/lagaca/Desktop/su-alti1/build/CMakeFiles/3.28.3/CMakeCCompiler.cmake",
+		"/home/lagaca/Desktop/su-alti1/build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeSystemSpecificInformation.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeGenericSystem.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeInitializeConfigs.cmake",
@@ -89,33 +89,33 @@
 		"/usr/lib/x86_64-linux-gnu/cmake/opencv4/OpenCVModules.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/opencv4/OpenCVModules-release.cmake"
 	],
-	"CMAKE_SOURCE_DIR" : "/home/lagaca/Desktop/su-alti",
-	"DEP_FILE" : "/home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/deps",
+	"CMAKE_SOURCE_DIR" : "/home/lagaca/Desktop/su-alti1",
+	"DEP_FILE" : "/home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/deps",
 	"DEP_FILE_RULE_NAME" : "su_alti_rov_autogen/timestamp",
 	"HEADERS" : 
 	[
 		[
-			"/home/lagaca/Desktop/su-alti/algoritma.h",
+			"/home/lagaca/Desktop/su-alti1/algoritma.h",
 			"MU",
 			"EWIEGA46WW/moc_algoritma.cpp",
 			null
 		],
 		[
-			"/home/lagaca/Desktop/su-alti/tasarim.h",
+			"/home/lagaca/Desktop/su-alti1/tasarim.h",
 			"MU",
 			"EWIEGA46WW/moc_tasarim.cpp",
 			null
 		],
 		[
-			"/home/lagaca/Desktop/su-alti/yazilim.h",
+			"/home/lagaca/Desktop/su-alti1/yazilim.h",
 			"MU",
 			"EWIEGA46WW/moc_yazilim.cpp",
 			null
 		]
 	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
-	"INCLUDE_DIR" : "/home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/include",
-	"MOC_COMPILATION_FILE" : "/home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/mocs_compilation.cpp",
+	"INCLUDE_DIR" : "/home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/include",
+	"MOC_COMPILATION_FILE" : "/home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/mocs_compilation.cpp",
 	"MOC_DEFINITIONS" : 
 	[
 		"QT_CORE_LIB",
@@ -135,7 +135,8 @@
 	],
 	"MOC_INCLUDES" : 
 	[
-		"/home/lagaca/Desktop/su-alti/mavlink",
+		"/home/lagaca/Desktop/su-alti1/mavlink",
+		"/usr/include/opencv4",
 		"/usr/include/x86_64-linux-gnu/qt5",
 		"/usr/include/x86_64-linux-gnu/qt5/QtCore",
 		"/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++",
@@ -144,7 +145,6 @@
 		"/usr/include/x86_64-linux-gnu/qt5/QtNetwork",
 		"/usr/include/x86_64-linux-gnu/qt5/QtSerialPort",
 		"/usr/include/x86_64-linux-gnu/qt5/QtWebSockets",
-		"/usr/include/opencv4",
 		"/usr/include/c++/13",
 		"/usr/include/x86_64-linux-gnu/c++/13",
 		"/usr/include/c++/13/backward",
@@ -165,23 +165,23 @@
 		"-c",
 		"/usr/share/cmake-3.28/Modules/CMakeCXXCompilerABI.cpp"
 	],
-	"MOC_PREDEFS_FILE" : "/home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/moc_predefs.h",
+	"MOC_PREDEFS_FILE" : "/home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/moc_predefs.h",
 	"MOC_RELAXED_MODE" : false,
 	"MOC_SKIP" : [],
 	"MULTI_CONFIG" : false,
 	"PARALLEL" : 14,
-	"PARSE_CACHE_FILE" : "/home/lagaca/Desktop/su-alti/build/CMakeFiles/su_alti_rov_autogen.dir/ParseCache.txt",
+	"PARSE_CACHE_FILE" : "/home/lagaca/Desktop/su-alti1/build/CMakeFiles/su_alti_rov_autogen.dir/ParseCache.txt",
 	"QT_MOC_EXECUTABLE" : "/usr/lib/qt5/bin/moc",
 	"QT_UIC_EXECUTABLE" : "/usr/lib/qt5/bin/uic",
 	"QT_VERSION_MAJOR" : 5,
 	"QT_VERSION_MINOR" : 15,
-	"SETTINGS_FILE" : "/home/lagaca/Desktop/su-alti/build/CMakeFiles/su_alti_rov_autogen.dir/AutogenUsed.txt",
+	"SETTINGS_FILE" : "/home/lagaca/Desktop/su-alti1/build/CMakeFiles/su_alti_rov_autogen.dir/AutogenUsed.txt",
 	"SOURCES" : 
 	[
-		[ "/home/lagaca/Desktop/su-alti/algoritma.cpp", "MU", null ],
-		[ "/home/lagaca/Desktop/su-alti/main.cpp", "MU", null ],
-		[ "/home/lagaca/Desktop/su-alti/tasarim.cpp", "MU", null ],
-		[ "/home/lagaca/Desktop/su-alti/yazilim.cpp", "MU", null ]
+		[ "/home/lagaca/Desktop/su-alti1/algoritma.cpp", "MU", null ],
+		[ "/home/lagaca/Desktop/su-alti1/main.cpp", "MU", null ],
+		[ "/home/lagaca/Desktop/su-alti1/tasarim.cpp", "MU", null ],
+		[ "/home/lagaca/Desktop/su-alti1/yazilim.cpp", "MU", null ]
 	],
 	"UIC_OPTIONS" : [],
 	"UIC_SEARCH_PATHS" : [],

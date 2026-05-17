@@ -1,7 +1,7 @@
-/home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/EWIEGA46WW/moc_yazilim.cpp: /home/lagaca/Desktop/su-alti/yazilim.h \
-  /home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/moc_predefs.h \
-  /home/lagaca/Desktop/su-alti/algoritma.h \
-  /home/lagaca/Desktop/su-alti/tasarim.h \
+/home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/EWIEGA46WW/moc_yazilim.cpp: /home/lagaca/Desktop/su-alti1/yazilim.h \
+  /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/moc_predefs.h \
+  /home/lagaca/Desktop/su-alti1/algoritma.h \
+  /home/lagaca/Desktop/su-alti1/tasarim.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \
@@ -325,6 +325,7 @@
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qvarlengtharray.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qvector.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qversiontagging.h \
+  /usr/include/x86_64-linux-gnu/qt5/QtGui/QColor \
   /usr/include/x86_64-linux-gnu/qt5/QtGui/QImage \
   /usr/include/x86_64-linux-gnu/qt5/QtGui/QPainter \
   /usr/include/x86_64-linux-gnu/qt5/QtGui/QPolygonF \
@@ -357,6 +358,7 @@
   /usr/include/x86_64-linux-gnu/qt5/QtGui/qtransform.h \
   /usr/include/x86_64-linux-gnu/qt5/QtGui/qvalidator.h \
   /usr/include/x86_64-linux-gnu/qt5/QtGui/qwindowdefs.h \
+  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QColorDialog \
   /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QComboBox \
   /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGridLayout \
   /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGroupBox \
@@ -374,7 +376,9 @@
   /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qabstractslider.h \
   /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qabstractspinbox.h \
   /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qboxlayout.h \
+  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qcolordialog.h \
   /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qcombobox.h \
+  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
   /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qframe.h \
   /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgridlayout.h \
   /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgroupbox.h \

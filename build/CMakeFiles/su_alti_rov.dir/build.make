@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lagaca/Desktop/su-alti
+CMAKE_SOURCE_DIR = /home/lagaca/Desktop/su-alti1
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lagaca/Desktop/su-alti/build
+CMAKE_BINARY_DIR = /home/lagaca/Desktop/su-alti1/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/su_alti_rov.dir/depend.make
@@ -72,79 +72,79 @@ include CMakeFiles/su_alti_rov.dir/flags.make
 su_alti_rov_autogen/timestamp: /usr/lib/qt5/bin/moc
 su_alti_rov_autogen/timestamp: /usr/lib/qt5/bin/uic
 su_alti_rov_autogen/timestamp: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/lagaca/Desktop/su-alti/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target su_alti_rov"
-	/usr/bin/cmake -E cmake_autogen /home/lagaca/Desktop/su-alti/build/CMakeFiles/su_alti_rov_autogen.dir/AutogenInfo.json ""
-	/usr/bin/cmake -E touch /home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/timestamp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target su_alti_rov"
+	/usr/bin/cmake -E cmake_autogen /home/lagaca/Desktop/su-alti1/build/CMakeFiles/su_alti_rov_autogen.dir/AutogenInfo.json ""
+	/usr/bin/cmake -E touch /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/timestamp
 
 CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
 CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o: su_alti_rov_autogen/mocs_compilation.cpp
 CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o -MF CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o -c /home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/mocs_compilation.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o -MF CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o -c /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/mocs_compilation.cpp
 
 CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.i"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/mocs_compilation.cpp > CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.i
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/mocs_compilation.cpp > CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.i
 
 CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.s"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/mocs_compilation.cpp -o CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.s
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/mocs_compilation.cpp -o CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.s
 
 CMakeFiles/su_alti_rov.dir/main.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
-CMakeFiles/su_alti_rov.dir/main.cpp.o: /home/lagaca/Desktop/su-alti/main.cpp
+CMakeFiles/su_alti_rov.dir/main.cpp.o: /home/lagaca/Desktop/su-alti1/main.cpp
 CMakeFiles/su_alti_rov.dir/main.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/su_alti_rov.dir/main.cpp.o"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/main.cpp.o -MF CMakeFiles/su_alti_rov.dir/main.cpp.o.d -o CMakeFiles/su_alti_rov.dir/main.cpp.o -c /home/lagaca/Desktop/su-alti/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/su_alti_rov.dir/main.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/main.cpp.o -MF CMakeFiles/su_alti_rov.dir/main.cpp.o.d -o CMakeFiles/su_alti_rov.dir/main.cpp.o -c /home/lagaca/Desktop/su-alti1/main.cpp
 
 CMakeFiles/su_alti_rov.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/main.cpp.i"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti/main.cpp > CMakeFiles/su_alti_rov.dir/main.cpp.i
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/main.cpp > CMakeFiles/su_alti_rov.dir/main.cpp.i
 
 CMakeFiles/su_alti_rov.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/main.cpp.s"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti/main.cpp -o CMakeFiles/su_alti_rov.dir/main.cpp.s
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/main.cpp -o CMakeFiles/su_alti_rov.dir/main.cpp.s
 
 CMakeFiles/su_alti_rov.dir/yazilim.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
-CMakeFiles/su_alti_rov.dir/yazilim.cpp.o: /home/lagaca/Desktop/su-alti/yazilim.cpp
+CMakeFiles/su_alti_rov.dir/yazilim.cpp.o: /home/lagaca/Desktop/su-alti1/yazilim.cpp
 CMakeFiles/su_alti_rov.dir/yazilim.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/su_alti_rov.dir/yazilim.cpp.o"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/yazilim.cpp.o -MF CMakeFiles/su_alti_rov.dir/yazilim.cpp.o.d -o CMakeFiles/su_alti_rov.dir/yazilim.cpp.o -c /home/lagaca/Desktop/su-alti/yazilim.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/su_alti_rov.dir/yazilim.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/yazilim.cpp.o -MF CMakeFiles/su_alti_rov.dir/yazilim.cpp.o.d -o CMakeFiles/su_alti_rov.dir/yazilim.cpp.o -c /home/lagaca/Desktop/su-alti1/yazilim.cpp
 
 CMakeFiles/su_alti_rov.dir/yazilim.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/yazilim.cpp.i"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti/yazilim.cpp > CMakeFiles/su_alti_rov.dir/yazilim.cpp.i
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/yazilim.cpp > CMakeFiles/su_alti_rov.dir/yazilim.cpp.i
 
 CMakeFiles/su_alti_rov.dir/yazilim.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/yazilim.cpp.s"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti/yazilim.cpp -o CMakeFiles/su_alti_rov.dir/yazilim.cpp.s
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/yazilim.cpp -o CMakeFiles/su_alti_rov.dir/yazilim.cpp.s
 
 CMakeFiles/su_alti_rov.dir/tasarim.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
-CMakeFiles/su_alti_rov.dir/tasarim.cpp.o: /home/lagaca/Desktop/su-alti/tasarim.cpp
+CMakeFiles/su_alti_rov.dir/tasarim.cpp.o: /home/lagaca/Desktop/su-alti1/tasarim.cpp
 CMakeFiles/su_alti_rov.dir/tasarim.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/su_alti_rov.dir/tasarim.cpp.o"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/tasarim.cpp.o -MF CMakeFiles/su_alti_rov.dir/tasarim.cpp.o.d -o CMakeFiles/su_alti_rov.dir/tasarim.cpp.o -c /home/lagaca/Desktop/su-alti/tasarim.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/su_alti_rov.dir/tasarim.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/tasarim.cpp.o -MF CMakeFiles/su_alti_rov.dir/tasarim.cpp.o.d -o CMakeFiles/su_alti_rov.dir/tasarim.cpp.o -c /home/lagaca/Desktop/su-alti1/tasarim.cpp
 
 CMakeFiles/su_alti_rov.dir/tasarim.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/tasarim.cpp.i"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti/tasarim.cpp > CMakeFiles/su_alti_rov.dir/tasarim.cpp.i
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/tasarim.cpp > CMakeFiles/su_alti_rov.dir/tasarim.cpp.i
 
 CMakeFiles/su_alti_rov.dir/tasarim.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/tasarim.cpp.s"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti/tasarim.cpp -o CMakeFiles/su_alti_rov.dir/tasarim.cpp.s
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/tasarim.cpp -o CMakeFiles/su_alti_rov.dir/tasarim.cpp.s
 
 CMakeFiles/su_alti_rov.dir/algoritma.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
-CMakeFiles/su_alti_rov.dir/algoritma.cpp.o: /home/lagaca/Desktop/su-alti/algoritma.cpp
+CMakeFiles/su_alti_rov.dir/algoritma.cpp.o: /home/lagaca/Desktop/su-alti1/algoritma.cpp
 CMakeFiles/su_alti_rov.dir/algoritma.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/su_alti_rov.dir/algoritma.cpp.o"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/algoritma.cpp.o -MF CMakeFiles/su_alti_rov.dir/algoritma.cpp.o.d -o CMakeFiles/su_alti_rov.dir/algoritma.cpp.o -c /home/lagaca/Desktop/su-alti/algoritma.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/su_alti_rov.dir/algoritma.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/algoritma.cpp.o -MF CMakeFiles/su_alti_rov.dir/algoritma.cpp.o.d -o CMakeFiles/su_alti_rov.dir/algoritma.cpp.o -c /home/lagaca/Desktop/su-alti1/algoritma.cpp
 
 CMakeFiles/su_alti_rov.dir/algoritma.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/algoritma.cpp.i"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti/algoritma.cpp > CMakeFiles/su_alti_rov.dir/algoritma.cpp.i
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/algoritma.cpp > CMakeFiles/su_alti_rov.dir/algoritma.cpp.i
 
 CMakeFiles/su_alti_rov.dir/algoritma.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/algoritma.cpp.s"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti/algoritma.cpp -o CMakeFiles/su_alti_rov.dir/algoritma.cpp.s
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/algoritma.cpp -o CMakeFiles/su_alti_rov.dir/algoritma.cpp.s
 
 # Object files for target su_alti_rov
 su_alti_rov_OBJECTS = \
@@ -225,7 +225,7 @@ su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_photo.so.4.6.0
 su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_imgproc.so.4.6.0
 su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_core.so.4.6.0
 su_alti_rov: CMakeFiles/su_alti_rov.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/lagaca/Desktop/su-alti/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable su_alti_rov"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable su_alti_rov"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/su_alti_rov.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -237,6 +237,6 @@ CMakeFiles/su_alti_rov.dir/clean:
 .PHONY : CMakeFiles/su_alti_rov.dir/clean
 
 CMakeFiles/su_alti_rov.dir/depend: su_alti_rov_autogen/timestamp
-	cd /home/lagaca/Desktop/su-alti/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lagaca/Desktop/su-alti /home/lagaca/Desktop/su-alti /home/lagaca/Desktop/su-alti/build /home/lagaca/Desktop/su-alti/build /home/lagaca/Desktop/su-alti/build/CMakeFiles/su_alti_rov.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/lagaca/Desktop/su-alti1/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lagaca/Desktop/su-alti1 /home/lagaca/Desktop/su-alti1 /home/lagaca/Desktop/su-alti1/build /home/lagaca/Desktop/su-alti1/build /home/lagaca/Desktop/su-alti1/build/CMakeFiles/su_alti_rov.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/su_alti_rov.dir/depend
 

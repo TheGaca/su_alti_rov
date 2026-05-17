@@ -1,6 +1,6 @@
 CMakeFiles/su_alti_rov.dir/tasarim.cpp.o: \
- /home/lagaca/Desktop/su-alti/tasarim.cpp /usr/include/stdc-predef.h \
- /home/lagaca/Desktop/su-alti/tasarim.h \
+ /home/lagaca/Desktop/su-alti1/tasarim.cpp /usr/include/stdc-predef.h \
+ /home/lagaca/Desktop/su-alti1/tasarim.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -334,9 +334,50 @@ CMakeFiles/su_alti_rov.dir/tasarim.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qtextformat.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QProgressBar \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qprogressbar.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QColorDialog \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qcolordialog.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtGui/QColor \
+ /usr/include/x86_64-linux-gnu/qt5/QtGui/qcolor.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtGui/QPaintEvent \
+ /usr/include/x86_64-linux-gnu/qt5/QtGui/qevent.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qcoreevent.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qset.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qfile.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qfiledevice.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtGui/qvector2d.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtGui/qtouchdevice.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QPainterPath \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qpainterpath.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QFont \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qfont.h \
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QMainWindow \
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qmainwindow.h
+ /usr/include/x86_64-linux-gnu/qt5/QtSerialPort/QSerialPortInfo \
+ /usr/include/x86_64-linux-gnu/qt5/QtSerialPort/qserialportinfo.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtSerialPort/qserialportglobal.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QDir \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qdir.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qfileinfo.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QFileInfoList \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qfileinfo.h \
+ /usr/include/c++/13/cmath /usr/include/math.h \
+ /usr/include/x86_64-linux-gnu/bits/math-vector.h \
+ /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
+ /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
+ /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
+ /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h \
+ /usr/include/x86_64-linux-gnu/bits/iscanonical.h \
+ /usr/include/c++/13/bits/specfun.h /usr/include/c++/13/tr1/gamma.tcc \
+ /usr/include/c++/13/tr1/special_function_util.h \
+ /usr/include/c++/13/tr1/bessel_function.tcc \
+ /usr/include/c++/13/tr1/beta_function.tcc \
+ /usr/include/c++/13/tr1/ell_integral.tcc \
+ /usr/include/c++/13/tr1/exp_integral.tcc \
+ /usr/include/c++/13/tr1/hypergeometric.tcc \
+ /usr/include/c++/13/tr1/legendre_function.tcc \
+ /usr/include/c++/13/tr1/modified_bessel_func.tcc \
+ /usr/include/c++/13/tr1/poly_hermite.tcc \
+ /usr/include/c++/13/tr1/poly_laguerre.tcc \
+ /usr/include/c++/13/tr1/riemann_zeta.tcc

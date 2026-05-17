@@ -1,5 +1,5 @@
-/home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/EWIEGA46WW/moc_algoritma.cpp: /home/lagaca/Desktop/su-alti/algoritma.h \
-  /home/lagaca/Desktop/su-alti/build/su_alti_rov_autogen/moc_predefs.h \
+/home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/EWIEGA46WW/moc_algoritma.cpp: /home/lagaca/Desktop/su-alti1/algoritma.h \
+  /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/moc_predefs.h \
   /usr/include/assert.h \
   /usr/include/c++/13/algorithm \
   /usr/include/c++/13/array \
