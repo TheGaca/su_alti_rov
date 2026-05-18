@@ -201,11 +201,10 @@ IP'ler farklıysa `yazilim.cpp` içinde `start_camera_threads()` fonksiyonundaki
 **Hızlı test:**
 
 ```bash
-# MiniROV kamerası açık mı?
-curl -I http://192.168.88.2/stream
-
-# AnaROV ping:
-ping -c 3 192.168.1.116
+ sudo ip addr flush dev enp46s0
+ sudo ip addr add 192.168.88.1/24 dev enp46s0
+ sudo ip link set enp46s0 up
+ ping 192.168.88.2
 ```
 
 ---
@@ -240,7 +239,6 @@ Uygulama fullscreen açılır. Kapatmak için `Alt+F4` veya `Ctrl+Q`.
 5. Yönelim/VFR HUD verileri akmaya başlar
 
 ### 9.2 Joystick Bağlantısı
-
 1. Kumanda Durumu kısmından `/dev/input/js0` seç
 2. **Kol Bağla** butonuna bas
 3. Durum: `Kol Bağlandı!`
@@ -377,4 +375,4 @@ cmake .. && make -j$(nproc)
 ---
 
 **Sürüm:** 1.0
-**Lisans:** Proje sahibine ait
+**Lisans:** SuGaca

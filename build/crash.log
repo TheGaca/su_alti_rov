@@ -1,0 +1,3 @@
+QNativeSocketEngine::write() was not called in QAbstractSocket::ConnectedState
+QProcess: Destroyed while process ("ping") is still running.
+QProcess: Destroyed while process ("ping") is still running.
