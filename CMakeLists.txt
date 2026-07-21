@@ -13,21 +13,33 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt5 COMPONENTS Core Gui Widgets Network SerialPort WebSockets REQUIRED)
 find_package(OpenCV REQUIRED)
 
-# MAVLink başlık dosyası yolu
-# Proje klasörüne `mavlink/` klasörünü kopyalaman gerekiyor
-# (https://github.com/mavlink/c_library_v2 → common.h vs.)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/mavlink)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-# Kaynak dosyalar
+# Kaynak dosyalar - her sinif kendi basligi/dosyasinda (bkz. include/ ve src/)
 add_executable(su_alti_rov
-    main.cpp
-    yazilim.cpp
-    yazilim.h
-    tasarim.cpp
-    tasarim.h
-    algoritma.cpp
-    algoritma.h
+    src/main.cpp
+    src/JoystickThread.cpp
+    src/CameraThread.cpp
+    src/AnaRovThread.cpp
+    src/EspRovThread.cpp
+    src/ColorPickerButton.cpp
+    src/AttitudeIndicator.cpp
+    src/MotorDiagramWidget.cpp
+    src/PixhawkPanel.cpp
+    src/Ui_MainWindow.cpp
+    src/PixhawkGUI.cpp
+
+    include/JoystickThread.hpp
+    include/CameraThread.hpp
+    include/AnaRovThread.hpp
+    include/EspRovThread.hpp
+    include/ColorPickerButton.hpp
+    include/AttitudeIndicator.hpp
+    include/MotorDiagramWidget.hpp
+    include/PixhawkPanel.hpp
+    include/Ui_MainWindow.hpp
+    include/PixhawkGUI.hpp
 )
 
 target_link_libraries(su_alti_rov

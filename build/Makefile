@@ -155,53 +155,269 @@ su_alti_rov_autogen/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov_autogen.dir/build.make CMakeFiles/su_alti_rov_autogen.dir/build
 .PHONY : su_alti_rov_autogen/fast
 
-algoritma.o: algoritma.cpp.o
-.PHONY : algoritma.o
+src/AnaRovThread.o: src/AnaRovThread.cpp.o
+.PHONY : src/AnaRovThread.o
 
 # target to build an object file
-algoritma.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/algoritma.cpp.o
-.PHONY : algoritma.cpp.o
+src/AnaRovThread.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o
+.PHONY : src/AnaRovThread.cpp.o
 
-algoritma.i: algoritma.cpp.i
-.PHONY : algoritma.i
+src/AnaRovThread.i: src/AnaRovThread.cpp.i
+.PHONY : src/AnaRovThread.i
 
 # target to preprocess a source file
-algoritma.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/algoritma.cpp.i
-.PHONY : algoritma.cpp.i
+src/AnaRovThread.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.i
+.PHONY : src/AnaRovThread.cpp.i
 
-algoritma.s: algoritma.cpp.s
-.PHONY : algoritma.s
+src/AnaRovThread.s: src/AnaRovThread.cpp.s
+.PHONY : src/AnaRovThread.s
 
 # target to generate assembly for a file
-algoritma.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/algoritma.cpp.s
-.PHONY : algoritma.cpp.s
+src/AnaRovThread.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.s
+.PHONY : src/AnaRovThread.cpp.s
 
-main.o: main.cpp.o
-.PHONY : main.o
+src/AttitudeIndicator.o: src/AttitudeIndicator.cpp.o
+.PHONY : src/AttitudeIndicator.o
 
 # target to build an object file
-main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/main.cpp.o
-.PHONY : main.cpp.o
+src/AttitudeIndicator.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o
+.PHONY : src/AttitudeIndicator.cpp.o
 
-main.i: main.cpp.i
-.PHONY : main.i
+src/AttitudeIndicator.i: src/AttitudeIndicator.cpp.i
+.PHONY : src/AttitudeIndicator.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/main.cpp.i
-.PHONY : main.cpp.i
+src/AttitudeIndicator.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.i
+.PHONY : src/AttitudeIndicator.cpp.i
 
-main.s: main.cpp.s
-.PHONY : main.s
+src/AttitudeIndicator.s: src/AttitudeIndicator.cpp.s
+.PHONY : src/AttitudeIndicator.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/main.cpp.s
-.PHONY : main.cpp.s
+src/AttitudeIndicator.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.s
+.PHONY : src/AttitudeIndicator.cpp.s
+
+src/CameraThread.o: src/CameraThread.cpp.o
+.PHONY : src/CameraThread.o
+
+# target to build an object file
+src/CameraThread.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.o
+.PHONY : src/CameraThread.cpp.o
+
+src/CameraThread.i: src/CameraThread.cpp.i
+.PHONY : src/CameraThread.i
+
+# target to preprocess a source file
+src/CameraThread.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.i
+.PHONY : src/CameraThread.cpp.i
+
+src/CameraThread.s: src/CameraThread.cpp.s
+.PHONY : src/CameraThread.s
+
+# target to generate assembly for a file
+src/CameraThread.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.s
+.PHONY : src/CameraThread.cpp.s
+
+src/ColorPickerButton.o: src/ColorPickerButton.cpp.o
+.PHONY : src/ColorPickerButton.o
+
+# target to build an object file
+src/ColorPickerButton.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o
+.PHONY : src/ColorPickerButton.cpp.o
+
+src/ColorPickerButton.i: src/ColorPickerButton.cpp.i
+.PHONY : src/ColorPickerButton.i
+
+# target to preprocess a source file
+src/ColorPickerButton.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.i
+.PHONY : src/ColorPickerButton.cpp.i
+
+src/ColorPickerButton.s: src/ColorPickerButton.cpp.s
+.PHONY : src/ColorPickerButton.s
+
+# target to generate assembly for a file
+src/ColorPickerButton.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.s
+.PHONY : src/ColorPickerButton.cpp.s
+
+src/EspRovThread.o: src/EspRovThread.cpp.o
+.PHONY : src/EspRovThread.o
+
+# target to build an object file
+src/EspRovThread.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o
+.PHONY : src/EspRovThread.cpp.o
+
+src/EspRovThread.i: src/EspRovThread.cpp.i
+.PHONY : src/EspRovThread.i
+
+# target to preprocess a source file
+src/EspRovThread.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.i
+.PHONY : src/EspRovThread.cpp.i
+
+src/EspRovThread.s: src/EspRovThread.cpp.s
+.PHONY : src/EspRovThread.s
+
+# target to generate assembly for a file
+src/EspRovThread.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.s
+.PHONY : src/EspRovThread.cpp.s
+
+src/JoystickThread.o: src/JoystickThread.cpp.o
+.PHONY : src/JoystickThread.o
+
+# target to build an object file
+src/JoystickThread.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.o
+.PHONY : src/JoystickThread.cpp.o
+
+src/JoystickThread.i: src/JoystickThread.cpp.i
+.PHONY : src/JoystickThread.i
+
+# target to preprocess a source file
+src/JoystickThread.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.i
+.PHONY : src/JoystickThread.cpp.i
+
+src/JoystickThread.s: src/JoystickThread.cpp.s
+.PHONY : src/JoystickThread.s
+
+# target to generate assembly for a file
+src/JoystickThread.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.s
+.PHONY : src/JoystickThread.cpp.s
+
+src/MotorDiagramWidget.o: src/MotorDiagramWidget.cpp.o
+.PHONY : src/MotorDiagramWidget.o
+
+# target to build an object file
+src/MotorDiagramWidget.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o
+.PHONY : src/MotorDiagramWidget.cpp.o
+
+src/MotorDiagramWidget.i: src/MotorDiagramWidget.cpp.i
+.PHONY : src/MotorDiagramWidget.i
+
+# target to preprocess a source file
+src/MotorDiagramWidget.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.i
+.PHONY : src/MotorDiagramWidget.cpp.i
+
+src/MotorDiagramWidget.s: src/MotorDiagramWidget.cpp.s
+.PHONY : src/MotorDiagramWidget.s
+
+# target to generate assembly for a file
+src/MotorDiagramWidget.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.s
+.PHONY : src/MotorDiagramWidget.cpp.s
+
+src/PixhawkGUI.o: src/PixhawkGUI.cpp.o
+.PHONY : src/PixhawkGUI.o
+
+# target to build an object file
+src/PixhawkGUI.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o
+.PHONY : src/PixhawkGUI.cpp.o
+
+src/PixhawkGUI.i: src/PixhawkGUI.cpp.i
+.PHONY : src/PixhawkGUI.i
+
+# target to preprocess a source file
+src/PixhawkGUI.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.i
+.PHONY : src/PixhawkGUI.cpp.i
+
+src/PixhawkGUI.s: src/PixhawkGUI.cpp.s
+.PHONY : src/PixhawkGUI.s
+
+# target to generate assembly for a file
+src/PixhawkGUI.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.s
+.PHONY : src/PixhawkGUI.cpp.s
+
+src/PixhawkPanel.o: src/PixhawkPanel.cpp.o
+.PHONY : src/PixhawkPanel.o
+
+# target to build an object file
+src/PixhawkPanel.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o
+.PHONY : src/PixhawkPanel.cpp.o
+
+src/PixhawkPanel.i: src/PixhawkPanel.cpp.i
+.PHONY : src/PixhawkPanel.i
+
+# target to preprocess a source file
+src/PixhawkPanel.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.i
+.PHONY : src/PixhawkPanel.cpp.i
+
+src/PixhawkPanel.s: src/PixhawkPanel.cpp.s
+.PHONY : src/PixhawkPanel.s
+
+# target to generate assembly for a file
+src/PixhawkPanel.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.s
+.PHONY : src/PixhawkPanel.cpp.s
+
+src/Ui_MainWindow.o: src/Ui_MainWindow.cpp.o
+.PHONY : src/Ui_MainWindow.o
+
+# target to build an object file
+src/Ui_MainWindow.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o
+.PHONY : src/Ui_MainWindow.cpp.o
+
+src/Ui_MainWindow.i: src/Ui_MainWindow.cpp.i
+.PHONY : src/Ui_MainWindow.i
+
+# target to preprocess a source file
+src/Ui_MainWindow.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.i
+.PHONY : src/Ui_MainWindow.cpp.i
+
+src/Ui_MainWindow.s: src/Ui_MainWindow.cpp.s
+.PHONY : src/Ui_MainWindow.s
+
+# target to generate assembly for a file
+src/Ui_MainWindow.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.s
+.PHONY : src/Ui_MainWindow.cpp.s
+
+src/main.o: src/main.cpp.o
+.PHONY : src/main.o
+
+# target to build an object file
+src/main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/main.cpp.o
+.PHONY : src/main.cpp.o
+
+src/main.i: src/main.cpp.i
+.PHONY : src/main.i
+
+# target to preprocess a source file
+src/main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
+
+src/main.s: src/main.cpp.s
+.PHONY : src/main.s
+
+# target to generate assembly for a file
+src/main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
 
 su_alti_rov_autogen/mocs_compilation.o: su_alti_rov_autogen/mocs_compilation.cpp.o
 .PHONY : su_alti_rov_autogen/mocs_compilation.o
@@ -227,54 +443,6 @@ su_alti_rov_autogen/mocs_compilation.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.s
 .PHONY : su_alti_rov_autogen/mocs_compilation.cpp.s
 
-tasarim.o: tasarim.cpp.o
-.PHONY : tasarim.o
-
-# target to build an object file
-tasarim.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/tasarim.cpp.o
-.PHONY : tasarim.cpp.o
-
-tasarim.i: tasarim.cpp.i
-.PHONY : tasarim.i
-
-# target to preprocess a source file
-tasarim.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/tasarim.cpp.i
-.PHONY : tasarim.cpp.i
-
-tasarim.s: tasarim.cpp.s
-.PHONY : tasarim.s
-
-# target to generate assembly for a file
-tasarim.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/tasarim.cpp.s
-.PHONY : tasarim.cpp.s
-
-yazilim.o: yazilim.cpp.o
-.PHONY : yazilim.o
-
-# target to build an object file
-yazilim.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/yazilim.cpp.o
-.PHONY : yazilim.cpp.o
-
-yazilim.i: yazilim.cpp.i
-.PHONY : yazilim.i
-
-# target to preprocess a source file
-yazilim.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/yazilim.cpp.i
-.PHONY : yazilim.cpp.i
-
-yazilim.s: yazilim.cpp.s
-.PHONY : yazilim.s
-
-# target to generate assembly for a file
-yazilim.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/yazilim.cpp.s
-.PHONY : yazilim.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -286,21 +454,42 @@ help:
 	@echo "... su_alti_rov_autogen"
 	@echo "... su_alti_rov_autogen_timestamp_deps"
 	@echo "... su_alti_rov"
-	@echo "... algoritma.o"
-	@echo "... algoritma.i"
-	@echo "... algoritma.s"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... src/AnaRovThread.o"
+	@echo "... src/AnaRovThread.i"
+	@echo "... src/AnaRovThread.s"
+	@echo "... src/AttitudeIndicator.o"
+	@echo "... src/AttitudeIndicator.i"
+	@echo "... src/AttitudeIndicator.s"
+	@echo "... src/CameraThread.o"
+	@echo "... src/CameraThread.i"
+	@echo "... src/CameraThread.s"
+	@echo "... src/ColorPickerButton.o"
+	@echo "... src/ColorPickerButton.i"
+	@echo "... src/ColorPickerButton.s"
+	@echo "... src/EspRovThread.o"
+	@echo "... src/EspRovThread.i"
+	@echo "... src/EspRovThread.s"
+	@echo "... src/JoystickThread.o"
+	@echo "... src/JoystickThread.i"
+	@echo "... src/JoystickThread.s"
+	@echo "... src/MotorDiagramWidget.o"
+	@echo "... src/MotorDiagramWidget.i"
+	@echo "... src/MotorDiagramWidget.s"
+	@echo "... src/PixhawkGUI.o"
+	@echo "... src/PixhawkGUI.i"
+	@echo "... src/PixhawkGUI.s"
+	@echo "... src/PixhawkPanel.o"
+	@echo "... src/PixhawkPanel.i"
+	@echo "... src/PixhawkPanel.s"
+	@echo "... src/Ui_MainWindow.o"
+	@echo "... src/Ui_MainWindow.i"
+	@echo "... src/Ui_MainWindow.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
 	@echo "... su_alti_rov_autogen/mocs_compilation.o"
 	@echo "... su_alti_rov_autogen/mocs_compilation.i"
 	@echo "... su_alti_rov_autogen/mocs_compilation.s"
-	@echo "... tasarim.o"
-	@echo "... tasarim.i"
-	@echo "... tasarim.s"
-	@echo "... yazilim.o"
-	@echo "... yazilim.i"
-	@echo "... yazilim.s"
 .PHONY : help
 
 

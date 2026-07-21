@@ -90,78 +90,190 @@ CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.s: cmake_for
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.s"
 	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/mocs_compilation.cpp -o CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.s
 
-CMakeFiles/su_alti_rov.dir/main.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
-CMakeFiles/su_alti_rov.dir/main.cpp.o: /home/lagaca/Desktop/su-alti1/main.cpp
-CMakeFiles/su_alti_rov.dir/main.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/su_alti_rov.dir/main.cpp.o"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/main.cpp.o -MF CMakeFiles/su_alti_rov.dir/main.cpp.o.d -o CMakeFiles/su_alti_rov.dir/main.cpp.o -c /home/lagaca/Desktop/su-alti1/main.cpp
+CMakeFiles/su_alti_rov.dir/src/main.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
+CMakeFiles/su_alti_rov.dir/src/main.cpp.o: /home/lagaca/Desktop/su-alti1/src/main.cpp
+CMakeFiles/su_alti_rov.dir/src/main.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/su_alti_rov.dir/src/main.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/main.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/main.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/main.cpp.o -c /home/lagaca/Desktop/su-alti1/src/main.cpp
 
-CMakeFiles/su_alti_rov.dir/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/main.cpp.i"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/main.cpp > CMakeFiles/su_alti_rov.dir/main.cpp.i
+CMakeFiles/su_alti_rov.dir/src/main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/src/main.cpp.i"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/src/main.cpp > CMakeFiles/su_alti_rov.dir/src/main.cpp.i
 
-CMakeFiles/su_alti_rov.dir/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/main.cpp.s"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/main.cpp -o CMakeFiles/su_alti_rov.dir/main.cpp.s
+CMakeFiles/su_alti_rov.dir/src/main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/main.cpp.s"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/src/main.cpp -o CMakeFiles/su_alti_rov.dir/src/main.cpp.s
 
-CMakeFiles/su_alti_rov.dir/yazilim.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
-CMakeFiles/su_alti_rov.dir/yazilim.cpp.o: /home/lagaca/Desktop/su-alti1/yazilim.cpp
-CMakeFiles/su_alti_rov.dir/yazilim.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/su_alti_rov.dir/yazilim.cpp.o"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/yazilim.cpp.o -MF CMakeFiles/su_alti_rov.dir/yazilim.cpp.o.d -o CMakeFiles/su_alti_rov.dir/yazilim.cpp.o -c /home/lagaca/Desktop/su-alti1/yazilim.cpp
+CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
+CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.o: /home/lagaca/Desktop/su-alti1/src/JoystickThread.cpp
+CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.o -c /home/lagaca/Desktop/su-alti1/src/JoystickThread.cpp
 
-CMakeFiles/su_alti_rov.dir/yazilim.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/yazilim.cpp.i"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/yazilim.cpp > CMakeFiles/su_alti_rov.dir/yazilim.cpp.i
+CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.i"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/src/JoystickThread.cpp > CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.i
 
-CMakeFiles/su_alti_rov.dir/yazilim.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/yazilim.cpp.s"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/yazilim.cpp -o CMakeFiles/su_alti_rov.dir/yazilim.cpp.s
+CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.s"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/src/JoystickThread.cpp -o CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.s
 
-CMakeFiles/su_alti_rov.dir/tasarim.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
-CMakeFiles/su_alti_rov.dir/tasarim.cpp.o: /home/lagaca/Desktop/su-alti1/tasarim.cpp
-CMakeFiles/su_alti_rov.dir/tasarim.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/su_alti_rov.dir/tasarim.cpp.o"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/tasarim.cpp.o -MF CMakeFiles/su_alti_rov.dir/tasarim.cpp.o.d -o CMakeFiles/su_alti_rov.dir/tasarim.cpp.o -c /home/lagaca/Desktop/su-alti1/tasarim.cpp
+CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
+CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.o: /home/lagaca/Desktop/su-alti1/src/CameraThread.cpp
+CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.o -c /home/lagaca/Desktop/su-alti1/src/CameraThread.cpp
 
-CMakeFiles/su_alti_rov.dir/tasarim.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/tasarim.cpp.i"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/tasarim.cpp > CMakeFiles/su_alti_rov.dir/tasarim.cpp.i
+CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.i"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/src/CameraThread.cpp > CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.i
 
-CMakeFiles/su_alti_rov.dir/tasarim.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/tasarim.cpp.s"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/tasarim.cpp -o CMakeFiles/su_alti_rov.dir/tasarim.cpp.s
+CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.s"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/src/CameraThread.cpp -o CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.s
 
-CMakeFiles/su_alti_rov.dir/algoritma.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
-CMakeFiles/su_alti_rov.dir/algoritma.cpp.o: /home/lagaca/Desktop/su-alti1/algoritma.cpp
-CMakeFiles/su_alti_rov.dir/algoritma.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/su_alti_rov.dir/algoritma.cpp.o"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/algoritma.cpp.o -MF CMakeFiles/su_alti_rov.dir/algoritma.cpp.o.d -o CMakeFiles/su_alti_rov.dir/algoritma.cpp.o -c /home/lagaca/Desktop/su-alti1/algoritma.cpp
+CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
+CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o: /home/lagaca/Desktop/su-alti1/src/AnaRovThread.cpp
+CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o -c /home/lagaca/Desktop/su-alti1/src/AnaRovThread.cpp
 
-CMakeFiles/su_alti_rov.dir/algoritma.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/algoritma.cpp.i"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/algoritma.cpp > CMakeFiles/su_alti_rov.dir/algoritma.cpp.i
+CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.i"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/src/AnaRovThread.cpp > CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.i
 
-CMakeFiles/su_alti_rov.dir/algoritma.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/algoritma.cpp.s"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/algoritma.cpp -o CMakeFiles/su_alti_rov.dir/algoritma.cpp.s
+CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.s"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/src/AnaRovThread.cpp -o CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.s
+
+CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
+CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o: /home/lagaca/Desktop/su-alti1/src/EspRovThread.cpp
+CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o -c /home/lagaca/Desktop/su-alti1/src/EspRovThread.cpp
+
+CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.i"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/src/EspRovThread.cpp > CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.i
+
+CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.s"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/src/EspRovThread.cpp -o CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.s
+
+CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
+CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o: /home/lagaca/Desktop/su-alti1/src/ColorPickerButton.cpp
+CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o -c /home/lagaca/Desktop/su-alti1/src/ColorPickerButton.cpp
+
+CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.i"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/src/ColorPickerButton.cpp > CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.i
+
+CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.s"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/src/ColorPickerButton.cpp -o CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.s
+
+CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
+CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o: /home/lagaca/Desktop/su-alti1/src/AttitudeIndicator.cpp
+CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o -c /home/lagaca/Desktop/su-alti1/src/AttitudeIndicator.cpp
+
+CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.i"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/src/AttitudeIndicator.cpp > CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.i
+
+CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.s"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/src/AttitudeIndicator.cpp -o CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.s
+
+CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
+CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o: /home/lagaca/Desktop/su-alti1/src/MotorDiagramWidget.cpp
+CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o -c /home/lagaca/Desktop/su-alti1/src/MotorDiagramWidget.cpp
+
+CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.i"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/src/MotorDiagramWidget.cpp > CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.i
+
+CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.s"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/src/MotorDiagramWidget.cpp -o CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.s
+
+CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
+CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o: /home/lagaca/Desktop/su-alti1/src/PixhawkPanel.cpp
+CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o -c /home/lagaca/Desktop/su-alti1/src/PixhawkPanel.cpp
+
+CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.i"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/src/PixhawkPanel.cpp > CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.i
+
+CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.s"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/src/PixhawkPanel.cpp -o CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.s
+
+CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
+CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o: /home/lagaca/Desktop/su-alti1/src/Ui_MainWindow.cpp
+CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o -c /home/lagaca/Desktop/su-alti1/src/Ui_MainWindow.cpp
+
+CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.i"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/src/Ui_MainWindow.cpp > CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.i
+
+CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.s"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/src/Ui_MainWindow.cpp -o CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.s
+
+CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
+CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o: /home/lagaca/Desktop/su-alti1/src/PixhawkGUI.cpp
+CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o -c /home/lagaca/Desktop/su-alti1/src/PixhawkGUI.cpp
+
+CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.i"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su-alti1/src/PixhawkGUI.cpp > CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.i
+
+CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.s"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su-alti1/src/PixhawkGUI.cpp -o CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.s
 
 # Object files for target su_alti_rov
 su_alti_rov_OBJECTS = \
 "CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o" \
-"CMakeFiles/su_alti_rov.dir/main.cpp.o" \
-"CMakeFiles/su_alti_rov.dir/yazilim.cpp.o" \
-"CMakeFiles/su_alti_rov.dir/tasarim.cpp.o" \
-"CMakeFiles/su_alti_rov.dir/algoritma.cpp.o"
+"CMakeFiles/su_alti_rov.dir/src/main.cpp.o" \
+"CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.o" \
+"CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.o" \
+"CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o" \
+"CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o" \
+"CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o" \
+"CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o" \
+"CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o" \
+"CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o" \
+"CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o" \
+"CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o"
 
 # External object files for target su_alti_rov
 su_alti_rov_EXTERNAL_OBJECTS =
 
 su_alti_rov: CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o
-su_alti_rov: CMakeFiles/su_alti_rov.dir/main.cpp.o
-su_alti_rov: CMakeFiles/su_alti_rov.dir/yazilim.cpp.o
-su_alti_rov: CMakeFiles/su_alti_rov.dir/tasarim.cpp.o
-su_alti_rov: CMakeFiles/su_alti_rov.dir/algoritma.cpp.o
+su_alti_rov: CMakeFiles/su_alti_rov.dir/src/main.cpp.o
+su_alti_rov: CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.o
+su_alti_rov: CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.o
+su_alti_rov: CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o
+su_alti_rov: CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o
+su_alti_rov: CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o
+su_alti_rov: CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o
+su_alti_rov: CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o
+su_alti_rov: CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o
+su_alti_rov: CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o
+su_alti_rov: CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o
 su_alti_rov: CMakeFiles/su_alti_rov.dir/build.make
 su_alti_rov: /usr/lib/x86_64-linux-gnu/libQt5SerialPort.so.5.15.13
 su_alti_rov: /usr/lib/x86_64-linux-gnu/libQt5WebSockets.so.5.15.13
@@ -225,7 +337,7 @@ su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_photo.so.4.6.0
 su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_imgproc.so.4.6.0
 su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_core.so.4.6.0
 su_alti_rov: CMakeFiles/su_alti_rov.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable su_alti_rov"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Linking CXX executable su_alti_rov"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/su_alti_rov.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

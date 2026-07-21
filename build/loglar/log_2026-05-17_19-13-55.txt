@@ -1,1 +1,0 @@
-[SYS] [19:13:55.353] Sistem ve Loglama Başlatıldı.

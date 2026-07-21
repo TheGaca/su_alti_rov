@@ -1,2 +1,0 @@
-[SYS] [19:29:11.226] Sistem ve Loglama Başlatıldı.
-[ANA] [19:32:41.721] KOL: Start tuşuna basıldı
