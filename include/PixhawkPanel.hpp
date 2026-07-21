@@ -35,8 +35,9 @@ public:
     QPushButton *btn_connect;
     QLabel *lbl_status;
 
-    // Yonelim (Attitude) - ESP32 govdesinde IMU olmadigi icin veri akmaz, arayuz
-    // geriye donuk uyumluluk / gelecekte sensor eklenmesi icin korunur.
+    // Yonelim (Attitude) - Ana ROV'da MPU-6050 IMU'dan roll/pitch gelir (bkz.
+    // EspRovThread ATT: satiri). Yaw bu ivmeolcerle olculemez, hep "---" kalir.
+    // Mini ROV'da IMU yok, bu alanlar hep "---" olarak kalir.
     QGroupBox *group_att;
     QHBoxLayout *layout_att;
     QGridLayout *text_att_layout;
@@ -61,6 +62,7 @@ public:
     QLabel *lbl_battery;
     QLabel *lbl_servo_status;
     QLabel *lbl_lamp_status;
+    QLabel *lbl_stabilize_status; // Ana ROV'da sabitleme (IMU) modu; Mini'de nullptr
 
     // Kamera Akisi (icinde stats + video + yon butonlari + Arm/Disarm)
     QGroupBox *group_cam;

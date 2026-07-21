@@ -36,6 +36,11 @@ void EspRovThread::run() {
                     emit armed_signal(true);
                 } else if (line == "DISARMED") {
                     emit armed_signal(false);
+                } else if (line.startsWith("ATT:")) {
+                    QStringList parts = line.mid(4).split(',');
+                    if (parts.size() == 2) {
+                        emit attitude_signal(parts[0].toFloat(), parts[1].toFloat());
+                    }
                 } else {
                     emit status_signal(line);
                 }

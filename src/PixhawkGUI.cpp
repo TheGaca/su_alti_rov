@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QStandardPaths>
 #include <QMessageBox>
+#include <QStatusBar>
 #include <QRegExp>
 #include <QShortcut>
 #include <QKeySequence>
@@ -27,6 +28,12 @@ constexpr int AXIS_LEFT_X  = 0; // Sol stick X  -> yanal kayma (Sol/Sağ)
 constexpr int AXIS_LEFT_Y  = 1; // Sol stick Y  -> ileri/geri
 constexpr int AXIS_RIGHT_X = 3; // Sağ stick X  -> dönüş (yaw)
 constexpr int AXIS_RIGHT_Y = 4; // Sağ stick Y  -> yukarı/aşağı (derinlik)
+
+// Sabitleme (stabilize) modu: roll/pitch (derece) / 90 * STAB_GAIN, dikey itki
+// motorlarina fark olarak eklenir (-1..1 araliginda sinirlanir). STAB_GAIN=4.0
+// ile ~22.5 derece egimde tam duzeltme (doygunluk) uygulanir. Havuzda asiri/az
+// tepki gorulurse bu degeri ayarla; yon ters gelirse isaretini cevir.
+constexpr float STAB_GAIN = 4.0f;
 }
 
 PixhawkGUI::PixhawkGUI(QWidget *parent)
@@ -35,7 +42,8 @@ PixhawkGUI::PixhawkGUI(QWidget *parent)
       ana_joy_thread(nullptr), mini_joy_thread(nullptr),
       cam_thread(nullptr), anarov_thread(nullptr),
       ana_lamp_on(false), mini_lamp_on(false), ana_autonomous(false), torpedo_ready(true), minirov_launched(false), dark_mode(false),
-      ana_armed(false), mini_armed(false),
+      ana_armed(false), mini_armed(false), ana_cam_connected(false),
+      ana_stabilize(false), ana_roll(0.0f), ana_pitch(0.0f),
       cam_ping_proc(nullptr), anarov_ping_proc(nullptr),
       log_file(nullptr), log_stream(nullptr)
 {
@@ -54,6 +62,11 @@ PixhawkGUI::PixhawkGUI(QWidget *parent)
     connect(quitShortcutCtrlQ, &QShortcut::activated, this, &QWidget::close);
     QShortcut *quitShortcutEsc = new QShortcut(QKeySequence(Qt::Key_Escape), this);
     connect(quitShortcutEsc, &QShortcut::activated, this, &QWidget::close);
+
+    // Uyari mesaji süresi dolup statusBar bosalinca kirmizi stili de kaldir
+    connect(statusBar(), &QStatusBar::messageChanged, this, [this](const QString &msg) {
+        if (msg.isEmpty()) statusBar()->setStyleSheet("");
+    });
 
     // Standart joystick buton haritası (XBox/PS uyumlu)
     button_map[0] = "A";
@@ -196,6 +209,11 @@ void PixhawkGUI::start_camera_threads() {
     anarov_thread->start();
 }
 
+void PixhawkGUI::show_screen_warning(const QString &msg) {
+    statusBar()->setStyleSheet("background-color:#dc2626;color:white;font-weight:bold;font-size:14px;padding:4px;");
+    statusBar()->showMessage("⚠ " + msg, 6000);
+}
+
 // ==================== Log ====================
 void PixhawkGUI::log_message(const QString &msg, int target) {
     QString ts = QDateTime::currentDateTime().toString("HH:mm:ss.zzz");
@@ -211,23 +229,48 @@ void PixhawkGUI::log_message(const QString &msg, int target) {
 }
 
 // ==================== ESP32 8 motor karisimi ====================
-std::array<int, 8> PixhawkGUI::compute_motor_mix(float surge, float lateral, float yaw, float vertical) {
+std::array<int, 8> PixhawkGUI::compute_motor_mix(float surge, float lateral, float yaw, float vertical,
+                                                  float rollCorr, float pitchCorr) {
     std::array<int, 8> m{};
     for (int i = 0; i < 4; ++i) {
         float v = surge * W_SURGE[i] + lateral * W_LATERAL[i] + yaw * W_YAW[i];
         m[i] = qBound(1000, ESP_NEUTRAL_US + static_cast<int>(v * ESP_DELTA_US), 2000);
     }
-    for (int i = 4; i < 8; ++i) {
-        m[i] = qBound(1000, ESP_NEUTRAL_US + static_cast<int>(vertical * ESP_DELTA_US), 2000);
+    // M5=on sag, M6=on sol, M7=arka sag, M8=arka sol (bkz. MotorDiagramWidget).
+    // Sabitleme kapaliyken rollCorr/pitchCorr 0 gelir, dördü de ayni deger olur.
+    // Pitch negatif (burun asagida) oldugunda on motorlarin ARTMASI, arka
+    // motorlarin AZALMASI gerekir (burnu yukari kaldirip duzeltmek icin) -
+    // bu yuzden pitchCorr on'a eksi, arkaya arti isaretle ekleniyor.
+    float verticalUs[4] = {
+        vertical + rollCorr - pitchCorr, // M5 on-sag
+        vertical - rollCorr - pitchCorr, // M6 on-sol
+        vertical + rollCorr + pitchCorr, // M7 arka-sag
+        vertical - rollCorr + pitchCorr, // M8 arka-sol
+    };
+    for (int i = 0; i < 4; ++i) {
+        m[4 + i] = qBound(1000, ESP_NEUTRAL_US + static_cast<int>(verticalUs[i] * ESP_DELTA_US), 2000);
     }
     return m;
 }
 
 void PixhawkGUI::apply_ana_motor_mix(float surge, float lateral, float yaw, float vertical) {
     if (!ana_esp_thread) return;
-    auto pulses = compute_motor_mix(surge, lateral, yaw, vertical);
+    float rollCorr = 0.0f, pitchCorr = 0.0f;
+    if (ana_stabilize) {
+        rollCorr  = qBound(-1.0f, (ana_roll  / 90.0f) * STAB_GAIN, 1.0f);
+        pitchCorr = qBound(-1.0f, (ana_pitch / 90.0f) * STAB_GAIN, 1.0f);
+    }
+    auto pulses = compute_motor_mix(surge, lateral, yaw, vertical, rollCorr, pitchCorr);
     ana_esp_thread->set_motors(pulses);
-    ui.anaRovPanel->motor_diagram->set_motor_pulses(pulses);
+
+    // Motor diyagraminda hangi motorlara ne kadar stabilize duzeltmesi
+    // gittigini gostermek icin (bkz. compute_motor_mix'teki M5-M8 isaretleri).
+    std::array<int, 8> correctionUs{};
+    correctionUs[4] = static_cast<int>(( rollCorr - pitchCorr) * ESP_DELTA_US); // M5 on-sag
+    correctionUs[5] = static_cast<int>((-rollCorr - pitchCorr) * ESP_DELTA_US); // M6 on-sol
+    correctionUs[6] = static_cast<int>(( rollCorr + pitchCorr) * ESP_DELTA_US); // M7 arka-sag
+    correctionUs[7] = static_cast<int>((-rollCorr + pitchCorr) * ESP_DELTA_US); // M8 arka-sol
+    ui.anaRovPanel->motor_diagram->set_motor_pulses(pulses, correctionUs);
 }
 
 void PixhawkGUI::apply_mini_motor_mix(float surge, float lateral, float yaw, float vertical) {
@@ -247,6 +290,12 @@ void PixhawkGUI::toggle_ana_connection() {
         delete ana_esp_thread;
         ana_esp_thread = nullptr;
         ana_armed = false;
+        ana_stabilize = false;
+        ana_roll = ana_pitch = 0.0f;
+        if (A->lbl_stabilize_status) {
+            A->lbl_stabilize_status->setText("Kapalı");
+            A->lbl_stabilize_status->setStyleSheet("color:#c0392b;font-weight:bold;font-size:14px;");
+        }
         A->btn_connect->setText("Bağlan");
         A->btn_connect->setStyleSheet("");
         A->lbl_status->setText("Durum: Bağlantı Kesildi");
@@ -261,6 +310,7 @@ void PixhawkGUI::toggle_ana_connection() {
     ana_esp_thread = new EspRovThread(port, baud, this);
     connect(ana_esp_thread, &EspRovThread::status_signal, this, &PixhawkGUI::update_ana_status);
     connect(ana_esp_thread, &EspRovThread::armed_signal,  this, &PixhawkGUI::update_ana_armed);
+    connect(ana_esp_thread, &EspRovThread::attitude_signal, this, &PixhawkGUI::update_ana_attitude);
     ana_esp_thread->start();
     A->btn_connect->setText("Kes");
     A->btn_connect->setStyleSheet(activeStyle);
@@ -283,6 +333,26 @@ void PixhawkGUI::update_ana_armed(bool armed) {
         A->btn_stabilize->setText("ARM Et");
         A->btn_stabilize->setStyleSheet("");
         log_message("[ANA] DISARMED - motorlara sinyal kesildi.", 0);
+    }
+}
+
+void PixhawkGUI::update_ana_attitude(float roll, float pitch) {
+    ana_roll = roll;
+    ana_pitch = pitch;
+    PixhawkPanel *A = ui.anaRovPanel;
+    A->lbl_roll->setText(QString::number(roll, 'f', 1) + "°");
+    A->lbl_pitch->setText(QString::number(pitch, 'f', 1) + "°");
+    A->attitude_indicator->set_attitude(roll, pitch);
+
+    // Sabitleme acikken kumandaya dokunulmasa bile duzeltme surekli guncel
+    // kalsin diye, her yeni IMU okumasinda (yaklasik 10Hz) son bilinen
+    // kumanda pozisyonuyla motor karisimi yeniden hesaplanip gonderilir.
+    // Boylece kumandayi biraksan bile ROV kendi kendine seviyeyi korumaya
+    // calisir; sadece joystick hareketine bagli kalinsaydi, kumanda sabit
+    // durdugunda yeni eksen sinyali gelmedigi icin duzeltme hic guncellenmezdi.
+    if (ana_stabilize && ana_esp_thread && !ana_autonomous) {
+        apply_ana_motor_mix(-ana_axes_state[1], ana_axes_state[0],
+                             ana_axes_state[2], -ana_axes_state[3]);
     }
 }
 
@@ -407,12 +477,14 @@ void PixhawkGUI::update_ana_joy_button(int btn_id, int state) {
                   QStringList(ana_pressed_buttons.values()).join(", ");
     ui.anaRovPanel->lbl_pad_buttons->setText("Basılan Tuş: " + lst);
 
-    // Buton bazlı aksiyon: A=lamba aç, B=lamba kapat, Y=torpido, X=miniROV bırak
+    // Buton bazlı aksiyon: A=lamba aç, B=lamba kapat, Y=torpido, X=miniROV bırak,
+    // LB=sabitleme modu hızlı aç/kapa
     if (state && ana_esp_thread) {
-        if (name == "A")      on_lamp_on_ana();
-        else if (name == "B") on_lamp_off_ana();
-        else if (name == "Y") on_torpedo_fire();
-        else if (name == "X") on_minirov_launch();
+        if (name == "A")       on_lamp_on_ana();
+        else if (name == "B")  on_lamp_off_ana();
+        else if (name == "Y")  on_torpedo_fire();
+        else if (name == "X")  on_minirov_launch();
+        else if (name == "LB") toggle_stabilize_mode_ana();
     }
 }
 
@@ -507,6 +579,12 @@ void PixhawkGUI::update_anarov_frame(const QImage &img) {
 }
 
 void PixhawkGUI::update_anarov_status(const QString &msg) {
+    if (msg.contains("Bağlandı")) {
+        ana_cam_connected = true;
+    } else if (msg.contains("Koptu") || msg.contains("Hatası")) {
+        ana_cam_connected = false;
+        if (ana_autonomous) on_manual_ana();
+    }
     log_message("[CAM-ANA] " + msg, 0);
 }
 
@@ -602,12 +680,16 @@ void PixhawkGUI::mini_dir_released() {
 // ==================== Hızlı Komutlar ====================
 void PixhawkGUI::on_emergency_ana() {
     apply_ana_motor_mix(0, 0, 0, 0);
-    log_message("[ANA] ACİL DURDURMA tetiklendi!", 0);
+    if (ana_esp_thread) ana_esp_thread->disarm();
+    log_message("[ANA] ACİL DURDURMA tetiklendi! DISARM gönderildi.", 0);
+    show_screen_warning("ANA ROV: ACİL DURDURMA tetiklendi! Motorlar sıfırlandı, DISARM gönderildi.");
 }
 
 void PixhawkGUI::on_emergency_mini() {
     apply_mini_motor_mix(0, 0, 0, 0);
-    log_message("[MİNİ] ACİL DURDURMA tetiklendi!", 1);
+    if (mini_esp_thread) mini_esp_thread->disarm();
+    log_message("[MİNİ] ACİL DURDURMA tetiklendi! DISARM gönderildi.", 1);
+    show_screen_warning("MİNİ ROV: ACİL DURDURMA tetiklendi! Motorlar sıfırlandı, DISARM gönderildi.");
 }
 
 void PixhawkGUI::on_stabilize_ana() {
@@ -639,6 +721,11 @@ void PixhawkGUI::on_stabilize_mini() {
 }
 
 void PixhawkGUI::on_autonomous_ana() {
+    if (!ana_cam_connected) {
+        log_message("[ANA] Kamera bağlı değil, otonom moda geçilemez!", 0);
+        show_screen_warning("Kamera bağlı değil! Otonom moda geçilemez.");
+        return;
+    }
     ana_autonomous = true;
     set_led(ui.anaRovPanel->led_autonomous, true);
     set_led(ui.anaRovPanel->led_manual, false);
@@ -652,6 +739,26 @@ void PixhawkGUI::on_manual_ana() {
     log_message("[ANA] Manuel moda geçildi", 0);
 }
 
+void PixhawkGUI::toggle_stabilize_mode_ana() {
+    ana_stabilize = !ana_stabilize;
+    QLabel *lbl = ui.anaRovPanel->lbl_stabilize_status;
+    if (ana_stabilize) {
+        if (lbl) {
+            lbl->setText("Açık");
+            lbl->setStyleSheet("color:#2ecc71;font-weight:bold;font-size:14px;");
+        }
+        log_message("[ANA] Sabitleme modu AÇILDI (IMU destekli dengeleme).", 0);
+        show_screen_warning("Sabitleme modu açıldı: IMU destekli dengeleme aktif.");
+    } else {
+        if (lbl) {
+            lbl->setText("Kapalı");
+            lbl->setStyleSheet("color:#c0392b;font-weight:bold;font-size:14px;");
+        }
+        log_message("[ANA] Sabitleme modu KAPANDI (%100 manuel).", 0);
+        show_screen_warning("Sabitleme modu kapandı: %100 manuel kontrol.");
+    }
+}
+
 void PixhawkGUI::on_minirov_launch() {
     minirov_launched = true;
     set_led(ui.anaRovPanel->led_minirov, true);
@@ -663,11 +770,15 @@ void PixhawkGUI::on_torpedo_fire() {
         torpedo_ready = false;
         set_led(ui.anaRovPanel->led_torpedo, true); // Active state (Green)
         ui.anaRovPanel->btn_torpedo->setText("Torpidoyu\nHazırla");
+        ui.anaRovPanel->lbl_servo_status->setText("Fırlatıldı");
+        ui.anaRovPanel->lbl_servo_status->setStyleSheet("color:#2ecc71;font-weight:bold;font-size:14px;");
         log_message("[ANA] Torpido Fırlatıldı! (not: ayrı torpido çıkışı bu ESP32 kartında tanımlı değil)", 0);
     } else {
         torpedo_ready = true;
         set_led(ui.anaRovPanel->led_torpedo, false); // Inactive state (Red)
         ui.anaRovPanel->btn_torpedo->setText("Torpido\nFırlat");
+        ui.anaRovPanel->lbl_servo_status->setText("Hazır");
+        ui.anaRovPanel->lbl_servo_status->setStyleSheet("color:#c0392b;font-weight:bold;font-size:14px;");
         log_message("[ANA] Torpido Yeniden Hazırlandı!", 0);
     }
 }

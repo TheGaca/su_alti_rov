@@ -5,6 +5,7 @@
 #include <QPolygonF>
 #include <QFont>
 #include <algorithm>
+#include <cstdlib>
 
 namespace {
 constexpr int NEUTRAL_US = 1490;
@@ -29,8 +30,10 @@ MotorDiagramWidget::MotorDiagramWidget(QWidget *parent)
     setMaximumSize(220, 220);
 }
 
-void MotorDiagramWidget::set_motor_pulses(const std::array<int, 8> &pulses_us) {
+void MotorDiagramWidget::set_motor_pulses(const std::array<int, 8> &pulses_us,
+                                           const std::array<int, 8> &correction_us) {
     pulses = pulses_us;
+    correction = correction_us;
     update();
 }
 
@@ -85,5 +88,27 @@ void MotorDiagramWidget::paintEvent(QPaintEvent *) {
         painter.setPen(Qt::white);
         painter.drawText(QRectF(center.x() - r, center.y() - r, r * 2, r * 2),
                           Qt::AlignCenter, QString::number(mp.number));
+
+        // Sabitleme (stabilize) modunun bu motora eklemis oldugu duzeltme:
+        // dolu daire (yukarida) her zaman gercek/nihai sinyali gosterir; bu
+        // seffaf hale sadece "burada otonom bir duzeltme aktif" bilgisini
+        // ekler - buyuklugu duzeltmenin siddetine gore olceklenir.
+        int corr = correction[mp.number - 1];
+        if (corr != 0) {
+            double mag = std::min(1.0, std::abs(corr) / double(MAX_US - NEUTRAL_US));
+            qreal haloR = r * (1.25 + 0.5 * mag);
+            QColor halo(80, 200, 255, static_cast<int>(60 + 90 * mag)); // seffaf camgobegi
+            painter.setBrush(halo);
+            painter.setPen(Qt::NoPen);
+            painter.drawEllipse(center, haloR, haloR);
+
+            // Dolu daireyi hale ustunde tekrar ciz, altta kalmasin
+            painter.setBrush(color);
+            painter.setPen(QPen(QColor(30, 30, 30), 2));
+            painter.drawEllipse(center, r, r);
+            painter.setPen(Qt::white);
+            painter.drawText(QRectF(center.x() - r, center.y() - r, r * 2, r * 2),
+                              Qt::AlignCenter, QString::number(mp.number));
+        }
     }
 }

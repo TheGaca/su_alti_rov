@@ -141,11 +141,11 @@ PixhawkPanel::PixhawkPanel(const QString &title, bool mini, QWidget *parent)
     layout_sys->setContentsMargins(10, 18, 10, 10);
     QLabel *ls1 = new QLabel("Batarya Voltaj:");
     QLabel *ls2 = new QLabel("Batarya %:");
-    QLabel *ls3 = new QLabel("AUX 1 Servo:");
+    QLabel *ls3 = new QLabel(isMini ? "AUX 1 Servo:" : "Torpido Durumu:");
     QLabel *ls4 = new QLabel("Lamba Durumu:");
     lbl_voltage = new QLabel("---");
     lbl_battery = new QLabel("---");
-    lbl_servo_status = new QLabel("Kapalı");
+    lbl_servo_status = new QLabel(isMini ? "Kapalı" : "Hazır");
     lbl_lamp_status = new QLabel("Kapalı");
     lbl_voltage->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     lbl_battery->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -163,6 +163,17 @@ PixhawkPanel::PixhawkPanel(const QString &title, bool mini, QWidget *parent)
     layout_sys->addWidget(ls2, 1, 0); layout_sys->addWidget(lbl_battery, 1, 1);
     layout_sys->addWidget(ls3, 2, 0); layout_sys->addWidget(lbl_servo_status, 2, 1);
     layout_sys->addWidget(ls4, 3, 0); layout_sys->addWidget(lbl_lamp_status, 3, 1);
+
+    if (!isMini) {
+        QLabel *ls5 = new QLabel("Sabitleme Modu:");
+        lbl_stabilize_status = new QLabel("Kapalı");
+        lbl_stabilize_status->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+        lbl_stabilize_status->setObjectName("lamp_status");
+        lbl_stabilize_status->setStyleSheet("color:#c0392b;font-weight:bold;font-size:14px;");
+        layout_sys->addWidget(ls5, 4, 0); layout_sys->addWidget(lbl_stabilize_status, 4, 1);
+    } else {
+        lbl_stabilize_status = nullptr;
+    }
     rightCol->addWidget(group_sys);
 
     topRow->addLayout(rightCol, 2);

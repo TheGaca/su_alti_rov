@@ -22,6 +22,7 @@ public:
     ~PixhawkGUI();
 
     void log_message(const QString &msg, int target = -1); // 0: Ana, 1: Mini, -1: Her ikisi
+    void show_screen_warning(const QString &msg); // Ekrani engellemeyen, kendiliginden kapanan uyari
 
 protected:
     void closeEvent(QCloseEvent *event) override;
@@ -31,6 +32,7 @@ private slots:
     void toggle_ana_connection();
     void update_ana_status(const QString &msg);
     void update_ana_armed(bool armed);
+    void update_ana_attitude(float roll, float pitch);
 
     // Mini ROV baglanti (ESP32 seri port)
     void toggle_mini_connection();
@@ -79,6 +81,7 @@ private slots:
     void on_lamp_on_mini();
     void on_lamp_off_mini();
     void toggle_theme();
+    void toggle_stabilize_mode_ana(); // Kumandadan IMU destekli dengeleme modu ac/kapa
 
 private:
     void connect_signals();
@@ -90,7 +93,8 @@ private:
     // vertical (yukari+) -> 8 motorun darbe genisligi (us). Bkz. MotorDiagramWidget
     // ve foto/ dizinindeki motor semasi. Isaretler ilk tahmindir; bir motor ters
     // donerse compute_motor_mix() icindeki ilgili agirligi ters cevirmek yeterlidir.
-    static std::array<int, 8> compute_motor_mix(float surge, float lateral, float yaw, float vertical);
+    static std::array<int, 8> compute_motor_mix(float surge, float lateral, float yaw, float vertical,
+                                                 float rollCorr = 0.0f, float pitchCorr = 0.0f);
     void apply_ana_motor_mix(float surge, float lateral, float yaw, float vertical);
     void apply_mini_motor_mix(float surge, float lateral, float yaw, float vertical);
 
@@ -120,6 +124,14 @@ private:
     bool dark_mode;
     bool ana_armed;
     bool mini_armed;
+    bool ana_cam_connected;
+
+    // IMU (ESP32 uzerindeki MPU-6050) ile dengeleme (stabilize) modu: acikken roll/pitch
+    // sapmasi dikey itki motorlarina otomatik fark olarak eklenir; kapaliyken
+    // %100 manuel (hicbir IMU duzeltmesi uygulanmaz).
+    bool ana_stabilize;
+    float ana_roll;
+    float ana_pitch;
 
     // Ping islemleri
     QProcess *cam_ping_proc;

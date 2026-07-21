@@ -390,6 +390,8 @@ CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QMessageBox \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qmessagebox.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QStatusBar \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qstatusbar.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QRegExp \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qregexp.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QShortcut \

@@ -13,6 +13,15 @@ void Ui_MainWindow::setupUi(QWidget *MainWindow) {
     QHBoxLayout *title_layout = new QHBoxLayout();
     title_layout->setContentsMargins(10, 2, 10, 2);
 
+    btn_theme = new QPushButton("🌙 Koyu Mod");
+    btn_theme->setObjectName("btn_theme");
+    btn_theme->setCursor(Qt::PointingHandCursor);
+    btn_theme->setFixedSize(170, 34);
+    btn_theme->setStyleSheet("font-size: 13px; font-weight: bold; background-color: #334155; color: white; border: none; border-radius: 4px; padding: 6px 12px;");
+
+    // Sag taraftaki tema dugmesiyle ayni genislikte bosluk birakilarak
+    // ortadaki baslik yaziyi gercekten pencere ortasina hizalanir.
+    title_layout->addSpacing(btn_theme->width());
     title_layout->addStretch(1);
 
     QLabel *lbl_title = new QLabel("SuGaca");
@@ -22,11 +31,6 @@ void Ui_MainWindow::setupUi(QWidget *MainWindow) {
     title_layout->addWidget(lbl_title);
 
     title_layout->addStretch(1);
-
-    btn_theme = new QPushButton("🌙 Koyu Mod");
-    btn_theme->setObjectName("btn_theme");
-    btn_theme->setCursor(Qt::PointingHandCursor);
-    btn_theme->setStyleSheet("font-size: 13px; font-weight: bold; background-color: #334155; color: white; border: none; border-radius: 4px; padding: 6px 12px;");
     title_layout->addWidget(btn_theme);
 
     main_layout->addLayout(title_layout);
