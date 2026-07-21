@@ -7,6 +7,22 @@
 PixhawkPanel::PixhawkPanel(const QString &title, bool mini, QWidget *parent)
     : QWidget(parent), isMini(mini) {
 
+    // Bir butonun altina, kumandadaki karsiligini kucuk gri yaziyla ekler
+    // (orn. "(RB)", "Sol Stick"). btn'in kendisi degismez, sadece kucuk bir
+    // ipucu etiketi altina eklenir; donen widget layout'a btn yerine eklenir.
+    auto wrapWithHint = [](QWidget *btn, const QString &hint) -> QWidget* {
+        QWidget *wrap = new QWidget();
+        QVBoxLayout *v = new QVBoxLayout(wrap);
+        v->setContentsMargins(0, 0, 0, 0);
+        v->setSpacing(2);
+        v->addWidget(btn);
+        QLabel *hintLbl = new QLabel(hint);
+        hintLbl->setAlignment(Qt::AlignCenter);
+        hintLbl->setStyleSheet("color:#94a3b8; font-size:9px;");
+        v->addWidget(hintLbl);
+        return wrap;
+    };
+
     main_group = new QGroupBox(title, this);
     main_group->setObjectName("rov_main_group");
 
@@ -237,12 +253,15 @@ PixhawkPanel::PixhawkPanel(const QString &title, bool mini, QWidget *parent)
     }
 
     // Left Column (Turn) - vertically centered
+    // Donus (Sola/Saga Don) ve derinlik (Z+/Z-) kumandada Sag Stick ile,
+    // ileri/geri/sol/sag ise Sol Stick ile kontrol edilir (bkz. PixhawkGUI
+    // update_ana_joy_axis / update_mini_joy_axis).
     QVBoxLayout *turnCol = new QVBoxLayout();
     turnCol->setSpacing(6);
     turnCol->setContentsMargins(0, 0, 0, 0);
     turnCol->addStretch();
-    turnCol->addWidget(btn_turn_left);
-    turnCol->addWidget(btn_turn_right);
+    turnCol->addWidget(wrapWithHint(btn_turn_left, "Sağ Stick"));
+    turnCol->addWidget(wrapWithHint(btn_turn_right, "Sağ Stick"));
     turnCol->addStretch();
     dirRow->addLayout(turnCol);
 
@@ -250,10 +269,10 @@ PixhawkPanel::PixhawkPanel(const QString &title, bool mini, QWidget *parent)
     layout_directions = new QGridLayout();
     layout_directions->setSpacing(6);
     layout_directions->setContentsMargins(0, 0, 0, 0);
-    layout_directions->addWidget(btn_forward,    0, 1, Qt::AlignCenter);
-    layout_directions->addWidget(btn_left,       1, 0, Qt::AlignCenter);
-    layout_directions->addWidget(btn_right,      1, 2, Qt::AlignCenter);
-    layout_directions->addWidget(btn_backward,   2, 1, Qt::AlignCenter);
+    layout_directions->addWidget(wrapWithHint(btn_forward,  "Sol Stick"), 0, 1, Qt::AlignCenter);
+    layout_directions->addWidget(wrapWithHint(btn_left,     "Sol Stick"), 1, 0, Qt::AlignCenter);
+    layout_directions->addWidget(wrapWithHint(btn_right,    "Sol Stick"), 1, 2, Qt::AlignCenter);
+    layout_directions->addWidget(wrapWithHint(btn_backward, "Sol Stick"), 2, 1, Qt::AlignCenter);
     dirRow->addLayout(layout_directions);
 
     // Right Column (Depth) - vertically centered
@@ -261,8 +280,8 @@ PixhawkPanel::PixhawkPanel(const QString &title, bool mini, QWidget *parent)
     depthCol->setSpacing(6);
     depthCol->setContentsMargins(0, 0, 0, 0);
     depthCol->addStretch();
-    depthCol->addWidget(btn_up);
-    depthCol->addWidget(btn_down);
+    depthCol->addWidget(wrapWithHint(btn_up, "Sağ Stick"));
+    depthCol->addWidget(wrapWithHint(btn_down, "Sağ Stick"));
     depthCol->addStretch();
     dirRow->addLayout(depthCol);
 
@@ -275,7 +294,7 @@ PixhawkPanel::PixhawkPanel(const QString &title, bool mini, QWidget *parent)
     btn_stabilize = new QPushButton("ARM Et");
     btn_stabilize->setObjectName("btn_stabilize");
     btn_stabilize->setMinimumHeight(50);  // büyütüldü
-    dirRoot->addWidget(btn_stabilize);
+    dirRoot->addWidget(wrapWithHint(btn_stabilize, "(Start)"));
     dirRoot->addStretch();
 
     layout_cam->addWidget(dir_widget);
@@ -290,7 +309,7 @@ PixhawkPanel::PixhawkPanel(const QString &title, bool mini, QWidget *parent)
     btn_emergency = new QPushButton("ACİL\nDURDURMA");
     btn_emergency->setObjectName("btn_emergency");
     btn_emergency->setMinimumSize(130, 78);
-    layout_commands->addWidget(btn_emergency);
+    layout_commands->addWidget(wrapWithHint(btn_emergency, "(L3)"));
 
     auto makeLed = [](bool isGreen, bool isActive) {
         QLabel *l = new QLabel();
@@ -305,7 +324,7 @@ PixhawkPanel::PixhawkPanel(const QString &title, bool mini, QWidget *parent)
         return l;
     };
 
-    auto addCmd = [&](QPushButton *&btn, const QString &text, QLabel *&ledOut) {
+    auto addCmd = [&](QPushButton *&btn, const QString &text, QLabel *&ledOut, const QString &hint) {
         QVBoxLayout *v = new QVBoxLayout();
         v->setSpacing(6);
         QHBoxLayout *ledRow = new QHBoxLayout();
@@ -323,6 +342,11 @@ PixhawkPanel::PixhawkPanel(const QString &title, bool mini, QWidget *parent)
         btn->setMinimumSize(110, 42);
         v->addWidget(btn);
 
+        QLabel *hintLbl = new QLabel(hint);
+        hintLbl->setAlignment(Qt::AlignCenter);
+        hintLbl->setStyleSheet("color:#94a3b8; font-size:9px;");
+        v->addWidget(hintLbl);
+
         grnLed->setProperty("redPartner", QVariant::fromValue<void*>(redLed));
         grnLed->setProperty("isGreen", true);
 
@@ -331,10 +355,10 @@ PixhawkPanel::PixhawkPanel(const QString &title, bool mini, QWidget *parent)
     };
 
     if (!isMini) {
-        addCmd(btn_autonomous, "Otonom", led_autonomous);
-        addCmd(btn_manual,     "Manuel", led_manual);
-        addCmd(btn_minirov_launch, "MiniROV\nBırak", led_minirov);
-        addCmd(btn_torpedo,        "Torpido\nFırlat", led_torpedo);
+        addCmd(btn_autonomous, "Otonom", led_autonomous, "(RB)");
+        addCmd(btn_manual,     "Manuel", led_manual, "(Back)");
+        addCmd(btn_minirov_launch, "MiniROV\nBırak", led_minirov, "(X)");
+        addCmd(btn_torpedo,        "Torpido\nFırlat", led_torpedo, "(Y)");
     } else {
         btn_autonomous = nullptr;
         btn_manual = nullptr;
@@ -386,6 +410,10 @@ PixhawkPanel::PixhawkPanel(const QString &title, bool mini, QWidget *parent)
     btn_lamp_on->setObjectName("lamp_on");
     btn_lamp_on->setMinimumSize(60, 38);
     lampOnCol->addWidget(btn_lamp_on);
+    QLabel *lampOnHint = new QLabel("(A)");
+    lampOnHint->setAlignment(Qt::AlignCenter);
+    lampOnHint->setStyleSheet("color:#94a3b8; font-size:9px;");
+    lampOnCol->addWidget(lampOnHint);
 
     // Lamba Kapa Sütunu
     QVBoxLayout *lampOffCol = new QVBoxLayout();
@@ -401,6 +429,10 @@ PixhawkPanel::PixhawkPanel(const QString &title, bool mini, QWidget *parent)
     btn_lamp_off->setObjectName("lamp_off");
     btn_lamp_off->setMinimumSize(60, 38);
     lampOffCol->addWidget(btn_lamp_off);
+    QLabel *lampOffHint = new QLabel("(B)");
+    lampOffHint->setAlignment(Qt::AlignCenter);
+    lampOffHint->setStyleSheet("color:#94a3b8; font-size:9px;");
+    lampOffCol->addWidget(lampOffHint);
 
     lampBody->addLayout(lampOnCol);
     lampBody->addLayout(lampOffCol);

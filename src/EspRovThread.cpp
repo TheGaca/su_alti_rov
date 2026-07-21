@@ -41,6 +41,19 @@ void EspRovThread::run() {
                     if (parts.size() == 2) {
                         emit attitude_signal(parts[0].toFloat(), parts[1].toFloat());
                     }
+                } else if (line.startsWith("DEPTH:")) {
+                    // "DEPTH:1.23,0.045" periyodik veri satiri; "DEPTH: yuzey
+                    // kalibrasyonu..." gibi insan-okunur mesajlar bu formatta
+                    // olmadigi icin asagi, normal durum mesaji gibi loglanmasina dusulur.
+                    QStringList parts = line.mid(6).split(',');
+                    bool okDepth = false, okSpeed = false;
+                    float meters = parts.size() == 2 ? parts[0].toFloat(&okDepth) : 0.0f;
+                    float speed  = parts.size() == 2 ? parts[1].toFloat(&okSpeed) : 0.0f;
+                    if (okDepth && okSpeed) {
+                        emit depth_signal(meters, speed);
+                    } else {
+                        emit status_signal(line);
+                    }
                 } else {
                     emit status_signal(line);
                 }

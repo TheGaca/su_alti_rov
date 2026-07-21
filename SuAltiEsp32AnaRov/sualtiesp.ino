@@ -12,9 +12,24 @@
  *   "M:p1,p2,p3,p4,p5,p6,p7,p8" -> motor 1..8 icin darbe genisligi (us, 1000-2000)
  * Cihaz durum bildirimi icin "READY", "ARMING", "ARMED", "DISARMED", "ERR:..." satirlari yollar.
  * IMU takiliysa 100ms'de bir "ATT:roll,pitch" (derece) satiri da yollanir.
+ * Basinc sensoru takiliysa 200ms'de bir "DEPTH:metre,dikey_hiz_buyuklugu_m/s"
+ * satiri da yollanir. Derinlik EMA filtresiyle yumusatilir; hiz bu yumusatilmis
+ * derinligin degisim oraninin MUTLAK DEGERIDIR (yon yok, hep >=0, kucuk
+ * degerler gurultu sayilip 0'a yuvarlanir) - SADECE dikey (batma/yukselme)
+ * hareketi yansitir; ileri/yanal hiz icin DVL/akis sensoru gerekir, bu
+ * donanimda yok.
  *
  * Guvenlik: ARMED durumdayken 500ms boyunca yeni "M:" komutu gelmezse
  * (baglanti kopmasi ihtimaline karsi) tum motorlar otomatik notre (1490us) cekilir.
+ *
+ * Basinc/Derinlik sensoru (analog, 5V, 0.5-4.5V cikis, 0-1.6 MPa) baglantisi:
+ *   Kirmizi (V+)    -> ESP32 kartinin 5V/VIN pini (3.3V DEGIL, sensor 5V ister)
+ *   Siyah (GND)     -> GND
+ *   Sinyal (0.5-4.5V) -> ESP32 ADC 3.3V'u gecemez! Once gerilim bolucuden gecir:
+ *       Sinyal --[10k]-- GPIO34 --[20k]-- GND   (bolucu orani = 20/(10+20) = 2/3)
+ *   ONEMLI: ESP32 acilirken (setup icinde) sensor HAVADA/SUYA GIRMEMIS olmali;
+ *   o andaki basinc "yuzey/atmosfer" referansi olarak kalibre edilir. Sudayken
+ *   acarsan derinlik yanlis (sifirdan farkli baslar) okunur.
  *
  * IMU (MPU-6050, I2C) baglantisi:
  *   VCC -> 3V3        GND -> GND
@@ -47,6 +62,88 @@
 #define IMU_PERIOD_MS 100
 
 const int motorPins[8] = {13, 4, 14, 27, 26, 25, 33, 32};
+
+// ==================== Basinc/Derinlik Sensoru ====================
+#define DEPTH_ADC_PIN      34   // input-only pin, baska hicbir seyle cakismaz
+#define DEPTH_PERIOD_MS    200
+#define DEPTH_ADC_SAMPLES  32   // ESP32 ADC gurultulu; ortalama alarak stabilize edilir
+
+#define DEPTH_DIVIDER_RATIO 0.6667f // 10k+20k bolucu: 20/(10+20)
+#define DEPTH_ADC_VREF      3.3f
+#define DEPTH_ADC_MAX_COUNTS 4095.0f
+
+#define DEPTH_SENSOR_V_MIN  0.5f   // sensorun 0 MPa'daki ciktisi
+#define DEPTH_SENSOR_V_MAX  4.5f   // sensorun 1.6 MPa'daki ciktisi
+#define DEPTH_SENSOR_MPA_MAX 1.6f
+
+#define WATER_DENSITY_KGM3  1000.0f // tatli su; tuzlu suda ~1025 kullan
+#define GRAVITY_MS2         9.80665f
+
+#define DEPTH_FILTER_ALPHA  0.25f // 0-1 arasi; kucuk=daha yumusak/gecikmeli, buyuk=daha hizli/gurultulu
+#define DEPTH_SPEED_DEADBAND 0.02f // bu esigin (m/s) altindaki degerler gurultu sayilip 0'a yuvarlanir
+
+float depthSurfaceMPa = 0.101325f; // acilista kalibre edilen yuzey/atmosfer basinci
+float depthMeters = 0.0f;          // EMA ile yumusatilmis derinlik
+float depthSpeedMs = 0.0f;         // dikey hiz buyuklugu (m/s), her zaman >=0 (yon bilgisi yok)
+bool depthFilterInit = false;
+unsigned long lastDepthAt = 0;
+unsigned long lastDepthUpdateMs = 0;
+
+// ADC'den birkac ornek ortalamasiyla, gerilim bolucuyu tersine cevirip
+// sensorun gercek ciktisini (0.5-4.5V) ve oradan da MPa cinsinden basinci hesaplar.
+float depthReadPressureMPa() {
+    long sum = 0;
+    for (int i = 0; i < DEPTH_ADC_SAMPLES; i++) sum += analogRead(DEPTH_ADC_PIN);
+    float avgCounts = sum / (float)DEPTH_ADC_SAMPLES;
+
+    float vAtPin = (avgCounts / DEPTH_ADC_MAX_COUNTS) * DEPTH_ADC_VREF;
+    float vSensor = vAtPin / DEPTH_DIVIDER_RATIO;
+
+    float pressureMPa = (vSensor - DEPTH_SENSOR_V_MIN) /
+                         (DEPTH_SENSOR_V_MAX - DEPTH_SENSOR_V_MIN) * DEPTH_SENSOR_MPA_MAX;
+    return (pressureMPa < 0) ? 0 : pressureMPa;
+}
+
+// Acilista (ROV suya girmeden once) o anki basinci "yuzey" referansi olarak kaydeder.
+void depthCalibrateSurface() {
+    depthSurfaceMPa = depthReadPressureMPa();
+    Serial.print("DEPTH: yuzey kalibrasyonu tamamlandi, referans = ");
+    Serial.print(depthSurfaceMPa, 4);
+    Serial.println(" MPa");
+}
+
+void depthUpdate() {
+    float pressureMPa = depthReadPressureMPa();
+    float gaugeMPa = pressureMPa - depthSurfaceMPa; // sadece su kolonunun basinci
+    if (gaugeMPa < 0) gaugeMPa = 0;
+    float rawDepth = (gaugeMPa * 1000000.0f) / (WATER_DENSITY_KGM3 * GRAVITY_MS2);
+
+    unsigned long now = millis();
+    float dt = (now - lastDepthUpdateMs) / 1000.0f;
+    lastDepthUpdateMs = now;
+
+    if (!depthFilterInit) {
+        // Ilk okuma: filtreyi ham degerle baslat, hiz henuz hesaplanamaz.
+        depthMeters = rawDepth;
+        depthSpeedMs = 0.0f;
+        depthFilterInit = true;
+        return;
+    }
+
+    // Dusuk gecirgen (EMA) filtre: ADC/basinc gurultusunden gelen ani
+    // sicramalari yumusatir, boylece "İrtifa" degeri surekli oynamaz.
+    float prevDepth = depthMeters;
+    depthMeters = prevDepth + DEPTH_FILTER_ALPHA * (rawDepth - prevDepth);
+
+    // Dikey hiz buyuklugu, yumusatilmis derinligin degisim oraninin mutlak
+    // degeridir (m/s). Deadband altindaki degerler (ROV gercekte durgunken
+    // sensor gurultusunden gelen ~birkac mm/s'lik kirinti) 0'a yuvarlanir,
+    // boylece hareketsizken "Hiz" tam olarak 0.00 gorunur.
+    if (dt > 0.0f && dt < 2.0f) {
+        float instSpeed = fabs(depthMeters - prevDepth) / dt;
+        depthSpeedMs = (instSpeed < DEPTH_SPEED_DEADBAND) ? 0.0f : instSpeed;
+    }
+}
 
 // ==================== MPU-6050 IMU (ivmeolcer + jiroskop) ====================
 #define MPU6050_ADDR      0x68   // AD0 GND'ye cekiliyse 0x68; VCC'ye cekiliyse 0x69
@@ -305,6 +402,9 @@ void setup() {
     for (int i = 0; i < 8; i++) motorPulse[i] = NEUTRAL_US;
     imuReady = imuInit();
     Serial.println(imuReady ? "SUALTIESP32 READY (IMU OK)" : "SUALTIESP32 READY (IMU YOK)");
+
+    analogSetPinAttenuation(DEPTH_ADC_PIN, ADC_11db); // 0-3.3V tam araligi kullan
+    depthCalibrateSurface();
 }
 
 void loop() {
@@ -337,5 +437,14 @@ void loop() {
         lastImuRetryAt = millis();
         Serial.println("IMU: yeniden baglanmaya calisiliyor...");
         imuReady = imuInit();
+    }
+
+    if (millis() - lastDepthAt >= DEPTH_PERIOD_MS) {
+        lastDepthAt = millis();
+        depthUpdate();
+        Serial.print("DEPTH:");
+        Serial.print(depthMeters, 2);
+        Serial.print(',');
+        Serial.println(depthSpeedMs, 3);
     }
 }

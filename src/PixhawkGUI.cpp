@@ -311,6 +311,7 @@ void PixhawkGUI::toggle_ana_connection() {
     connect(ana_esp_thread, &EspRovThread::status_signal, this, &PixhawkGUI::update_ana_status);
     connect(ana_esp_thread, &EspRovThread::armed_signal,  this, &PixhawkGUI::update_ana_armed);
     connect(ana_esp_thread, &EspRovThread::attitude_signal, this, &PixhawkGUI::update_ana_attitude);
+    connect(ana_esp_thread, &EspRovThread::depth_signal, this, &PixhawkGUI::update_ana_depth);
     ana_esp_thread->start();
     A->btn_connect->setText("Kes");
     A->btn_connect->setStyleSheet(activeStyle);
@@ -354,6 +355,20 @@ void PixhawkGUI::update_ana_attitude(float roll, float pitch) {
         apply_ana_motor_mix(-ana_axes_state[1], ana_axes_state[0],
                              ana_axes_state[2], -ana_axes_state[3]);
     }
+}
+
+void PixhawkGUI::update_ana_depth(float meters, float vertical_speed_ms) {
+    PixhawkPanel *A = ui.anaRovPanel;
+    A->lbl_alt->setText(QString::number(meters, 'f', 2));
+    // Dikey bar 0-100 araliginda; varsayilan olcek 0-20m'yi tam bara yayar
+    // (bkz. PixhawkPanel.cpp bar_alt->setRange(0,100)). Daha derin calisilacaksa
+    // asagidaki 20.0f'i gercek maksimum derinlige gore guncelle.
+    int barVal = qBound(0, 100, static_cast<int>(meters / 20.0f * 100.0f));
+    A->bar_alt->setValue(barVal);
+
+    // NOT: Bu SADECE dikey (batma/yukselme) hizidir - basinc sensorunden
+    // turetiliyor. Ileri/yanal hiz icin DVL/akis sensoru gerekir, bu ROV'da yok.
+    A->lbl_speed->setText(QString::number(vertical_speed_ms, 'f', 2));
 }
 
 // ==================== Mini ROV Bağlantı (ESP32 seri port) ====================
@@ -478,13 +493,18 @@ void PixhawkGUI::update_ana_joy_button(int btn_id, int state) {
     ui.anaRovPanel->lbl_pad_buttons->setText("Basılan Tuş: " + lst);
 
     // Buton bazlı aksiyon: A=lamba aç, B=lamba kapat, Y=torpido, X=miniROV bırak,
-    // LB=sabitleme modu hızlı aç/kapa
+    // LB=sabitleme modu hızlı aç/kapa, RB=otonom, Back=manuel, Start=ARM/DISARM,
+    // L3=acil durdurma
     if (state && ana_esp_thread) {
-        if (name == "A")       on_lamp_on_ana();
-        else if (name == "B")  on_lamp_off_ana();
-        else if (name == "Y")  on_torpedo_fire();
-        else if (name == "X")  on_minirov_launch();
-        else if (name == "LB") toggle_stabilize_mode_ana();
+        if (name == "A")          on_lamp_on_ana();
+        else if (name == "B")     on_lamp_off_ana();
+        else if (name == "Y")     on_torpedo_fire();
+        else if (name == "X")     on_minirov_launch();
+        else if (name == "LB")    toggle_stabilize_mode_ana();
+        else if (name == "RB")    on_autonomous_ana();
+        else if (name == "Back")  on_manual_ana();
+        else if (name == "Start") on_stabilize_ana();
+        else if (name == "L3")    on_emergency_ana();
     }
 }
 
@@ -519,13 +539,21 @@ void PixhawkGUI::update_mini_joy_status(const QString &msg) {
 }
 
 void PixhawkGUI::update_mini_joy_button(int btn_id, int state) {
-    if (!minirov_launched) return;
     QString name = button_map.value(btn_id, QString("BTN%1").arg(btn_id));
     if (state) mini_pressed_buttons.insert(name);
     else       mini_pressed_buttons.remove(name);
     QString lst = mini_pressed_buttons.isEmpty() ? "Yok" :
                   QStringList(mini_pressed_buttons.values()).join(", ");
     ui.miniRovPanel->lbl_pad_buttons->setText("Basılan Tuş: " + lst);
+
+    // Start (ARM/DISARM) ve L3 (acil durdurma) ekrandaki karsiliklari gibi
+    // minirov_launched sartina bagli degil, her zaman calisir.
+    if (state && mini_esp_thread) {
+        if (name == "Start") { on_stabilize_mini(); return; }
+        if (name == "L3")    { on_emergency_mini(); return; }
+    }
+
+    if (!minirov_launched) return;
 
     if (state && mini_esp_thread) {
         if (name == "A")      on_lamp_on_mini();

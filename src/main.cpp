@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QFile>
+#include <QScreen>
 #include "PixhawkGUI.hpp"
 #include <cstdlib>
 
@@ -17,6 +18,20 @@ int main(int argc, char *argv[]) {
     app.setOrganizationName("ROV Team");
 
     PixhawkGUI window;
+
+    // showFullScreen() bazi pencere yoneticilerinde/masaustu ortamlarinda
+    // (WM'nin _NET_WM_STATE_FULLSCREEN'i tam desteklememesi/gormezden
+    // gelmesi durumunda) baslik cubugunu, pencere dugmelerini ve dock/paneli
+    // gizlemeden sadece normal bir pencere gibi kalabiliyor. Cerceveyi
+    // WM'den bagimsiz olarak Qt'nin kendisine ciz dirmek (Frameless) ve
+    // gercek ekran piksellerini (dock/panel dahil) kapsayacak sekilde
+    // geometriyi elle ayarlamak bunu WM'den bagimsiz sekilde garantiler.
+    // NOT: Bu flag show()'dan ONCE ayarlanmali; zaten gorunur bir pencerede
+    // degistirmek native pencerenin yeniden olusturulmasini gerektirir.
+    window.setWindowFlags(window.windowFlags() | Qt::FramelessWindowHint);
+    if (QScreen *screen = QGuiApplication::primaryScreen()) {
+        window.setGeometry(screen->geometry());
+    }
     window.showFullScreen();
     return app.exec();
 }

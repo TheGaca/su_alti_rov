@@ -20,6 +20,7 @@ class QSerialPort;
 //   "M:p1,p2,...,p8"              -> 8 motorun darbe genisligini (us) gonderir
 // ESP32 taraf: "READY" / "ARMING" / "ARMED" / "DISARMED" / "ERR:..." satirlari yollar.
 // ESP32 ayrica IMU (MPU-6050) varsa periyodik "ATT:roll,pitch" (derece) satiri yollar.
+// Basinc sensoru takiliysa "DEPTH:metre,dikey_hiz_m/s" satiri da yollar.
 class EspRovThread : public QThread {
     Q_OBJECT
 public:
@@ -36,6 +37,7 @@ signals:
     void status_signal(const QString &msg);
     void armed_signal(bool armed);
     void attitude_signal(float roll, float pitch);
+    void depth_signal(float meters, float vertical_speed_ms);
 
 protected:
     void run() override;

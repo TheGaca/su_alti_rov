@@ -33,6 +33,7 @@ private slots:
     void update_ana_status(const QString &msg);
     void update_ana_armed(bool armed);
     void update_ana_attitude(float roll, float pitch);
+    void update_ana_depth(float meters, float vertical_speed_ms);
 
     // Mini ROV baglanti (ESP32 seri port)
     void toggle_mini_connection();
