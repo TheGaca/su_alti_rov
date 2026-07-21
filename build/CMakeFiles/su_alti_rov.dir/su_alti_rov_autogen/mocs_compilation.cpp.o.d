@@ -1,7 +1,7 @@
 CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o: \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/mocs_compilation.cpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/mocs_compilation.cpp \
  /usr/include/stdc-predef.h \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/moc_AnaRovThread.cpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/moc_AnaRovThread.cpp \
  /usr/include/c++/13/memory /usr/include/c++/13/bits/memoryfwd.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
@@ -116,7 +116,7 @@ CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o: \
  /usr/include/c++/13/backward/auto_ptr.h \
  /usr/include/c++/13/pstl/glue_memory_defs.h \
  /usr/include/c++/13/pstl/execution_defs.h \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/AnaRovThread.hpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/AnaRovThread.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QThread \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qthread.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobject.h \
@@ -280,8 +280,8 @@ CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qline.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/moc_AttitudeIndicator.cpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/AttitudeIndicator.hpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/moc_AttitudeIndicator.cpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/AttitudeIndicator.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -300,10 +300,10 @@ CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qsizepolicy.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qcursor.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qkeysequence.h \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/moc_CameraThread.cpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/CameraThread.hpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/moc_ColorPickerButton.cpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/ColorPickerButton.hpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/moc_CameraThread.cpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/CameraThread.hpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/moc_ColorPickerButton.cpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/ColorPickerButton.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QPushButton \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qpushbutton.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qabstractbutton.h \
@@ -311,14 +311,18 @@ CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QColor \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qcolor.h \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/moc_EspRovThread.cpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/EspRovThread.hpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/moc_JoystickThread.cpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/JoystickThread.hpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/moc_MotorDiagramWidget.cpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/MotorDiagramWidget.hpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/moc_PixhawkGUI.cpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/PixhawkGUI.hpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/moc_EspRovThread.cpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/EspRovThread.hpp \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QMutex \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qmutex.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QQueue \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qqueue.h \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/moc_JoystickThread.cpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/JoystickThread.hpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/moc_MotorDiagramWidget.cpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/MotorDiagramWidget.hpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/moc_PixhawkGUI.cpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/PixhawkGUI.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QMainWindow \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qmainwindow.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtabwidget.h \
@@ -337,7 +341,7 @@ CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o: \
  /usr/include/c++/13/variant \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QProcess \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qprocess.h \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/Ui_MainWindow.hpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/Ui_MainWindow.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QVBoxLayout \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qboxlayout.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qlayout.h \
@@ -345,7 +349,7 @@ CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qboxlayout.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgridlayout.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QHBoxLayout \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/PixhawkPanel.hpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/PixhawkPanel.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGridLayout \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgridlayout.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLabel \
@@ -377,12 +381,12 @@ CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qpen.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QProgressBar \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qprogressbar.h \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/AttitudeIndicator.hpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/ColorPickerButton.hpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/MotorDiagramWidget.hpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/EspRovThread.hpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/JoystickThread.hpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/CameraThread.hpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/AnaRovThread.hpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/moc_PixhawkPanel.cpp \
- /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/../../../include/PixhawkPanel.hpp
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/AttitudeIndicator.hpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/ColorPickerButton.hpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/MotorDiagramWidget.hpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/EspRovThread.hpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/JoystickThread.hpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/CameraThread.hpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/AnaRovThread.hpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/moc_PixhawkPanel.cpp \
+ /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/PixhawkPanel.hpp

@@ -1,7 +1,7 @@
 CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o: \
- /home/lagaca/Desktop/su-alti1/src/Ui_MainWindow.cpp \
+ /home/lagaca/Desktop/su_alti_rov/src/Ui_MainWindow.cpp \
  /usr/include/stdc-predef.h \
- /home/lagaca/Desktop/su-alti1/include/Ui_MainWindow.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/Ui_MainWindow.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -295,7 +295,7 @@ CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qabstractbutton.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qicon.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
- /home/lagaca/Desktop/su-alti1/include/PixhawkPanel.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/PixhawkPanel.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGridLayout \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgridlayout.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLabel \
@@ -332,8 +332,8 @@ CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qpen.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QProgressBar \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qprogressbar.h \
- /home/lagaca/Desktop/su-alti1/include/AttitudeIndicator.hpp \
- /home/lagaca/Desktop/su-alti1/include/ColorPickerButton.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/AttitudeIndicator.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/ColorPickerButton.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QColor \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qcolor.h \
- /home/lagaca/Desktop/su-alti1/include/MotorDiagramWidget.hpp
+ /home/lagaca/Desktop/su_alti_rov/include/MotorDiagramWidget.hpp

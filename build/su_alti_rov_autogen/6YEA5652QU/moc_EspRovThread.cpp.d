@@ -1,5 +1,5 @@
-/home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/moc_EspRovThread.cpp: /home/lagaca/Desktop/su-alti1/include/EspRovThread.hpp \
-  /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/moc_predefs.h \
+/home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/moc_EspRovThread.cpp: /home/lagaca/Desktop/su_alti_rov/include/EspRovThread.hpp \
+  /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/moc_predefs.h \
   /usr/include/assert.h \
   /usr/include/c++/13/algorithm \
   /usr/include/c++/13/array \
@@ -192,6 +192,8 @@
   /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
+  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMutex \
+  /usr/include/x86_64-linux-gnu/qt5/QtCore/QQueue \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/QThread \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qalgorithms.h \
@@ -217,6 +219,7 @@
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qlist.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qlogging.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h \
+  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmutex.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qnamespace.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qnumeric.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qobject.h \
@@ -225,6 +228,7 @@
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qobjectdefs_impl.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qpair.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qprocessordetection.h \
+  /usr/include/x86_64-linux-gnu/qt5/QtCore/qqueue.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qrefcount.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qregexp.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qscopedpointer.h \

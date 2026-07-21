@@ -1,7 +1,7 @@
 CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o: \
- /home/lagaca/Desktop/su-alti1/src/EspRovThread.cpp \
+ /home/lagaca/Desktop/su_alti_rov/src/EspRovThread.cpp \
  /usr/include/stdc-predef.h \
- /home/lagaca/Desktop/su-alti1/include/EspRovThread.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/EspRovThread.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QThread \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qthread.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobject.h \
@@ -253,6 +253,10 @@ CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o: \
  /usr/include/c++/13/bits/std_thread.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QMutex \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qmutex.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QQueue \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qqueue.h \
  /usr/include/x86_64-linux-gnu/qt5/QtSerialPort/QSerialPort \
  /usr/include/x86_64-linux-gnu/qt5/QtSerialPort/qserialport.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qiodevice.h \

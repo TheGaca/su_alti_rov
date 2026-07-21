@@ -1,5 +1,5 @@
-/home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/moc_AnaRovThread.cpp: /home/lagaca/Desktop/su-alti1/include/AnaRovThread.hpp \
-  /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/moc_predefs.h \
+/home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/moc_AnaRovThread.cpp: /home/lagaca/Desktop/su_alti_rov/include/AnaRovThread.hpp \
+  /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/moc_predefs.h \
   /usr/include/assert.h \
   /usr/include/c++/13/algorithm \
   /usr/include/c++/13/array \

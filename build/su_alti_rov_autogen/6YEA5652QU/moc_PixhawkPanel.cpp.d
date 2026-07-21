@@ -1,8 +1,8 @@
-/home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/moc_PixhawkPanel.cpp: /home/lagaca/Desktop/su-alti1/include/PixhawkPanel.hpp \
-  /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/moc_predefs.h \
-  /home/lagaca/Desktop/su-alti1/include/AttitudeIndicator.hpp \
-  /home/lagaca/Desktop/su-alti1/include/ColorPickerButton.hpp \
-  /home/lagaca/Desktop/su-alti1/include/MotorDiagramWidget.hpp \
+/home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/moc_PixhawkPanel.cpp: /home/lagaca/Desktop/su_alti_rov/include/PixhawkPanel.hpp \
+  /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/moc_predefs.h \
+  /home/lagaca/Desktop/su_alti_rov/include/AttitudeIndicator.hpp \
+  /home/lagaca/Desktop/su_alti_rov/include/ColorPickerButton.hpp \
+  /home/lagaca/Desktop/su_alti_rov/include/MotorDiagramWidget.hpp \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \

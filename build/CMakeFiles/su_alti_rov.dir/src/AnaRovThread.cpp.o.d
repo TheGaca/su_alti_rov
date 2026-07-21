@@ -1,7 +1,7 @@
 CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o: \
- /home/lagaca/Desktop/su-alti1/src/AnaRovThread.cpp \
+ /home/lagaca/Desktop/su_alti_rov/src/AnaRovThread.cpp \
  /usr/include/stdc-predef.h \
- /home/lagaca/Desktop/su-alti1/include/AnaRovThread.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/AnaRovThread.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QThread \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qthread.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobject.h \

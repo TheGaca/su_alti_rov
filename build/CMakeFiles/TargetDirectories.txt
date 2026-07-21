@@ -1,5 +1,5 @@
-/home/lagaca/Desktop/su-alti1/build/CMakeFiles/su_alti_rov.dir
-/home/lagaca/Desktop/su-alti1/build/CMakeFiles/edit_cache.dir
-/home/lagaca/Desktop/su-alti1/build/CMakeFiles/rebuild_cache.dir
-/home/lagaca/Desktop/su-alti1/build/CMakeFiles/su_alti_rov_autogen_timestamp_deps.dir
-/home/lagaca/Desktop/su-alti1/build/CMakeFiles/su_alti_rov_autogen.dir
+/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles/su_alti_rov.dir
+/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles/edit_cache.dir
+/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles/rebuild_cache.dir
+/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles/su_alti_rov_autogen_timestamp_deps.dir
+/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles/su_alti_rov_autogen.dir

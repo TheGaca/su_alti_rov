@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lagaca/Desktop/su-alti1
+CMAKE_SOURCE_DIR = /home/lagaca/Desktop/su_alti_rov
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lagaca/Desktop/su-alti1/build
+CMAKE_BINARY_DIR = /home/lagaca/Desktop/su_alti_rov/build
 
 # Utility rule file for su_alti_rov_autogen.
 
@@ -71,9 +71,9 @@ CMakeFiles/su_alti_rov_autogen: su_alti_rov_autogen/timestamp
 su_alti_rov_autogen/timestamp: /usr/lib/qt5/bin/moc
 su_alti_rov_autogen/timestamp: /usr/lib/qt5/bin/uic
 su_alti_rov_autogen/timestamp: CMakeFiles/su_alti_rov_autogen.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/lagaca/Desktop/su-alti1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target su_alti_rov"
-	/usr/bin/cmake -E cmake_autogen /home/lagaca/Desktop/su-alti1/build/CMakeFiles/su_alti_rov_autogen.dir/AutogenInfo.json ""
-	/usr/bin/cmake -E touch /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/timestamp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target su_alti_rov"
+	/usr/bin/cmake -E cmake_autogen /home/lagaca/Desktop/su_alti_rov/build/CMakeFiles/su_alti_rov_autogen.dir/AutogenInfo.json ""
+	/usr/bin/cmake -E touch /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/timestamp
 
 su_alti_rov_autogen: CMakeFiles/su_alti_rov_autogen
 su_alti_rov_autogen: su_alti_rov_autogen/timestamp
@@ -89,6 +89,6 @@ CMakeFiles/su_alti_rov_autogen.dir/clean:
 .PHONY : CMakeFiles/su_alti_rov_autogen.dir/clean
 
 CMakeFiles/su_alti_rov_autogen.dir/depend:
-	cd /home/lagaca/Desktop/su-alti1/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lagaca/Desktop/su-alti1 /home/lagaca/Desktop/su-alti1 /home/lagaca/Desktop/su-alti1/build /home/lagaca/Desktop/su-alti1/build /home/lagaca/Desktop/su-alti1/build/CMakeFiles/su_alti_rov_autogen.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/lagaca/Desktop/su_alti_rov/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lagaca/Desktop/su_alti_rov /home/lagaca/Desktop/su_alti_rov /home/lagaca/Desktop/su_alti_rov/build /home/lagaca/Desktop/su_alti_rov/build /home/lagaca/Desktop/su_alti_rov/build/CMakeFiles/su_alti_rov_autogen.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/su_alti_rov_autogen.dir/depend
 

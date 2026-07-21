@@ -1,7 +1,7 @@
 CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o: \
- /home/lagaca/Desktop/su-alti1/src/PixhawkGUI.cpp \
+ /home/lagaca/Desktop/su_alti_rov/src/PixhawkGUI.cpp \
  /usr/include/stdc-predef.h \
- /home/lagaca/Desktop/su-alti1/include/PixhawkGUI.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/PixhawkGUI.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QMainWindow \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qmainwindow.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -301,7 +301,7 @@ CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o: \
  /usr/include/c++/13/variant \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QProcess \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qprocess.h \
- /home/lagaca/Desktop/su-alti1/include/Ui_MainWindow.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/Ui_MainWindow.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QVBoxLayout \
@@ -314,7 +314,7 @@ CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QPushButton \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qpushbutton.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qabstractbutton.h \
- /home/lagaca/Desktop/su-alti1/include/PixhawkPanel.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/PixhawkPanel.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGridLayout \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgridlayout.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLabel \
@@ -346,12 +346,12 @@ CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qpen.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QProgressBar \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qprogressbar.h \
- /home/lagaca/Desktop/su-alti1/include/AttitudeIndicator.hpp \
- /home/lagaca/Desktop/su-alti1/include/ColorPickerButton.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/AttitudeIndicator.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/ColorPickerButton.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QColor \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qcolor.h \
- /home/lagaca/Desktop/su-alti1/include/MotorDiagramWidget.hpp \
- /home/lagaca/Desktop/su-alti1/include/EspRovThread.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/MotorDiagramWidget.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/EspRovThread.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QThread \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qthread.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qdeadlinetimer.h \
@@ -364,11 +364,15 @@ CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o: \
  /usr/include/c++/13/bits/std_thread.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
- /home/lagaca/Desktop/su-alti1/include/JoystickThread.hpp \
- /home/lagaca/Desktop/su-alti1/include/CameraThread.hpp \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QMutex \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qmutex.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QQueue \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qqueue.h \
+ /home/lagaca/Desktop/su_alti_rov/include/JoystickThread.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/CameraThread.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QImage \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qimage.h \
- /home/lagaca/Desktop/su-alti1/include/AnaRovThread.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/AnaRovThread.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDateTime \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qdatetime.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QCloseEvent \

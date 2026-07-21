@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lagaca/Desktop/su-alti1
+CMAKE_SOURCE_DIR = /home/lagaca/Desktop/su_alti_rov
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lagaca/Desktop/su-alti1/build
+CMAKE_BINARY_DIR = /home/lagaca/Desktop/su_alti_rov/build
 
 # Utility rule file for su_alti_rov_autogen_timestamp_deps.
 
@@ -66,16 +66,16 @@ include CMakeFiles/su_alti_rov_autogen_timestamp_deps.dir/compiler_depend.make
 # Include the progress variables for this target.
 include CMakeFiles/su_alti_rov_autogen_timestamp_deps.dir/progress.make
 
-CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.15.13
-CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.15.13
+CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt5WebSockets.so.5.15.13
 CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/qt5/bin/moc
+CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.15.13
+CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.15.13
+CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5.15.13
 CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/qt5/bin/uic
-CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt5Network.so.5.15.13
-CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt5SerialPort.so.5.15.13
 CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libopencv_dnn_superres.so.4.6.0
 CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libopencv_features2d.so.4.6.0
-CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5.15.13
-CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt5WebSockets.so.5.15.13
+CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt5Network.so.5.15.13
+CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt5SerialPort.so.5.15.13
 CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libopencv_imgproc.so.4.6.0
 CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libopencv_core.so.4.6.0
 CMakeFiles/su_alti_rov_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libopencv_flann.so.4.6.0
@@ -143,6 +143,6 @@ CMakeFiles/su_alti_rov_autogen_timestamp_deps.dir/clean:
 .PHONY : CMakeFiles/su_alti_rov_autogen_timestamp_deps.dir/clean
 
 CMakeFiles/su_alti_rov_autogen_timestamp_deps.dir/depend:
-	cd /home/lagaca/Desktop/su-alti1/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lagaca/Desktop/su-alti1 /home/lagaca/Desktop/su-alti1 /home/lagaca/Desktop/su-alti1/build /home/lagaca/Desktop/su-alti1/build /home/lagaca/Desktop/su-alti1/build/CMakeFiles/su_alti_rov_autogen_timestamp_deps.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/lagaca/Desktop/su_alti_rov/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lagaca/Desktop/su_alti_rov /home/lagaca/Desktop/su_alti_rov /home/lagaca/Desktop/su_alti_rov/build /home/lagaca/Desktop/su_alti_rov/build /home/lagaca/Desktop/su_alti_rov/build/CMakeFiles/su_alti_rov_autogen_timestamp_deps.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/su_alti_rov_autogen_timestamp_deps.dir/depend
 

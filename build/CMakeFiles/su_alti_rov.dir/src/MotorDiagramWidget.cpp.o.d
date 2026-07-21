@@ -1,7 +1,7 @@
 CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o: \
- /home/lagaca/Desktop/su-alti1/src/MotorDiagramWidget.cpp \
+ /home/lagaca/Desktop/su_alti_rov/src/MotorDiagramWidget.cpp \
  /usr/include/stdc-predef.h \
- /home/lagaca/Desktop/su-alti1/include/MotorDiagramWidget.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/MotorDiagramWidget.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \

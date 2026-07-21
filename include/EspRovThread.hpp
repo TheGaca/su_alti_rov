@@ -3,7 +3,10 @@
 
 #include <QThread>
 #include <QString>
+#include <QMutex>
+#include <QQueue>
 #include <array>
+#include <atomic>
 
 class QSerialPort;
 
@@ -37,11 +40,19 @@ protected:
 
 private:
     void send_line(const QString &line);
+    void write_pending_lines();
 
     QString portName;
     int baudRate;
-    bool running;
+    std::atomic<bool> running;
     QSerialPort *serial;
+
+    // arm()/disarm()/set_motors() cagrilari GUI thread'inden gelir; serial
+    // nesnesi ise sadece run()'in kendi thread'inde yasar. Bu yuzden yazma
+    // istekleri once bu kuyruga konur, gercek serial->write() ise run()
+    // dongusunde (dogru thread'de) yapilir.
+    QMutex writeMutex;
+    QQueue<QByteArray> pendingWrites;
 };
 
 #endif // ESPROVTHREAD_H

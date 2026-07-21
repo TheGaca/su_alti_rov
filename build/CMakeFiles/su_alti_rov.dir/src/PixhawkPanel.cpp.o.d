@@ -1,7 +1,7 @@
 CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o: \
- /home/lagaca/Desktop/su-alti1/src/PixhawkPanel.cpp \
+ /home/lagaca/Desktop/su_alti_rov/src/PixhawkPanel.cpp \
  /usr/include/stdc-predef.h \
- /home/lagaca/Desktop/su-alti1/include/PixhawkPanel.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/PixhawkPanel.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -331,11 +331,11 @@ CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qpen.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QProgressBar \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qprogressbar.h \
- /home/lagaca/Desktop/su-alti1/include/AttitudeIndicator.hpp \
- /home/lagaca/Desktop/su-alti1/include/ColorPickerButton.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/AttitudeIndicator.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/ColorPickerButton.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QColor \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qcolor.h \
- /home/lagaca/Desktop/su-alti1/include/MotorDiagramWidget.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/MotorDiagramWidget.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtSerialPort/QSerialPortInfo \
  /usr/include/x86_64-linux-gnu/qt5/QtSerialPort/qserialportinfo.h \
  /usr/include/x86_64-linux-gnu/qt5/QtSerialPort/qserialportglobal.h \

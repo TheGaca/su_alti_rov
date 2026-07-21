@@ -4,7 +4,7 @@
 # compile CXX with /usr/lib/ccache/g++
 CXX_DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_NO_DEBUG -DQT_SERIALPORT_LIB -DQT_WEBSOCKETS_LIB -DQT_WIDGETS_LIB
 
-CXX_INCLUDES = -I/home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/include -I/home/lagaca/Desktop/su-alti1/include -isystem /usr/include/opencv4 -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtNetwork -isystem /usr/include/x86_64-linux-gnu/qt5/QtSerialPort -isystem /usr/include/x86_64-linux-gnu/qt5/QtWebSockets
+CXX_INCLUDES = -I/home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/include -I/home/lagaca/Desktop/su_alti_rov/include -isystem /usr/include/opencv4 -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtNetwork -isystem /usr/include/x86_64-linux-gnu/qt5/QtSerialPort -isystem /usr/include/x86_64-linux-gnu/qt5/QtWebSockets
 
 CXX_FLAGS = -std=gnu++17 -fPIC
 

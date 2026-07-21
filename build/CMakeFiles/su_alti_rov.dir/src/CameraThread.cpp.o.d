@@ -1,7 +1,7 @@
 CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.o: \
- /home/lagaca/Desktop/su-alti1/src/CameraThread.cpp \
+ /home/lagaca/Desktop/su_alti_rov/src/CameraThread.cpp \
  /usr/include/stdc-predef.h \
- /home/lagaca/Desktop/su-alti1/include/CameraThread.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/CameraThread.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QThread \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qthread.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobject.h \

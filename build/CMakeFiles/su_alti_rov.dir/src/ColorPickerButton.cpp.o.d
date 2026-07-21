@@ -1,7 +1,7 @@
 CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o: \
- /home/lagaca/Desktop/su-alti1/src/ColorPickerButton.cpp \
+ /home/lagaca/Desktop/su_alti_rov/src/ColorPickerButton.cpp \
  /usr/include/stdc-predef.h \
- /home/lagaca/Desktop/su-alti1/include/ColorPickerButton.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/ColorPickerButton.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QPushButton \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qpushbutton.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \

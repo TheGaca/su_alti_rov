@@ -1,4 +1,4 @@
-# Install script for directory: /home/lagaca/Desktop/su-alti1
+# Install script for directory: /home/lagaca/Desktop/su_alti_rov
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/lagaca/Desktop/su-alti1/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/lagaca/Desktop/su_alti_rov/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

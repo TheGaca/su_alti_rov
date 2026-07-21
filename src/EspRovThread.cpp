@@ -22,7 +22,9 @@ void EspRovThread::run() {
 
     QByteArray buffer;
     while (running) {
-        if (serial->waitForReadyRead(100)) {
+        write_pending_lines();
+
+        if (serial->waitForReadyRead(20)) {
             buffer += serial->readAll();
             int nl;
             while ((nl = buffer.indexOf('\n')) != -1) {
@@ -41,14 +43,22 @@ void EspRovThread::run() {
         }
     }
 
+    write_pending_lines();
     serial->close();
     delete serial;
     serial = nullptr;
 }
 
+void EspRovThread::write_pending_lines() {
+    QMutexLocker locker(&writeMutex);
+    while (!pendingWrites.isEmpty()) {
+        serial->write(pendingWrites.dequeue());
+    }
+}
+
 void EspRovThread::send_line(const QString &line) {
-    if (!serial || !serial->isOpen()) return;
-    serial->write((line + "\n").toUtf8());
+    QMutexLocker locker(&writeMutex);
+    pendingWrites.enqueue((line + "\n").toUtf8());
 }
 
 void EspRovThread::arm() {

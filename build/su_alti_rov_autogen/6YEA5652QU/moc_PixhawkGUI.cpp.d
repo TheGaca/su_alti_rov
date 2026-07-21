@@ -1,14 +1,14 @@
-/home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/6YEA5652QU/moc_PixhawkGUI.cpp: /home/lagaca/Desktop/su-alti1/include/PixhawkGUI.hpp \
-  /home/lagaca/Desktop/su-alti1/build/su_alti_rov_autogen/moc_predefs.h \
-  /home/lagaca/Desktop/su-alti1/include/AnaRovThread.hpp \
-  /home/lagaca/Desktop/su-alti1/include/AttitudeIndicator.hpp \
-  /home/lagaca/Desktop/su-alti1/include/CameraThread.hpp \
-  /home/lagaca/Desktop/su-alti1/include/ColorPickerButton.hpp \
-  /home/lagaca/Desktop/su-alti1/include/EspRovThread.hpp \
-  /home/lagaca/Desktop/su-alti1/include/JoystickThread.hpp \
-  /home/lagaca/Desktop/su-alti1/include/MotorDiagramWidget.hpp \
-  /home/lagaca/Desktop/su-alti1/include/PixhawkPanel.hpp \
-  /home/lagaca/Desktop/su-alti1/include/Ui_MainWindow.hpp \
+/home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/moc_PixhawkGUI.cpp: /home/lagaca/Desktop/su_alti_rov/include/PixhawkGUI.hpp \
+  /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/moc_predefs.h \
+  /home/lagaca/Desktop/su_alti_rov/include/AnaRovThread.hpp \
+  /home/lagaca/Desktop/su_alti_rov/include/AttitudeIndicator.hpp \
+  /home/lagaca/Desktop/su_alti_rov/include/CameraThread.hpp \
+  /home/lagaca/Desktop/su_alti_rov/include/ColorPickerButton.hpp \
+  /home/lagaca/Desktop/su_alti_rov/include/EspRovThread.hpp \
+  /home/lagaca/Desktop/su_alti_rov/include/JoystickThread.hpp \
+  /home/lagaca/Desktop/su_alti_rov/include/MotorDiagramWidget.hpp \
+  /home/lagaca/Desktop/su_alti_rov/include/PixhawkPanel.hpp \
+  /home/lagaca/Desktop/su_alti_rov/include/Ui_MainWindow.hpp \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \
@@ -257,7 +257,9 @@
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/QFile \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/QMap \
+  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMutex \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/QProcess \
+  /usr/include/x86_64-linux-gnu/qt5/QtCore/QQueue \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/QSet \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/QTextStream \
@@ -295,6 +297,7 @@
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qmargins.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h \
+  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmutex.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qnamespace.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qnumeric.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qobject.h \
@@ -305,6 +308,7 @@
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qpoint.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qprocess.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qprocessordetection.h \
+  /usr/include/x86_64-linux-gnu/qt5/QtCore/qqueue.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qrect.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qrefcount.h \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qregexp.h \
