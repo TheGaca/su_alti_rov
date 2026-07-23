@@ -1,76 +1,110 @@
 #include "EspRovThread.hpp"
 
 #include <QSerialPort>
+#include <QTcpSocket>
+#include <QAbstractSocket>
 #include <QStringList>
 
 EspRovThread::EspRovThread(const QString &port, int baudrate, QObject *parent)
-    : QThread(parent), portName(port), baudRate(baudrate), running(true), serial(nullptr) {}
+    : EspRovThread(false, port, baudrate, parent) {}
+
+EspRovThread *EspRovThread::createTcp(const QString &host, quint16 tcpPort, QObject *parent) {
+    return new EspRovThread(true, host, tcpPort, parent);
+}
+
+EspRovThread::EspRovThread(bool tcpMode, const QString &hostOrPort_, int portOrBaud_, QObject *parent)
+    : QThread(parent), useTcp(tcpMode), hostOrPort(hostOrPort_), portOrBaud(portOrBaud_),
+      running(true), device(nullptr) {}
 
 void EspRovThread::run() {
-    serial = new QSerialPort();
-    serial->setPortName(portName);
-    serial->setBaudRate(baudRate);
+    QSerialPort serialDev;
+    QTcpSocket tcpDev;
+    QIODevice *dev = nullptr;
 
-    if (!serial->open(QIODevice::ReadWrite)) {
-        emit status_signal(QString("Hata: %1 açılamadı").arg(portName));
-        delete serial;
-        serial = nullptr;
-        return;
+    if (useTcp) {
+        tcpDev.connectToHost(hostOrPort, static_cast<quint16>(portOrBaud));
+        if (!tcpDev.waitForConnected(3000)) {
+            emit status_signal(QString("Hata: %1:%2 baglantisi kurulamadi (%3)")
+                                    .arg(hostOrPort).arg(portOrBaud).arg(tcpDev.errorString()));
+            return;
+        }
+        dev = &tcpDev;
+        emit status_signal(QString("Kopru baglantisi acildi (%1:%2)").arg(hostOrPort).arg(portOrBaud));
+    } else {
+        serialDev.setPortName(hostOrPort);
+        serialDev.setBaudRate(portOrBaud);
+        if (!serialDev.open(QIODevice::ReadWrite)) {
+            emit status_signal(QString("Hata: %1 açılamadı").arg(hostOrPort));
+            return;
+        }
+        dev = &serialDev;
+        emit status_signal(QString("ESP32 seri port bağlantısı açıldı (%1)").arg(hostOrPort));
     }
 
-    emit status_signal(QString("ESP32 seri port bağlantısı açıldı (%1)").arg(portName));
+    device = dev;
 
     QByteArray buffer;
     while (running) {
         write_pending_lines();
 
-        if (serial->waitForReadyRead(20)) {
-            buffer += serial->readAll();
+        if (dev->waitForReadyRead(20)) {
+            buffer += dev->readAll();
             int nl;
             while ((nl = buffer.indexOf('\n')) != -1) {
                 QString line = QString::fromUtf8(buffer.left(nl)).trimmed();
                 buffer.remove(0, nl + 1);
-                if (line.isEmpty()) continue;
-
-                if (line == "ARMED") {
-                    emit armed_signal(true);
-                } else if (line == "DISARMED") {
-                    emit armed_signal(false);
-                } else if (line.startsWith("ATT:")) {
-                    QStringList parts = line.mid(4).split(',');
-                    if (parts.size() == 2) {
-                        emit attitude_signal(parts[0].toFloat(), parts[1].toFloat());
-                    }
-                } else if (line.startsWith("DEPTH:")) {
-                    // "DEPTH:1.23,0.045" periyodik veri satiri; "DEPTH: yuzey
-                    // kalibrasyonu..." gibi insan-okunur mesajlar bu formatta
-                    // olmadigi icin asagi, normal durum mesaji gibi loglanmasina dusulur.
-                    QStringList parts = line.mid(6).split(',');
-                    bool okDepth = false, okSpeed = false;
-                    float meters = parts.size() == 2 ? parts[0].toFloat(&okDepth) : 0.0f;
-                    float speed  = parts.size() == 2 ? parts[1].toFloat(&okSpeed) : 0.0f;
-                    if (okDepth && okSpeed) {
-                        emit depth_signal(meters, speed);
-                    } else {
-                        emit status_signal(line);
-                    }
-                } else {
-                    emit status_signal(line);
-                }
+                if (!line.isEmpty()) process_line(line);
             }
+        }
+
+        if (useTcp && tcpDev.state() != QAbstractSocket::ConnectedState) {
+            emit status_signal("Köprü bağlantısı koptu.");
+            break;
         }
     }
 
     write_pending_lines();
-    serial->close();
-    delete serial;
-    serial = nullptr;
+    device = nullptr;
+    if (useTcp) {
+        tcpDev.close();
+    } else {
+        serialDev.close();
+    }
+}
+
+void EspRovThread::process_line(const QString &line) {
+    if (line == "ARMED") {
+        emit armed_signal(true);
+    } else if (line == "DISARMED") {
+        emit armed_signal(false);
+    } else if (line.startsWith("ATT:")) {
+        QStringList parts = line.mid(4).split(',');
+        if (parts.size() == 3) {
+            emit attitude_signal(parts[0].toFloat(), parts[1].toFloat(), parts[2].toFloat());
+        }
+    } else if (line.startsWith("DEPTH:")) {
+        // "DEPTH:1.23,0.045" periyodik veri satiri; "DEPTH: yuzey
+        // kalibrasyonu..." gibi insan-okunur mesajlar bu formatta
+        // olmadigi icin asagi, normal durum mesaji gibi loglanmasina dusulur.
+        QStringList parts = line.mid(6).split(',');
+        bool okDepth = false, okSpeed = false;
+        float meters = parts.size() == 2 ? parts[0].toFloat(&okDepth) : 0.0f;
+        float speed  = parts.size() == 2 ? parts[1].toFloat(&okSpeed) : 0.0f;
+        if (okDepth && okSpeed) {
+            emit depth_signal(meters, speed);
+        } else {
+            emit status_signal(line);
+        }
+    } else {
+        emit status_signal(line);
+    }
 }
 
 void EspRovThread::write_pending_lines() {
     QMutexLocker locker(&writeMutex);
     while (!pendingWrites.isEmpty()) {
-        serial->write(pendingWrites.dequeue());
+        QByteArray data = pendingWrites.dequeue();
+        if (device) device->write(data);
     }
 }
 

@@ -32,7 +32,7 @@ private slots:
     void toggle_ana_connection();
     void update_ana_status(const QString &msg);
     void update_ana_armed(bool armed);
-    void update_ana_attitude(float roll, float pitch);
+    void update_ana_attitude(float roll, float pitch, float yaw);
     void update_ana_depth(float meters, float vertical_speed_ms);
 
     // Mini ROV baglanti (ESP32 seri port)
@@ -115,7 +115,7 @@ private:
     JoystickThread *ana_joy_thread;
     JoystickThread *mini_joy_thread;
     CameraThread *cam_thread;       // MiniROV kamera (MJPEG)
-    CameraThread *anarov_thread;    // AnaROV kamera (MJPEG @ AnaRov.ino)
+    CameraThread *anarov_thread;    // AnaROV kamera (MJPEG @ AnaRovKamera.ino)
 
     // Joystick durum: [0]=Sol Stick X, [1]=Sol Stick Y, [2]=Sağ Stick X, [3]=Sağ Stick Y
     QMap<int, QString> button_map;
@@ -135,12 +135,15 @@ private:
     bool mini_armed;
     bool ana_cam_connected;
 
-    // IMU (ESP32 uzerindeki MPU-6050) ile dengeleme (stabilize) modu: acikken roll/pitch
+    // IMU (ESP32 uzerindeki BNO055) ile dengeleme (stabilize) modu: acikken roll/pitch
     // sapmasi dikey itki motorlarina otomatik fark olarak eklenir; kapaliyken
     // %100 manuel (hicbir IMU duzeltmesi uygulanmaz).
     bool ana_stabilize;
     float ana_roll;
     float ana_pitch;
+    float ana_yaw; // BNO055'in manyetometreli pusulasindan; su an sadece
+                    // gosterge/log icin - motor karisimina henuz dahil edilmiyor
+                    // (yaw-hold ileride istenirse buradan baslanir).
 
     // Ping islemleri
     QProcess *cam_ping_proc;

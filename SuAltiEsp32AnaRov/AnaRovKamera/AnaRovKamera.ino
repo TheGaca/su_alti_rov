@@ -3,8 +3,21 @@
 
 #include <ETH.h>
 #include <SPI.h>
+#include <NetworkServer.h>
+#include <NetworkClient.h>
+#include <WiFi.h>
+#include <ArduinoOTA.h>
 
 #include "board_config.h"
+
+// ---- OTA (kablosuz kod yukleme) ayarlari ----
+// Motor karti (AnaRovBeyin.ino) OTA'siyla ayni desen: ESP32 kendi WiFi erisim
+// noktasini (AP) acar, dis bir router/internet gerekmez. SSID/hostname motor
+// kartinkinden FARKLI - ikisi ayni anda acikken karismasin diye.
+#define OTA_AP_SSID     "AnaRovKamera(DenizAlti)"
+#define OTA_AP_PASS     "sualti123"  // WPA2 min. 8 karakter sart
+#define OTA_PASSWORD    "sualti123"  // Arduino IDE kod atarken ayrica sorulan OTA sifresi
+#define OTA_HOSTNAME    "Ana-Rov-Kamera-DenizAlti"  // mDNS hostname: sadece harf/rakam/tire, parantez/bosluk KULLANMA
 
 // ======================
 // W5500 Ethernet pinleri
@@ -21,8 +34,26 @@
 #define ETH_MISO 12
 #define ETH_MOSI 13
 
+// ======================
+// Motor ESP'sine (AnaRovBeyin.ino) UART koprusu
+// ======================
+// PC artik motor komutlarini (ARM/DISARM/M:...) USB yerine bu karta Ethernet
+// (TCP) uzerinden gonderiyor; bu kart gelen/giden her byte'i oldugu gibi
+// Serial2'ye/den aktarir - protokolu hic yorumlamaz, sadece kopru gorevi gorur.
+// Kablolama: bu kart GPIO33(TX) -> motor ESP GPIO16(RX), bu kart GPIO32(RX)
+// <- motor ESP GPIO17(TX), GND ortak. 16/17'yi KULLANMA - bu kartta (WROVER-KIT)
+// PSRAM'a ayrilmis.
+#define BRIDGE_TCP_PORT 8888
+#define BRIDGE_RX_PIN   32
+#define BRIDGE_TX_PIN   33
+#define BRIDGE_BAUD     115200
+
+NetworkServer bridgeServer(BRIDGE_TCP_PORT);
+NetworkClient bridgeClient;
+
 static bool ethernetConnected = false;
 static bool cameraServerStarted = false;
+static bool bridgeServerStarted = false;
 
 void startCameraServer();
 void setupLedFlash();
@@ -195,11 +226,66 @@ bool startCamera()
   return true;
 }
 
+// PC<->motor ESP arasinda ham byte kopruleme yapar; protokolu hic bilmez.
+// Ayni anda tek PC baglantisi destekler - yeni biri baglanirsa (ya da eskisi
+// koptuysa) onun yerine gecer.
+void handleBridge()
+{
+  if (!bridgeClient || !bridgeClient.connected()) {
+    NetworkClient newClient = bridgeServer.accept();
+    if (newClient) {
+      bridgeClient = newClient;
+      Serial.println("Kopru: PC baglandi (motor komutlari)");
+    }
+  }
+
+  while (bridgeClient && bridgeClient.connected() && bridgeClient.available()) {
+    Serial2.write(bridgeClient.read());
+  }
+
+  while (Serial2.available()) {
+    uint8_t b = Serial2.read();
+    if (bridgeClient && bridgeClient.connected()) {
+      bridgeClient.write(b);
+    }
+  }
+}
+
+// ESP32'yi kendi WiFi erisim noktasi (AP) yapar; PC/telefon dogrudan bu aga
+// baglanip Arduino IDE'den kablosuz kod atabilir. Router/internet gerekmez -
+// tamamen yerel, tezgah/dokta kullanim icindir. WiFi ile Ethernet (ETH) ayni
+// anda, birbirinden bagimsiz calisir (ayri donanim) - kamera/kopru bundan
+// etkilenmez.
+void setupOTA()
+{
+  WiFi.mode(WIFI_AP);
+  WiFi.softAP(OTA_AP_SSID, OTA_AP_PASS);
+  Serial.print("OTA AP acildi -> SSID: ");
+  Serial.print(OTA_AP_SSID);
+  Serial.print("  IP: ");
+  Serial.println(WiFi.softAPIP());
+
+  ArduinoOTA.setHostname(OTA_HOSTNAME);
+  ArduinoOTA.setPassword(OTA_PASSWORD);
+  ArduinoOTA.onStart([]() {
+    Serial.println("OTA: guncelleme basladi.");
+  });
+  ArduinoOTA.onError([](ota_error_t error) {
+    Serial.printf("OTA HATA[%u]\n", error);
+  });
+  ArduinoOTA.begin();
+}
+
 void setup()
 {
   Serial.begin(115200);
   Serial.setDebugOutput(false); // true iken ESP-IDF'in dahili (wifi/heap/vs.) debug loglari da Serial'a akip cok gurultu yapiyordu
+  Serial2.begin(BRIDGE_BAUD, SERIAL_8N1, BRIDGE_RX_PIN, BRIDGE_TX_PIN);
   delay(1500);
+
+  // Kamera/Ethernet basarisiz olsa bile OTA ile kurtarilabilsin diye en once
+  // kurulur (asagidaki return'lerden etkilenmez).
+  setupOTA();
 
   Serial.println();
   Serial.println("Kamera + Ethernet sistemi basliyor");
@@ -217,6 +303,8 @@ void setup()
 
 void loop()
 {
+  ArduinoOTA.handle();
+
   if (ethernetConnected && !cameraServerStarted) {
     Serial.println("Kamera web sunucusu baslatiliyor...");
 
@@ -229,5 +317,19 @@ void loop()
     Serial.println("================================");
   }
 
-  delay(1000);
+  if (ethernetConnected && !bridgeServerStarted) {
+    bridgeServer.begin();
+    bridgeServerStarted = true;
+    Serial.print("Motor komut koprusu (TCP) hazir, port: ");
+    Serial.println(BRIDGE_TCP_PORT);
+  }
+
+  if (bridgeServerStarted) {
+    handleBridge();
+  }
+
+  // ONEMLI: eskiden buradaki delay(1000) motor komutlarina saniyede 1 kez
+  // bakilmasina yol acardi (kumandayla hareket icin kullanilmaz hale gelirdi).
+  // Kamera HTTP sunucusu kendi FreeRTOS gorevinde calistigi icin bu delay'in
+  // kaldirilmasi kamerayi etkilemez.
 }

@@ -8,18 +8,20 @@
 #include <array>
 #include <atomic>
 
-class QSerialPort;
+class QIODevice;
 
-// ESP32 tabanli 8 motorlu ROV govdesiyle (bkz. SuAltiEsp32AnaRov/sualtiesp.ino)
-// seri port uzerinden haberlesen thread. Eskiden MAVLink/Pixhawk uzerinden
-// gonderilen set_servo() komutlarinin yerini bu sinif alir.
-//
-// Seri protokol:
+// ESP32 tabanli 8 motorlu ROV govdesiyle (bkz. SuAltiEsp32AnaRov/AnaRovBeyin.ino)
+// haberlesen thread. Iki tasiyici modu var:
+//  - Seri (USB):     explicit EspRovThread(port, baudrate, parent) - Mini ROV
+//  - TCP (Ethernet):  EspRovThread::createTcp(host, tcpPort, parent) - Ana ROV;
+//    komutlar kamera ESP'sindeki (SuAltiEsp32AnaRov/AnaRovKamera/AnaRovKamera.ino)
+//    TCP koprusune gider, o da bunlari Serial2 uzerinden motor ESP'sine iletir.
+// Protokol tasiyicidan bagimsiz, ikisinde de birebir aynidir:
 //   "ARM"                        -> ESC'leri arm eder
 //   "DISARM"                     -> tum motorlara giden sinyali keser
 //   "M:p1,p2,...,p8"              -> 8 motorun darbe genisligini (us) gonderir
 // ESP32 taraf: "READY" / "ARMING" / "ARMED" / "DISARMED" / "ERR:..." satirlari yollar.
-// ESP32 ayrica IMU (MPU-6050) varsa periyodik "ATT:roll,pitch" (derece) satiri yollar.
+// ESP32 ayrica IMU (BNO055) varsa periyodik "ATT:roll,pitch,yaw" (derece) satiri yollar.
 // Basinc sensoru takiliysa "DEPTH:metre,dikey_hiz_m/s" satiri da yollar.
 class EspRovThread : public QThread {
     Q_OBJECT
@@ -27,6 +29,7 @@ public:
     explicit EspRovThread(const QString &port = "/dev/ttyUSB0",
                          int baudrate = 115200,
                          QObject *parent = nullptr);
+    static EspRovThread *createTcp(const QString &host, quint16 tcpPort, QObject *parent = nullptr);
     void stop();
 
     void arm();
@@ -36,25 +39,32 @@ public:
 signals:
     void status_signal(const QString &msg);
     void armed_signal(bool armed);
-    void attitude_signal(float roll, float pitch);
+    void attitude_signal(float roll, float pitch, float yaw);
     void depth_signal(float meters, float vertical_speed_ms);
 
 protected:
     void run() override;
 
 private:
+    EspRovThread(bool tcpMode, const QString &hostOrPort, int portOrBaud, QObject *parent);
+
+    void process_line(const QString &line);
     void send_line(const QString &line);
     void write_pending_lines();
 
-    QString portName;
-    int baudRate;
+    bool useTcp;
+    QString hostOrPort; // seri modda cihaz yolu (/dev/ttyUSB0), TCP modda host/IP
+    int portOrBaud;     // seri modda baudrate, TCP modda TCP port numarasi
     std::atomic<bool> running;
-    QSerialPort *serial;
 
-    // arm()/disarm()/set_motors() cagrilari GUI thread'inden gelir; serial
-    // nesnesi ise sadece run()'in kendi thread'inde yasar. Bu yuzden yazma
-    // istekleri once bu kuyruga konur, gercek serial->write() ise run()
-    // dongusunde (dogru thread'de) yapilir.
+    // run() icindeyken o an acik olan seri/TCP nesnesini gosterir; sadece
+    // run()'in kendi thread'inde yazilir/okunur (bkz. write_pending_lines()).
+    QIODevice *device;
+
+    // arm()/disarm()/set_motors() cagrilari GUI thread'inden gelir; device
+    // ise sadece run()'in kendi thread'inde yasar. Bu yuzden yazma istekleri
+    // once bu kuyruga konur, gercek device->write() ise run() donugusunde
+    // (dogru thread'de) yapilir.
     QMutex writeMutex;
     QQueue<QByteArray> pendingWrites;
 };

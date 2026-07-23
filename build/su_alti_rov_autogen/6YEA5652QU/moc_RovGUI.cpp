@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_RovGUI_t {
-    QByteArrayData data[60];
-    char stringdata0[905];
+    QByteArrayData data[61];
+    char stringdata0[909];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -42,83 +42,84 @@ QT_MOC_LITERAL(6, 69, 5), // "armed"
 QT_MOC_LITERAL(7, 75, 19), // "update_ana_attitude"
 QT_MOC_LITERAL(8, 95, 4), // "roll"
 QT_MOC_LITERAL(9, 100, 5), // "pitch"
-QT_MOC_LITERAL(10, 106, 16), // "update_ana_depth"
-QT_MOC_LITERAL(11, 123, 6), // "meters"
-QT_MOC_LITERAL(12, 130, 17), // "vertical_speed_ms"
-QT_MOC_LITERAL(13, 148, 22), // "toggle_mini_connection"
-QT_MOC_LITERAL(14, 171, 18), // "update_mini_status"
-QT_MOC_LITERAL(15, 190, 17), // "update_mini_armed"
-QT_MOC_LITERAL(16, 208, 19), // "toggle_ana_joystick"
-QT_MOC_LITERAL(17, 228, 20), // "toggle_mini_joystick"
-QT_MOC_LITERAL(18, 249, 21), // "update_ana_joy_status"
-QT_MOC_LITERAL(19, 271, 21), // "update_ana_joy_button"
-QT_MOC_LITERAL(20, 293, 6), // "btn_id"
-QT_MOC_LITERAL(21, 300, 5), // "state"
-QT_MOC_LITERAL(22, 306, 19), // "update_ana_joy_axis"
-QT_MOC_LITERAL(23, 326, 7), // "axis_id"
-QT_MOC_LITERAL(24, 334, 5), // "value"
-QT_MOC_LITERAL(25, 340, 22), // "update_mini_joy_status"
-QT_MOC_LITERAL(26, 363, 22), // "update_mini_joy_button"
-QT_MOC_LITERAL(27, 386, 20), // "update_mini_joy_axis"
-QT_MOC_LITERAL(28, 407, 19), // "update_camera_frame"
-QT_MOC_LITERAL(29, 427, 3), // "img"
-QT_MOC_LITERAL(30, 431, 20), // "update_camera_status"
-QT_MOC_LITERAL(31, 452, 19), // "update_camera_stats"
-QT_MOC_LITERAL(32, 472, 3), // "fps"
-QT_MOC_LITERAL(33, 476, 4), // "kbps"
-QT_MOC_LITERAL(34, 481, 1), // "w"
-QT_MOC_LITERAL(35, 483, 1), // "h"
-QT_MOC_LITERAL(36, 485, 19), // "update_anarov_frame"
-QT_MOC_LITERAL(37, 505, 20), // "update_anarov_status"
-QT_MOC_LITERAL(38, 526, 19), // "update_anarov_stats"
-QT_MOC_LITERAL(39, 546, 13), // "read_cam_ping"
-QT_MOC_LITERAL(40, 560, 16), // "read_anarov_ping"
-QT_MOC_LITERAL(41, 577, 15), // "ana_dir_pressed"
-QT_MOC_LITERAL(42, 593, 16), // "ana_dir_released"
-QT_MOC_LITERAL(43, 610, 16), // "mini_dir_pressed"
-QT_MOC_LITERAL(44, 627, 17), // "mini_dir_released"
-QT_MOC_LITERAL(45, 645, 20), // "send_motor_heartbeat"
-QT_MOC_LITERAL(46, 666, 16), // "on_emergency_ana"
-QT_MOC_LITERAL(47, 683, 17), // "on_emergency_mini"
-QT_MOC_LITERAL(48, 701, 16), // "on_stabilize_ana"
-QT_MOC_LITERAL(49, 718, 17), // "on_stabilize_mini"
-QT_MOC_LITERAL(50, 736, 17), // "on_autonomous_ana"
-QT_MOC_LITERAL(51, 754, 13), // "on_manual_ana"
-QT_MOC_LITERAL(52, 768, 17), // "on_minirov_launch"
-QT_MOC_LITERAL(53, 786, 15), // "on_torpedo_fire"
-QT_MOC_LITERAL(54, 802, 14), // "on_lamp_on_ana"
-QT_MOC_LITERAL(55, 817, 15), // "on_lamp_off_ana"
-QT_MOC_LITERAL(56, 833, 15), // "on_lamp_on_mini"
-QT_MOC_LITERAL(57, 849, 16), // "on_lamp_off_mini"
-QT_MOC_LITERAL(58, 866, 12), // "toggle_theme"
-QT_MOC_LITERAL(59, 879, 25) // "toggle_stabilize_mode_ana"
+QT_MOC_LITERAL(10, 106, 3), // "yaw"
+QT_MOC_LITERAL(11, 110, 16), // "update_ana_depth"
+QT_MOC_LITERAL(12, 127, 6), // "meters"
+QT_MOC_LITERAL(13, 134, 17), // "vertical_speed_ms"
+QT_MOC_LITERAL(14, 152, 22), // "toggle_mini_connection"
+QT_MOC_LITERAL(15, 175, 18), // "update_mini_status"
+QT_MOC_LITERAL(16, 194, 17), // "update_mini_armed"
+QT_MOC_LITERAL(17, 212, 19), // "toggle_ana_joystick"
+QT_MOC_LITERAL(18, 232, 20), // "toggle_mini_joystick"
+QT_MOC_LITERAL(19, 253, 21), // "update_ana_joy_status"
+QT_MOC_LITERAL(20, 275, 21), // "update_ana_joy_button"
+QT_MOC_LITERAL(21, 297, 6), // "btn_id"
+QT_MOC_LITERAL(22, 304, 5), // "state"
+QT_MOC_LITERAL(23, 310, 19), // "update_ana_joy_axis"
+QT_MOC_LITERAL(24, 330, 7), // "axis_id"
+QT_MOC_LITERAL(25, 338, 5), // "value"
+QT_MOC_LITERAL(26, 344, 22), // "update_mini_joy_status"
+QT_MOC_LITERAL(27, 367, 22), // "update_mini_joy_button"
+QT_MOC_LITERAL(28, 390, 20), // "update_mini_joy_axis"
+QT_MOC_LITERAL(29, 411, 19), // "update_camera_frame"
+QT_MOC_LITERAL(30, 431, 3), // "img"
+QT_MOC_LITERAL(31, 435, 20), // "update_camera_status"
+QT_MOC_LITERAL(32, 456, 19), // "update_camera_stats"
+QT_MOC_LITERAL(33, 476, 3), // "fps"
+QT_MOC_LITERAL(34, 480, 4), // "kbps"
+QT_MOC_LITERAL(35, 485, 1), // "w"
+QT_MOC_LITERAL(36, 487, 1), // "h"
+QT_MOC_LITERAL(37, 489, 19), // "update_anarov_frame"
+QT_MOC_LITERAL(38, 509, 20), // "update_anarov_status"
+QT_MOC_LITERAL(39, 530, 19), // "update_anarov_stats"
+QT_MOC_LITERAL(40, 550, 13), // "read_cam_ping"
+QT_MOC_LITERAL(41, 564, 16), // "read_anarov_ping"
+QT_MOC_LITERAL(42, 581, 15), // "ana_dir_pressed"
+QT_MOC_LITERAL(43, 597, 16), // "ana_dir_released"
+QT_MOC_LITERAL(44, 614, 16), // "mini_dir_pressed"
+QT_MOC_LITERAL(45, 631, 17), // "mini_dir_released"
+QT_MOC_LITERAL(46, 649, 20), // "send_motor_heartbeat"
+QT_MOC_LITERAL(47, 670, 16), // "on_emergency_ana"
+QT_MOC_LITERAL(48, 687, 17), // "on_emergency_mini"
+QT_MOC_LITERAL(49, 705, 16), // "on_stabilize_ana"
+QT_MOC_LITERAL(50, 722, 17), // "on_stabilize_mini"
+QT_MOC_LITERAL(51, 740, 17), // "on_autonomous_ana"
+QT_MOC_LITERAL(52, 758, 13), // "on_manual_ana"
+QT_MOC_LITERAL(53, 772, 17), // "on_minirov_launch"
+QT_MOC_LITERAL(54, 790, 15), // "on_torpedo_fire"
+QT_MOC_LITERAL(55, 806, 14), // "on_lamp_on_ana"
+QT_MOC_LITERAL(56, 821, 15), // "on_lamp_off_ana"
+QT_MOC_LITERAL(57, 837, 15), // "on_lamp_on_mini"
+QT_MOC_LITERAL(58, 853, 16), // "on_lamp_off_mini"
+QT_MOC_LITERAL(59, 870, 12), // "toggle_theme"
+QT_MOC_LITERAL(60, 883, 25) // "toggle_stabilize_mode_ana"
 
     },
     "RovGUI\0toggle_ana_connection\0\0"
     "update_ana_status\0msg\0update_ana_armed\0"
     "armed\0update_ana_attitude\0roll\0pitch\0"
-    "update_ana_depth\0meters\0vertical_speed_ms\0"
-    "toggle_mini_connection\0update_mini_status\0"
-    "update_mini_armed\0toggle_ana_joystick\0"
-    "toggle_mini_joystick\0update_ana_joy_status\0"
-    "update_ana_joy_button\0btn_id\0state\0"
-    "update_ana_joy_axis\0axis_id\0value\0"
-    "update_mini_joy_status\0update_mini_joy_button\0"
-    "update_mini_joy_axis\0update_camera_frame\0"
-    "img\0update_camera_status\0update_camera_stats\0"
-    "fps\0kbps\0w\0h\0update_anarov_frame\0"
-    "update_anarov_status\0update_anarov_stats\0"
-    "read_cam_ping\0read_anarov_ping\0"
-    "ana_dir_pressed\0ana_dir_released\0"
-    "mini_dir_pressed\0mini_dir_released\0"
-    "send_motor_heartbeat\0on_emergency_ana\0"
-    "on_emergency_mini\0on_stabilize_ana\0"
-    "on_stabilize_mini\0on_autonomous_ana\0"
-    "on_manual_ana\0on_minirov_launch\0"
-    "on_torpedo_fire\0on_lamp_on_ana\0"
-    "on_lamp_off_ana\0on_lamp_on_mini\0"
-    "on_lamp_off_mini\0toggle_theme\0"
-    "toggle_stabilize_mode_ana"
+    "yaw\0update_ana_depth\0meters\0"
+    "vertical_speed_ms\0toggle_mini_connection\0"
+    "update_mini_status\0update_mini_armed\0"
+    "toggle_ana_joystick\0toggle_mini_joystick\0"
+    "update_ana_joy_status\0update_ana_joy_button\0"
+    "btn_id\0state\0update_ana_joy_axis\0"
+    "axis_id\0value\0update_mini_joy_status\0"
+    "update_mini_joy_button\0update_mini_joy_axis\0"
+    "update_camera_frame\0img\0update_camera_status\0"
+    "update_camera_stats\0fps\0kbps\0w\0h\0"
+    "update_anarov_frame\0update_anarov_status\0"
+    "update_anarov_stats\0read_cam_ping\0"
+    "read_anarov_ping\0ana_dir_pressed\0"
+    "ana_dir_released\0mini_dir_pressed\0"
+    "mini_dir_released\0send_motor_heartbeat\0"
+    "on_emergency_ana\0on_emergency_mini\0"
+    "on_stabilize_ana\0on_stabilize_mini\0"
+    "on_autonomous_ana\0on_manual_ana\0"
+    "on_minirov_launch\0on_torpedo_fire\0"
+    "on_lamp_on_ana\0on_lamp_off_ana\0"
+    "on_lamp_on_mini\0on_lamp_off_mini\0"
+    "toggle_theme\0toggle_stabilize_mode_ana"
 };
 #undef QT_MOC_LITERAL
 
@@ -139,70 +140,70 @@ static const uint qt_meta_data_RovGUI[] = {
        1,    0,  229,    2, 0x08 /* Private */,
        3,    1,  230,    2, 0x08 /* Private */,
        5,    1,  233,    2, 0x08 /* Private */,
-       7,    2,  236,    2, 0x08 /* Private */,
-      10,    2,  241,    2, 0x08 /* Private */,
-      13,    0,  246,    2, 0x08 /* Private */,
-      14,    1,  247,    2, 0x08 /* Private */,
-      15,    1,  250,    2, 0x08 /* Private */,
-      16,    0,  253,    2, 0x08 /* Private */,
-      17,    0,  254,    2, 0x08 /* Private */,
-      18,    1,  255,    2, 0x08 /* Private */,
-      19,    2,  258,    2, 0x08 /* Private */,
-      22,    2,  263,    2, 0x08 /* Private */,
-      25,    1,  268,    2, 0x08 /* Private */,
-      26,    2,  271,    2, 0x08 /* Private */,
-      27,    2,  276,    2, 0x08 /* Private */,
-      28,    1,  281,    2, 0x08 /* Private */,
-      30,    1,  284,    2, 0x08 /* Private */,
-      31,    4,  287,    2, 0x08 /* Private */,
-      36,    1,  296,    2, 0x08 /* Private */,
-      37,    1,  299,    2, 0x08 /* Private */,
-      38,    4,  302,    2, 0x08 /* Private */,
-      39,    0,  311,    2, 0x08 /* Private */,
-      40,    0,  312,    2, 0x08 /* Private */,
-      41,    0,  313,    2, 0x08 /* Private */,
-      42,    0,  314,    2, 0x08 /* Private */,
-      43,    0,  315,    2, 0x08 /* Private */,
-      44,    0,  316,    2, 0x08 /* Private */,
-      45,    0,  317,    2, 0x08 /* Private */,
-      46,    0,  318,    2, 0x08 /* Private */,
-      47,    0,  319,    2, 0x08 /* Private */,
-      48,    0,  320,    2, 0x08 /* Private */,
-      49,    0,  321,    2, 0x08 /* Private */,
-      50,    0,  322,    2, 0x08 /* Private */,
-      51,    0,  323,    2, 0x08 /* Private */,
-      52,    0,  324,    2, 0x08 /* Private */,
-      53,    0,  325,    2, 0x08 /* Private */,
-      54,    0,  326,    2, 0x08 /* Private */,
-      55,    0,  327,    2, 0x08 /* Private */,
-      56,    0,  328,    2, 0x08 /* Private */,
-      57,    0,  329,    2, 0x08 /* Private */,
-      58,    0,  330,    2, 0x08 /* Private */,
-      59,    0,  331,    2, 0x08 /* Private */,
+       7,    3,  236,    2, 0x08 /* Private */,
+      11,    2,  243,    2, 0x08 /* Private */,
+      14,    0,  248,    2, 0x08 /* Private */,
+      15,    1,  249,    2, 0x08 /* Private */,
+      16,    1,  252,    2, 0x08 /* Private */,
+      17,    0,  255,    2, 0x08 /* Private */,
+      18,    0,  256,    2, 0x08 /* Private */,
+      19,    1,  257,    2, 0x08 /* Private */,
+      20,    2,  260,    2, 0x08 /* Private */,
+      23,    2,  265,    2, 0x08 /* Private */,
+      26,    1,  270,    2, 0x08 /* Private */,
+      27,    2,  273,    2, 0x08 /* Private */,
+      28,    2,  278,    2, 0x08 /* Private */,
+      29,    1,  283,    2, 0x08 /* Private */,
+      31,    1,  286,    2, 0x08 /* Private */,
+      32,    4,  289,    2, 0x08 /* Private */,
+      37,    1,  298,    2, 0x08 /* Private */,
+      38,    1,  301,    2, 0x08 /* Private */,
+      39,    4,  304,    2, 0x08 /* Private */,
+      40,    0,  313,    2, 0x08 /* Private */,
+      41,    0,  314,    2, 0x08 /* Private */,
+      42,    0,  315,    2, 0x08 /* Private */,
+      43,    0,  316,    2, 0x08 /* Private */,
+      44,    0,  317,    2, 0x08 /* Private */,
+      45,    0,  318,    2, 0x08 /* Private */,
+      46,    0,  319,    2, 0x08 /* Private */,
+      47,    0,  320,    2, 0x08 /* Private */,
+      48,    0,  321,    2, 0x08 /* Private */,
+      49,    0,  322,    2, 0x08 /* Private */,
+      50,    0,  323,    2, 0x08 /* Private */,
+      51,    0,  324,    2, 0x08 /* Private */,
+      52,    0,  325,    2, 0x08 /* Private */,
+      53,    0,  326,    2, 0x08 /* Private */,
+      54,    0,  327,    2, 0x08 /* Private */,
+      55,    0,  328,    2, 0x08 /* Private */,
+      56,    0,  329,    2, 0x08 /* Private */,
+      57,    0,  330,    2, 0x08 /* Private */,
+      58,    0,  331,    2, 0x08 /* Private */,
+      59,    0,  332,    2, 0x08 /* Private */,
+      60,    0,  333,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void, QMetaType::QString,    4,
     QMetaType::Void, QMetaType::Bool,    6,
-    QMetaType::Void, QMetaType::Float, QMetaType::Float,    8,    9,
-    QMetaType::Void, QMetaType::Float, QMetaType::Float,   11,   12,
+    QMetaType::Void, QMetaType::Float, QMetaType::Float, QMetaType::Float,    8,    9,   10,
+    QMetaType::Void, QMetaType::Float, QMetaType::Float,   12,   13,
     QMetaType::Void,
     QMetaType::Void, QMetaType::QString,    4,
     QMetaType::Void, QMetaType::Bool,    6,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void, QMetaType::QString,    4,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int,   20,   21,
-    QMetaType::Void, QMetaType::Int, QMetaType::Float,   23,   24,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int,   21,   22,
+    QMetaType::Void, QMetaType::Int, QMetaType::Float,   24,   25,
     QMetaType::Void, QMetaType::QString,    4,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int,   20,   21,
-    QMetaType::Void, QMetaType::Int, QMetaType::Float,   23,   24,
-    QMetaType::Void, QMetaType::QImage,   29,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int,   21,   22,
+    QMetaType::Void, QMetaType::Int, QMetaType::Float,   24,   25,
+    QMetaType::Void, QMetaType::QImage,   30,
     QMetaType::Void, QMetaType::QString,    4,
-    QMetaType::Void, QMetaType::Int, QMetaType::Float, QMetaType::Int, QMetaType::Int,   32,   33,   34,   35,
-    QMetaType::Void, QMetaType::QImage,   29,
+    QMetaType::Void, QMetaType::Int, QMetaType::Float, QMetaType::Int, QMetaType::Int,   33,   34,   35,   36,
+    QMetaType::Void, QMetaType::QImage,   30,
     QMetaType::Void, QMetaType::QString,    4,
-    QMetaType::Void, QMetaType::Int, QMetaType::Float, QMetaType::Int, QMetaType::Int,   32,   33,   34,   35,
+    QMetaType::Void, QMetaType::Int, QMetaType::Float, QMetaType::Int, QMetaType::Int,   33,   34,   35,   36,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -237,7 +238,7 @@ void RovGUI::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 0: _t->toggle_ana_connection(); break;
         case 1: _t->update_ana_status((*reinterpret_cast< const QString(*)>(_a[1]))); break;
         case 2: _t->update_ana_armed((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 3: _t->update_ana_attitude((*reinterpret_cast< float(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2]))); break;
+        case 3: _t->update_ana_attitude((*reinterpret_cast< float(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2])),(*reinterpret_cast< float(*)>(_a[3]))); break;
         case 4: _t->update_ana_depth((*reinterpret_cast< float(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2]))); break;
         case 5: _t->toggle_mini_connection(); break;
         case 6: _t->update_mini_status((*reinterpret_cast< const QString(*)>(_a[1]))); break;

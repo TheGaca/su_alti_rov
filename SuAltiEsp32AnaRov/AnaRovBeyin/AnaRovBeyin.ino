@@ -6,12 +6,16 @@
  *   5,6,7,8 = dikey (derinlik) itki motorlari
  * motorPins dizisindeki index 0..7, motor numarasi 1..8'e karsilik gelir.
  *
- * Seri protokol (115200 baud, satir sonu '\n'):
+ * Seri protokol (115200 baud, satir sonu '\n'). Komutlar SADECE kamera
+ * ESP'sine giden kopruden (Serial2, GPIO16=RX/GPIO17=TX - bkz. BRIDGE_*
+ * tanimlari) okunur; USB (Serial) artik komut dinlemez, sadece durum
+ * satirlarini da alan bir debug/bench-test ciktisi olarak calisir (bkz.
+ * sendStatus()) - denizde zaten USB baglanmayacak, sadece guc (VIN/GND) gider:
  *   "ARM"                     -> ESC'leri ARM eder (2sn 850us tutar, sonra notre gecer)
  *   "DISARM"                  -> Tum pinlerden PWM sinyalini tamamen keser (ESC durur)
  *   "M:p1,p2,p3,p4,p5,p6,p7,p8" -> motor 1..8 icin darbe genisligi (us, 850-1850)
  * Cihaz durum bildirimi icin "READY", "ARMING", "ARMED", "DISARMED", "ERR:..." satirlari yollar.
- * IMU takiliysa 100ms'de bir "ATT:roll,pitch" (derece) satiri da yollanir.
+ * IMU takiliysa 100ms'de bir "ATT:roll,pitch,yaw" (derece) satiri da yollanir.
  * Basinc sensoru takiliysa 200ms'de bir "DEPTH:metre,dikey_hiz_buyuklugu_m/s"
  * satiri da yollanir. Derinlik EMA filtresiyle yumusatilir; hiz bu yumusatilmis
  * derinligin degisim oraninin MUTLAK DEGERIDIR (yon yok, hep >=0, kucuk
@@ -46,25 +50,34 @@
  * geliyor, yukaridaki seri protokol degismedi. OTA sirasinda guncelleme
  * baslar baslamaz motorlar guvenlik icin DISARM edilir (bkz. setupOTA()).
  *
- * IMU (MPU-6050, I2C) baglantisi:
- *   VCC -> 3V3        GND -> GND
- *   SCL -> GPIO 22    SDA -> GPIO 21
- *   XDA, XCL -> bos birak (auxiliary I2C, kullanilmiyor)
- *   AD0 -> GND (I2C adresini 0x68 sabitler)
- *   INT -> kullanilmiyor, bos birak
+ * IMU (Adafruit BNO055, 9-DOF fusion, I2C) baglantisi:
+ *   VIN -> 3V3         GND -> GND
+ *   SCL -> GPIO 22      SDA -> GPIO 21
+ *   RST, INT, PS0, PS1, 3Vo -> KULLANILMIYOR, hepsi bosta birakilir (PS0/PS1
+ *     bosken karttaki pull-down'lar sayesinde otomatik I2C moduna gecer).
+ *   ADR -> bosta/GND (I2C adresi 0x28 sabitlenir; 3.3V'a baglanirsa 0x29 olur,
+ *     o zaman asagidaki BNO055_I2C_ADDR degerini de guncelle).
  *   Bu pinler motorPins dizisiyle cakismaz, ESP32'nin varsayilan donanimsal
- *   I2C hatti oldugu icin ek kutuphane/pin ayari gerekmez.
+ *   I2C hatti oldugu icin ek pin ayari gerekmez. Fusion (roll/pitch/yaw
+ *   hesabi) cipin kendi icinde yapilir - bizim ayrica complementary filter
+ *   yazmamiza gerek yok (bkz. asagidaki IMU bolumu).
  *
- *   ONEMLI: Acilista (setup icinde) ~1 saniye surecek bir jiroskop
- *   kalibrasyonu yapilir. Bu sirada ROV'u SABIT ve olabildigince DUZ tutun;
- *   o an hareket ederse kalibrasyon yanlis sifir noktasi ogrenir ve roll/pitch
- *   degerleri kalici bir sapmayla gelir (ESP32'yi resetleyip tekrar sabit
- *   tutarak duzeltilir).
+ *   ONEMLI: Kutuphane kurulumu gerekir - Arduino IDE > Library Manager'dan
+ *   "Adafruit BNO055" kur (bagimliliklari Adafruit Unified Sensor ve Adafruit
+ *   BusIO otomatik gelir).
+ *
+ *   NOT: Acilista ekstra bir kalibrasyon bekletmesi YOK (eski MPU6050 kodundaki
+ *   1sn'lik jiroskop kalibrasyonunun aksine); ama BNO055'in ilk birkac saniyede
+ *   (ozellikle manyetometre icin) kendi kendine kalibre olmasi biraz zaman
+ *   alabilir, bu sure zarfinda roll/pitch degerleri hafif kaymali gelebilir.
  */
 #include <Arduino.h>
 #include <Wire.h>
 #include <WiFi.h>
 #include <ArduinoOTA.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+#include <utility/imumaths.h>
 
 // ---- OTA (kablosuz kod yukleme) ayarlari ----
 // ESP32 kendi erisim noktasini actigi icin dis bir WiFi agina/internete ihtiyac yok.
@@ -72,6 +85,17 @@
 #define OTA_AP_PASS     "sualti123"  // WPA2 min. 8 karakter sart - 6 harfli "sualti" AP'nin hic acilmamasina yol aciyordu
 #define OTA_PASSWORD    "sualti123"  // Arduino IDE kod atarken ayrica sorulan OTA sifresi
 #define OTA_HOSTNAME    "Ana-Rov-DenizAlti"  // mDNS hostname: sadece harf/rakam/tire gecerli, parantez/bosluk KULLANMA (Tools>Port'ta cihazi bulmayi engeller)
+
+// ---- Kamera ESP'sine (AnaRovKamera.ino) UART koprusu ----
+// PC artik komutlari USB yerine Ethernet uzerinden kamera ESP'sine gonderiyor;
+// kamera ESP'si bunlari bu ikinci donanimsal seri porttan (Serial2) bu karta
+// iletiyor. USB (Serial) debug/bench test icin ayrica calismaya devam ediyor -
+// iki kaynaktan da ayni komutlar kabul edilir (bkz. loop()).
+// Kablolama: kamera ESP GPIO33(TX) -> bu kart GPIO16(RX), kamera ESP GPIO32(RX)
+// <- bu kart GPIO17(TX), GND ortak.
+#define BRIDGE_RX_PIN 16
+#define BRIDGE_TX_PIN 17
+#define BRIDGE_BAUD   115200
 
 #define PWM_FREQ_HZ   50
 #define PWM_RES       16
@@ -133,12 +157,19 @@ float depthReadPressureMPa() {
     return (pressureMPa < 0) ? 0 : pressureMPa;
 }
 
+// Protokol/durum satirlarini (READY, ARMED, ATT:, DEPTH: vb.) HEM USB'ye HEM
+// de kamera ESP'sine giden koprude (Serial2) yollar - PC hangisinden baglanmis
+// olursa olsun ayni bilgiyi gorur. Sadece yerel/bench debug mesajlari (IMU I2C
+// tarama, OTA kurulum vs.) icin Serial.print kullanilmaya devam eder.
+void sendStatus(const String &line) {
+    Serial.println(line);
+    Serial2.println(line);
+}
+
 // Acilista (ROV suya girmeden once) o anki basinci "yuzey" referansi olarak kaydeder.
 void depthCalibrateSurface() {
     depthSurfaceMPa = depthReadPressureMPa();
-    Serial.print("DEPTH: yuzey kalibrasyonu tamamlandi, referans = ");
-    Serial.print(depthSurfaceMPa, 4);
-    Serial.println(" MPa");
+    sendStatus("DEPTH: yuzey kalibrasyonu tamamlandi, referans = " + String(depthSurfaceMPa, 4) + " MPa");
 }
 
 void depthUpdate() {
@@ -174,165 +205,66 @@ void depthUpdate() {
     }
 }
 
-// ==================== MPU-6050 IMU (ivmeolcer + jiroskop) ====================
-#define MPU6050_ADDR      0x68   // AD0 GND'ye cekiliyse 0x68; VCC'ye cekiliyse 0x69
-#define REG_WHO_AM_I      0x75
-#define REG_PWR_MGMT_1    0x6B
-#define REG_ACCEL_CONFIG  0x1C
-#define REG_GYRO_CONFIG   0x1B
-#define REG_ACCEL_XOUT_H  0x3B
-#define REG_GYRO_XOUT_H   0x43
+// ==================== BNO055 IMU (9-DOF donanimsal fusion) ====================
+#define BNO055_I2C_ADDR 0x28   // ADR pini bosta/GND -> 0x28; 3.3V'a baglanirsa 0x29
+#define IMU_RETRY_MS     3000  // IMU bulunamazsa bu araliklarla yeniden dene
 
-#define GYRO_LSB_PER_DPS  131.0f // +-250 deg/s araliginda (GYRO_CONFIG=0x00)
-#define GYRO_RETRY_MS     3000   // IMU bulunamazsa bu araliklarla yeniden dene
+Adafruit_BNO055 bno = Adafruit_BNO055(55, BNO055_I2C_ADDR, &Wire);
 
 bool imuReady = false;
 unsigned long lastImuAt = 0;
-unsigned long lastImuMicros = 0;
 unsigned long lastImuRetryAt = 0;
 float rollDeg = 0, pitchDeg = 0;
-float gyroBiasX = 0, gyroBiasY = 0;
-
-uint8_t imuReadReg(uint8_t reg) {
-    Wire.beginTransmission(MPU6050_ADDR);
-    Wire.write(reg);
-    Wire.endTransmission(false);
-    Wire.requestFrom(MPU6050_ADDR, 1);
-    return Wire.available() ? Wire.read() : 0;
-}
-
-void imuWriteReg(uint8_t reg, uint8_t val) {
-    Wire.beginTransmission(MPU6050_ADDR);
-    Wire.write(reg);
-    Wire.write(val);
-    Wire.endTransmission();
-}
-
-// SDA/SCL hattinda cevap veren tum I2C adreslerini tarayip yazdirir.
-// IMU bulunamadiginda "kablolama mi yanlis, adres mi farkli" ayrimini yapmak icin.
-void imuScanI2CBus() {
-    Serial.println("IMU: I2C hatti taraniyor (0x01-0x7F)...");
-    int found = 0;
-    for (uint8_t addr = 1; addr < 0x7F; addr++) {
-        Wire.beginTransmission(addr);
-        if (Wire.endTransmission() == 0) {
-            Serial.print("IMU: -> cihaz bulundu, adres 0x");
-            Serial.println(addr, HEX);
-            found++;
-        }
-    }
-    if (found == 0) {
-        Serial.println("IMU: Hicbir I2C cihazi bulunamadi! Kontrol et: SDA=GPIO21, SCL=GPIO22, VCC=3V3, GND, AD0 durumu ve SDA/SCL uzerinde pull-up direnci (bare modulse 4.7k harici gerekebilir).");
-    } else {
-        Serial.println("IMU: Yukaridaki adres(ler) MPU-6050'nin 0x68/0x69'undan farkliysa modul farkli bir sensor/adres olabilir (AD0 pinini kontrol et).");
-    }
-}
-
-// Ivmeolcer (3 eksen) + jiroskop X/Y (roll/pitch icin yeterli, yaw icin
-// gereken Z ekseni okunmuyor) tek seferde okunur. I2C hattinda gecici bir
-// hata/gurultu olursa (motor ESC'lerinden kaynaklanabilir) false doner ve
-// cagiran taraf eski aci degerlerini korur; cip hicbir zaman yanlis/yari
-// veriyle guncellenmez.
-bool imuReadAccelGyro(int16_t out[5]) {
-    Wire.beginTransmission(MPU6050_ADDR);
-    Wire.write(REG_ACCEL_XOUT_H);
-    if (Wire.endTransmission(false) != 0) return false;
-    if (Wire.requestFrom(MPU6050_ADDR, 6) != 6) return false;
-    out[0] = (int16_t)((Wire.read() << 8) | Wire.read());
-    out[1] = (int16_t)((Wire.read() << 8) | Wire.read());
-    out[2] = (int16_t)((Wire.read() << 8) | Wire.read());
-
-    Wire.beginTransmission(MPU6050_ADDR);
-    Wire.write(REG_GYRO_XOUT_H);
-    if (Wire.endTransmission(false) != 0) return false;
-    if (Wire.requestFrom(MPU6050_ADDR, 4) != 4) return false;
-    out[3] = (int16_t)((Wire.read() << 8) | Wire.read());
-    out[4] = (int16_t)((Wire.read() << 8) | Wire.read());
-    return true;
-}
+float yawDeg = 0; // BNO055'in manyetometreli fusion'u sayesinde artik mevcut,
+                   // ATT: satirina 3. deger olarak ekleniyor (bkz. loop()).
 
 bool imuInit() {
     Wire.begin(IMU_SDA_PIN, IMU_SCL_PIN);
-    delay(50); // sensor guc-acilis suresi
-    uint8_t who = imuReadReg(REG_WHO_AM_I);
-    Serial.print("IMU: adres 0x68 WHO_AM_I = 0x");
-    Serial.println(who, HEX);
-
-    // MPU-6050 icin beklenen deger genelde 0x68, bazi klon/varyantlarda 0x72/0x98 de gorulebilir
-    if (who != 0x68 && who != 0x72 && who != 0x98) {
-        Serial.println("IMU: MPU-6050 0x68 adresinde taninmadi (beklenen WHO_AM_I ~0x68).");
-        imuScanI2CBus();
+    if (!bno.begin()) {
+        Serial.println("IMU: BNO055 bulunamadi! Kontrol et: SDA=GPIO21, SCL=GPIO22, VIN=3V3, GND, ADR durumu.");
         return false;
     }
-
-    imuWriteReg(REG_PWR_MGMT_1, 0x01);     // uyku modundan cik, gyro-X saat referansi (dahili RC osilatorden daha kararli)
-    imuWriteReg(REG_ACCEL_CONFIG, 0x00);   // ivmeolcer araligi +-2g
-    imuWriteReg(REG_GYRO_CONFIG, 0x00);    // jiroskop araligi +-250 derece/s
     delay(50);
-
-    Serial.println("IMU: Jiroskop kalibrasyonu basliyor - ROV'u SABIT tutun...");
-    long sumGx = 0, sumGy = 0;
-    const int CAL_SAMPLES = 200;
-    int okSamples = 0;
-    for (int i = 0; i < CAL_SAMPLES; i++) {
-        int16_t v[5];
-        if (imuReadAccelGyro(v)) {
-            sumGx += v[3];
-            sumGy += v[4];
-            okSamples++;
-        }
-        delay(3);
-    }
-    if (okSamples > CAL_SAMPLES / 2) { // orneklerin yarisindan fazlasi basarisizsa I2C guvenilir degil demektir
-        gyroBiasX = sumGx / (float)okSamples;
-        gyroBiasY = sumGy / (float)okSamples;
-    } else {
-        Serial.println("IMU: Kalibrasyon sirasinda okumalarin cogu basarisiz oldu, I2C hatti guvenilir degil olabilir.");
-        return false;
-    }
-
-    lastImuMicros = 0; // ilk imuUpdate() cagrisinda dogrudan ivmeolcer acisiyla baslanacak
-    Serial.println("IMU: MPU-6050 aktif, ATT: satirlari basliyor.");
+    bno.setExtCrystalUse(true); // breakout uzerindeki harici kristali kullan, dahili osilatorden daha kararli
+    Serial.println("IMU: BNO055 aktif, ATT: satirlari basliyor.");
     return true;
 }
 
-// Sadece ivmeolcerden hesaplanan aci (roll/pitch) motor titresiminde sicrar/
-// gurultulu olur; sadece jiroskop entegrasyonu ise kisa vadede pürüzsuz ama
-// zamanla kayar (drift). Tamamlayici (complementary) filtre ikisini
-// birlestirir: kisa vadede jiroskopa, uzun vadede ivmeolcere guvenir.
-// Yaw hala hesaplanmiyor - Z eksen jiroskopu tek basina manyetometre
-// olmadan zamanla surer, "sabitleme" icin guvenilir bir referans olmaz.
+// BNO055 fusion'u (ivmeolcer+jiroskop+manyetometre birlestirmesi) cipin kendi
+// icindeki islemcide yapilir. ONEMLI: Euler acilarini (VECTOR_EULER) ciktiktan
+// SONRA y/z'yi yer degistirmek/isaret cevirmek matematiksel olarak guvenilir
+// DEGIL - uc Euler bileseni birbirine bagli hesaplanir, ciktida "hangisi roll
+// hangisi pitch" diye yer degistirmek gercek bir eksen donusumu yapmiyor, hala
+// eksenler arasi sizinti (coupling) oluyor (bench testinde burun kaldirilinca
+// roll'un degismesi buna isaret ediyordu).
 //
-// NOT: IMU govdeye 90 derece donuk monte edilmis - havuz/masa testinde
-// X ekseni tabanli hesap (asagidaki eski "pitch" formulu) sag/sol yatmayi
-// (roll), Y/Z ekseni tabanli hesap (eski "roll" formulu) ise yukari/asagi
-// bakmayi (pitch) verdigi gozlemlendi. Bu yuzden asagida eksenler kasitli
-// olarak "capraz" atanmistir. IMU'yu fiziksel olarak duz (0 derece) cevirip
-// takarsan bu eslemeyi eski haline (ax<->ay,az) geri almali/duzeltmelisin.
+// Bunun yerine cekim (gravity) vektorunu (VECTOR_GRAVITY) okuyoruz - bu 3
+// BAGIMSIZ sayidir (eski MPU6050 kodunun ivmeolcerden roll/pitch turetmesiyle
+// ayni mantik, ama artik BNO055'in filtrelenmis/motor-titresimine dayanikli
+// ciktisiyla). Boylece eksen atamasi/isareti dogru sekilde degistirilebilir.
+//
+// GECICI TEHIS MODU: Dogru gx/gy/gz -> roll/pitch eslemesi henuz kesinlesmedi;
+// asagidaki Serial.print ile ham degerleri USB'den izleyip (Serial Monitor,
+// 115200) ROV'u elle hareket ettirerek hangi eksenin hangi harekete tepki
+// verdigini gorebiliriz. Bu satirlari kaldirmadan once bu veriyi paylas.
 void imuUpdate() {
-    int16_t v[5];
-    if (!imuReadAccelGyro(v)) return; // basarisiz okuma: eski aci degerlerini koru
+    imu::Vector<3> gravity = bno.getVector(Adafruit_BNO055::VECTOR_GRAVITY);
+    Serial.print("GRAV: gx=");
+    Serial.print(gravity.x(), 2);
+    Serial.print(" gy=");
+    Serial.print(gravity.y(), 2);
+    Serial.print(" gz=");
+    Serial.println(gravity.z(), 2);
 
-    float ax = v[0], ay = v[1], az = v[2];
-    float gyroPitchRate = (v[3] - gyroBiasX) / GYRO_LSB_PER_DPS; // derece/sn (govde: yukari/asagi)
-    float gyroRollRate  = (v[4] - gyroBiasY) / GYRO_LSB_PER_DPS; // derece/sn (govde: sag/sol)
+    // Ilk denemede eksenler arasi sizinti (coupling) yoktu, sadece ikisinin de
+    // isareti tersti (yukari kaldirinca asagi, sola yatirinca saga gosteriyordu)
+    // - bu yuzden asagida her ikisi de eksi ile ceviriliyor.
+    rollDeg = -atan2(gravity.y(), gravity.z()) * 180.0 / PI;
+    pitchDeg = -atan2(-gravity.x(), sqrt(gravity.y() * gravity.y() + gravity.z() * gravity.z())) * 180.0 / PI;
 
-    float accelPitch = atan2(ay, az) * 180.0 / PI;                      // govde: yukari/asagi bakma
-    float accelRoll  = atan2(-ax, sqrt(ay * ay + az * az)) * 180.0 / PI; // govde: sag/sol yatma
-
-    unsigned long now = micros();
-    float dt = (lastImuMicros == 0) ? 0.0f : (now - lastImuMicros) / 1000000.0f;
-    lastImuMicros = now;
-
-    if (dt <= 0.0f || dt > 0.5f) {
-        // ilk okuma ya da anormal buyuk bosluk (ornegin gecici I2C kesintisi):
-        // jiroskop entegrasyonuna guvenilmez, dogrudan ivmeolcer acisina atla.
-        rollDeg = accelRoll;
-        pitchDeg = accelPitch;
-    } else {
-        rollDeg  = 0.98f * (rollDeg  + gyroRollRate  * dt) + 0.02f * accelRoll;
-        pitchDeg = 0.98f * (pitchDeg + gyroPitchRate * dt) + 0.02f * accelPitch;
-    }
+    sensors_event_t event;
+    bno.getEvent(&event, Adafruit_BNO055::VECTOR_EULER);
+    yawDeg = event.orientation.x; // yaw tek basina okundugu icin coupling sorunu yok
 }
 
 enum RovState { DISARMED, ARMING, ARMED };
@@ -396,7 +328,7 @@ void startArming() {
     allTargetsTo(MIN_US);
     armStartedAt = millis();
     state = ARMING;
-    Serial.println("ARMING");
+    sendStatus("ARMING");
 }
 
 void finishArming() {
@@ -404,7 +336,7 @@ void finishArming() {
     allTargetsTo(NEUTRAL_US);
     lastCommandAt = millis();
     state = ARMED;
-    Serial.println("ARMED");
+    sendStatus("ARMED");
 }
 
 void disarmNow() {
@@ -414,12 +346,12 @@ void disarmNow() {
     for (int i = 0; i < 8; i++) motorPulse[i] = NEUTRAL_US;
     allTargetsTo(NEUTRAL_US);
     state = DISARMED;
-    Serial.println("DISARMED");
+    sendStatus("DISARMED");
 }
 
 void handleMotorCommand(const String &line) {
     if (state != ARMED) {
-        Serial.println("ERR:NOTARMED");
+        sendStatus("ERR:NOTARMED");
         return;
     }
     int vals[8];
@@ -433,7 +365,7 @@ void handleMotorCommand(const String &line) {
         start = comma + 1;
     }
     if (idx != 8) {
-        Serial.println("ERR:BADFORMAT");
+        sendStatus("ERR:BADFORMAT");
         return;
     }
     // Dogrudan writeMotor yerine hedefi guncelliyoruz; gercek darbe
@@ -457,14 +389,14 @@ void handleLine(const String &line) {
     } else if (line.startsWith("M:")) {
         handleMotorCommand(line);
     } else {
-        Serial.println("ERR:UNKNOWN");
+        sendStatus("ERR:UNKNOWN");
     }
 }
 
 // ESP32'yi kendi WiFi erisim noktasi (AP) yapar; PC/telefon dogrudan bu aga
 // baglanip Arduino IDE'den kablosuz kod atabilir. Router/internet gerekmez -
 // tamamen yerel, tezgah/dokta kullanim icindir (motor komutlari bundan
-// etkilenmez, onlar hala USB Serial'dan geliyor).
+// etkilenmez, onlar USB Serial ve/veya kamera ESP koprusunden (Serial2) geliyor).
 void setupOTA() {
     WiFi.mode(WIFI_AP);
     WiFi.softAP(OTA_AP_SSID, OTA_AP_PASS);
@@ -489,9 +421,10 @@ void setupOTA() {
 
 void setup() {
     Serial.begin(115200);
+    Serial2.begin(BRIDGE_BAUD, SERIAL_8N1, BRIDGE_RX_PIN, BRIDGE_TX_PIN);
     for (int i = 0; i < 8; i++) motorPulse[i] = NEUTRAL_US;
     imuReady = imuInit();
-    Serial.println(imuReady ? "SUALTIESP32 READY (IMU OK)" : "SUALTIESP32 READY (IMU YOK)");
+    sendStatus(imuReady ? "SUALTIESP32 READY (IMU OK)" : "SUALTIESP32 READY (IMU YOK)");
 
     analogSetPinAttenuation(DEPTH_ADC_PIN, ADC_11db); // 0-3.3V tam araligi kullan
     depthCalibrateSurface();
@@ -502,8 +435,12 @@ void setup() {
 void loop() {
     ArduinoOTA.handle();
 
-    while (Serial.available()) {
-        String line = Serial.readStringUntil('\n');
+    // Komutlar artik SADECE kamera ESP'sinden (AnaRovKamera.ino) gelen kopruden
+    // (Serial2) okunuyor - USB (Serial) dinlenmiyor, sadece debug/durum ciktisi
+    // icin acik kaliyor (bkz. sendStatus()). Denizde zaten USB kablosu
+    // olmayacagi icin bu dinleme gereksizdi.
+    while (Serial2.available()) {
+        String line = Serial2.readStringUntil('\n');
         line.trim();
         if (line.length() > 0) handleLine(line);
     }
@@ -524,15 +461,12 @@ void loop() {
     if (imuReady && millis() - lastImuAt >= IMU_PERIOD_MS) {
         lastImuAt = millis();
         imuUpdate();
-        Serial.print("ATT:");
-        Serial.print(rollDeg, 1);
-        Serial.print(',');
-        Serial.println(pitchDeg, 1);
+        sendStatus("ATT:" + String(rollDeg, 1) + "," + String(pitchDeg, 1) + "," + String(yawDeg, 1));
     }
 
     // IMU baslangicta bulunamadiysa (kablolama gec duzeltildiyse, gevsek
     // temas vs.) tekrar reset atmaya gerek kalmadan periyodik yeniden dener.
-    if (!imuReady && millis() - lastImuRetryAt >= GYRO_RETRY_MS) {
+    if (!imuReady && millis() - lastImuRetryAt >= IMU_RETRY_MS) {
         lastImuRetryAt = millis();
         Serial.println("IMU: yeniden baglanmaya calisiliyor...");
         imuReady = imuInit();
@@ -541,9 +475,6 @@ void loop() {
     if (millis() - lastDepthAt >= DEPTH_PERIOD_MS) {
         lastDepthAt = millis();
         depthUpdate();
-        Serial.print("DEPTH:");
-        Serial.print(depthMeters, 2);
-        Serial.print(',');
-        Serial.println(depthSpeedMs, 3);
+        sendStatus("DEPTH:" + String(depthMeters, 2) + "," + String(depthSpeedMs, 3));
     }
 }

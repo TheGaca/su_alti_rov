@@ -43,7 +43,7 @@ RovGUI::RovGUI(QWidget *parent)
       cam_thread(nullptr), anarov_thread(nullptr),
       ana_lamp_on(false), mini_lamp_on(false), ana_autonomous(false), torpedo_ready(true), minirov_launched(false), dark_mode(false),
       ana_armed(false), mini_armed(false), ana_cam_connected(false),
-      ana_stabilize(false), ana_roll(0.0f), ana_pitch(0.0f),
+      ana_stabilize(false), ana_roll(0.0f), ana_pitch(0.0f), ana_yaw(0.0f),
       cam_ping_proc(nullptr), anarov_ping_proc(nullptr),
       log_file(nullptr), log_stream(nullptr),
       motor_heartbeat_timer(nullptr)
@@ -211,7 +211,7 @@ void RovGUI::start_camera_threads() {
     connect(cam_thread, &CameraThread::stats_signal,  this, &RovGUI::update_camera_stats);
     cam_thread->start();
 
-    // AnaROV kamera (MJPEG @ 192.168.2.220:81/stream - bkz. AnaRovCamera/AnaRov.ino,
+    // AnaROV kamera (MJPEG @ 192.168.2.220:81/stream - bkz. AnaRovKamera/AnaRovKamera.ino,
     // Espressif CameraWebServer ornegi: ana sunucu 80'de, stream sunucusu 80+1=81'de acilir)
     anarov_thread = new CameraThread("192.168.2.220:81", this);
     connect(anarov_thread, &CameraThread::image_signal,  this, &RovGUI::update_anarov_frame);
@@ -323,9 +323,13 @@ void RovGUI::toggle_ana_connection() {
         log_message("Ana ROV (ESP32) bağlantısı kesildi.", 0);
         return;
     }
-    QString port = A->port_combo->currentText();
-    int baud = A->baud_combo->currentText().toInt();
-    ana_esp_thread = new EspRovThread(port, baud, this);
+    // Ana ROV artik USB yerine kamera ESP'sindeki (AnaRovKamera/AnaRovKamera.ino) TCP
+    // koprusune baglaniyor - o da komutlari Serial2 uzerinden motor ESP'sine
+    // iletir (bkz. EspRovThread.hpp basindaki aciklama). port_combo/baud_combo
+    // artik Ana ROV icin kullanilmiyor (Mini ROV hala USB/seri, degismedi).
+    const QString anaRovHost = "192.168.2.220";
+    const quint16 anaRovBridgePort = 8888;
+    ana_esp_thread = EspRovThread::createTcp(anaRovHost, anaRovBridgePort, this);
     connect(ana_esp_thread, &EspRovThread::status_signal, this, &RovGUI::update_ana_status);
     connect(ana_esp_thread, &EspRovThread::armed_signal,  this, &RovGUI::update_ana_armed);
     connect(ana_esp_thread, &EspRovThread::attitude_signal, this, &RovGUI::update_ana_attitude);
@@ -333,7 +337,7 @@ void RovGUI::toggle_ana_connection() {
     ana_esp_thread->start();
     A->btn_connect->setText("Kes");
     A->btn_connect->setStyleSheet(activeStyle);
-    log_message("Ana ROV (ESP32) bağlantısı başlatılıyor: " + port, 0);
+    log_message(QString("Ana ROV bağlantısı başlatılıyor: %1:%2").arg(anaRovHost).arg(anaRovBridgePort), 0);
 }
 
 void RovGUI::update_ana_status(const QString &msg) {
@@ -355,12 +359,15 @@ void RovGUI::update_ana_armed(bool armed) {
     }
 }
 
-void RovGUI::update_ana_attitude(float roll, float pitch) {
+void RovGUI::update_ana_attitude(float roll, float pitch, float yaw) {
     ana_roll = roll;
     ana_pitch = pitch;
+    ana_yaw = yaw;
     RovPanel *A = ui.anaRovPanel;
     A->lbl_roll->setText(QString::number(roll, 'f', 1) + "°");
     A->lbl_pitch->setText(QString::number(pitch, 'f', 1) + "°");
+    A->lbl_yaw->setText(QString::number(yaw, 'f', 1) + "°");
+    A->lbl_heading->setText(QString::number(yaw, 'f', 1) + "°");
     A->attitude_indicator->set_attitude(roll, pitch);
 
     // Sabitleme acikken kumandaya dokunulmasa bile duzeltme surekli guncel

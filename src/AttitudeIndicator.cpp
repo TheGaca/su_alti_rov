@@ -33,7 +33,9 @@ void AttitudeIndicator::paintEvent(QPaintEvent *) {
 
     painter.save();
     painter.translate(center);
-    painter.rotate(-roll);
+    // NOT: Kullanici testinde sola/saga yatirma gorseldeki donme yonuyle ters
+    // geliyordu; isaret ceviridi (eskiden -roll idi).
+    painter.rotate(roll);
 
     qreal pitchOffset = pitch * (radius / 45.0);
 
