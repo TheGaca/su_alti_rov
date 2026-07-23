@@ -1,4 +1,4 @@
-#include "PixhawkGUI.hpp"
+#include "RovGUI.hpp"
 
 #include <QDateTime>
 #include <QCloseEvent>
@@ -36,7 +36,7 @@ constexpr int AXIS_RIGHT_Y = 4; // Sağ stick Y  -> yukarı/aşağı (derinlik)
 constexpr float STAB_GAIN = 4.0f;
 }
 
-PixhawkGUI::PixhawkGUI(QWidget *parent)
+RovGUI::RovGUI(QWidget *parent)
     : QMainWindow(parent),
       ana_esp_thread(nullptr), mini_esp_thread(nullptr),
       ana_joy_thread(nullptr), mini_joy_thread(nullptr),
@@ -103,13 +103,13 @@ PixhawkGUI::PixhawkGUI(QWidget *parent)
     // Ping işlemlerini başlat
     cam_ping_proc = new QProcess(this);
     connect(cam_ping_proc, &QProcess::readyReadStandardOutput,
-            this, &PixhawkGUI::read_cam_ping);
+            this, &RovGUI::read_cam_ping);
     cam_ping_proc->start("ping", QStringList() << "-i" << "1" << "192.168.88.2");
 
     anarov_ping_proc = new QProcess(this);
     connect(anarov_ping_proc, &QProcess::readyReadStandardOutput,
-            this, &PixhawkGUI::read_anarov_ping);
-    anarov_ping_proc->start("ping", QStringList() << "-i" << "1" << "192.168.1.116");
+            this, &RovGUI::read_anarov_ping);
+    anarov_ping_proc->start("ping", QStringList() << "-i" << "1" << "192.168.2.220");
 
     // Initialize default states for quick commands on GUI startup
     // Manuel active by default, Otonom inactive
@@ -127,11 +127,11 @@ PixhawkGUI::PixhawkGUI(QWidget *parent)
     // olayi tekrar tetiklenmeyince (stick sabit konumda) yeni komut gitmiyor ve
     // motorlar notrleniyordu. 150ms'de bir son komutu tazeleyerek bunu onluyoruz.
     motor_heartbeat_timer = new QTimer(this);
-    connect(motor_heartbeat_timer, &QTimer::timeout, this, &PixhawkGUI::send_motor_heartbeat);
+    connect(motor_heartbeat_timer, &QTimer::timeout, this, &RovGUI::send_motor_heartbeat);
     motor_heartbeat_timer->start(150);
 }
 
-PixhawkGUI::~PixhawkGUI() {
+RovGUI::~RovGUI() {
     if (ana_esp_thread)  { ana_esp_thread->stop();  delete ana_esp_thread; }
     if (mini_esp_thread) { mini_esp_thread->stop(); delete mini_esp_thread; }
     if (ana_joy_thread)  { ana_joy_thread->stop();  delete ana_joy_thread; }
@@ -146,7 +146,7 @@ PixhawkGUI::~PixhawkGUI() {
     if (log_file)   { log_file->close(); delete log_file; log_file = nullptr; }
 }
 
-void PixhawkGUI::closeEvent(QCloseEvent *event) {
+void RovGUI::closeEvent(QCloseEvent *event) {
     QMessageBox::StandardButton resBtn = QMessageBox::question(this, "SuGaca",
                                                                  "Çıkmak istediğinize emin misiniz?",
                                                                  QMessageBox::No | QMessageBox::Yes,
@@ -159,73 +159,74 @@ void PixhawkGUI::closeEvent(QCloseEvent *event) {
     }
 }
 
-void PixhawkGUI::connect_signals() {
-    PixhawkPanel *A = ui.anaRovPanel;
-    PixhawkPanel *M = ui.miniRovPanel;
+void RovGUI::connect_signals() {
+    RovPanel *A = ui.anaRovPanel;
+    RovPanel *M = ui.miniRovPanel;
 
     // Bağlantı butonları
-    connect(A->btn_connect, &QPushButton::clicked, this, &PixhawkGUI::toggle_ana_connection);
-    connect(M->btn_connect, &QPushButton::clicked, this, &PixhawkGUI::toggle_mini_connection);
+    connect(A->btn_connect, &QPushButton::clicked, this, &RovGUI::toggle_ana_connection);
+    connect(M->btn_connect, &QPushButton::clicked, this, &RovGUI::toggle_mini_connection);
 
     // Joystick bağlantı butonları
-    connect(A->btn_joy_connect, &QPushButton::clicked, this, &PixhawkGUI::toggle_ana_joystick);
-    connect(M->btn_joy_connect, &QPushButton::clicked, this, &PixhawkGUI::toggle_mini_joystick);
+    connect(A->btn_joy_connect, &QPushButton::clicked, this, &RovGUI::toggle_ana_joystick);
+    connect(M->btn_joy_connect, &QPushButton::clicked, this, &RovGUI::toggle_mini_joystick);
 
     // Yön butonları (pressed/released)
-    auto bindDir = [this](QPushButton *b, void (PixhawkGUI::*p)(), void (PixhawkGUI::*r)()) {
+    auto bindDir = [this](QPushButton *b, void (RovGUI::*p)(), void (RovGUI::*r)()) {
         connect(b, &QPushButton::pressed,  this, p);
         connect(b, &QPushButton::released, this, r);
     };
     for (QPushButton *b : {A->btn_forward, A->btn_backward, A->btn_left, A->btn_right,
                             A->btn_up, A->btn_down, A->btn_turn_left, A->btn_turn_right}) {
-        bindDir(b, &PixhawkGUI::ana_dir_pressed, &PixhawkGUI::ana_dir_released);
+        bindDir(b, &RovGUI::ana_dir_pressed, &RovGUI::ana_dir_released);
     }
     for (QPushButton *b : {M->btn_forward, M->btn_backward, M->btn_left, M->btn_right,
                             M->btn_up, M->btn_down, M->btn_turn_left, M->btn_turn_right}) {
-        bindDir(b, &PixhawkGUI::mini_dir_pressed, &PixhawkGUI::mini_dir_released);
+        bindDir(b, &RovGUI::mini_dir_pressed, &RovGUI::mini_dir_released);
     }
 
     // Hızlı komutlar
-    connect(A->btn_emergency,      &QPushButton::clicked, this, &PixhawkGUI::on_emergency_ana);
-    connect(M->btn_emergency,      &QPushButton::clicked, this, &PixhawkGUI::on_emergency_mini);
-    connect(A->btn_stabilize,      &QPushButton::clicked, this, &PixhawkGUI::on_stabilize_ana);
-    connect(M->btn_stabilize,      &QPushButton::clicked, this, &PixhawkGUI::on_stabilize_mini);
-    connect(A->btn_autonomous,     &QPushButton::clicked, this, &PixhawkGUI::on_autonomous_ana);
-    connect(A->btn_manual,         &QPushButton::clicked, this, &PixhawkGUI::on_manual_ana);
-    connect(A->btn_minirov_launch, &QPushButton::clicked, this, &PixhawkGUI::on_minirov_launch);
-    connect(A->btn_torpedo,        &QPushButton::clicked, this, &PixhawkGUI::on_torpedo_fire);
-    connect(A->btn_lamp_on,        &QPushButton::clicked, this, &PixhawkGUI::on_lamp_on_ana);
-    connect(A->btn_lamp_off,       &QPushButton::clicked, this, &PixhawkGUI::on_lamp_off_ana);
-    connect(M->btn_lamp_on,        &QPushButton::clicked, this, &PixhawkGUI::on_lamp_on_mini);
-    connect(M->btn_lamp_off,       &QPushButton::clicked, this, &PixhawkGUI::on_lamp_off_mini);
+    connect(A->btn_emergency,      &QPushButton::clicked, this, &RovGUI::on_emergency_ana);
+    connect(M->btn_emergency,      &QPushButton::clicked, this, &RovGUI::on_emergency_mini);
+    connect(A->btn_stabilize,      &QPushButton::clicked, this, &RovGUI::on_stabilize_ana);
+    connect(M->btn_stabilize,      &QPushButton::clicked, this, &RovGUI::on_stabilize_mini);
+    connect(A->btn_autonomous,     &QPushButton::clicked, this, &RovGUI::on_autonomous_ana);
+    connect(A->btn_manual,         &QPushButton::clicked, this, &RovGUI::on_manual_ana);
+    connect(A->btn_minirov_launch, &QPushButton::clicked, this, &RovGUI::on_minirov_launch);
+    connect(A->btn_torpedo,        &QPushButton::clicked, this, &RovGUI::on_torpedo_fire);
+    connect(A->btn_lamp_on,        &QPushButton::clicked, this, &RovGUI::on_lamp_on_ana);
+    connect(A->btn_lamp_off,       &QPushButton::clicked, this, &RovGUI::on_lamp_off_ana);
+    connect(M->btn_lamp_on,        &QPushButton::clicked, this, &RovGUI::on_lamp_on_mini);
+    connect(M->btn_lamp_off,       &QPushButton::clicked, this, &RovGUI::on_lamp_off_mini);
 
     // Temizlik / Tema Değişimi
-    connect(ui.btn_theme, &QPushButton::clicked, this, &PixhawkGUI::toggle_theme);
+    connect(ui.btn_theme, &QPushButton::clicked, this, &RovGUI::toggle_theme);
 }
 
-void PixhawkGUI::start_camera_threads() {
+void RovGUI::start_camera_threads() {
     // MiniROV kamera (MJPEG @ 192.168.88.2/stream)
     cam_thread = new CameraThread("192.168.88.2", this);
-    connect(cam_thread, &CameraThread::image_signal,  this, &PixhawkGUI::update_camera_frame);
-    connect(cam_thread, &CameraThread::status_signal, this, &PixhawkGUI::update_camera_status);
-    connect(cam_thread, &CameraThread::stats_signal,  this, &PixhawkGUI::update_camera_stats);
+    connect(cam_thread, &CameraThread::image_signal,  this, &RovGUI::update_camera_frame);
+    connect(cam_thread, &CameraThread::status_signal, this, &RovGUI::update_camera_status);
+    connect(cam_thread, &CameraThread::stats_signal,  this, &RovGUI::update_camera_stats);
     cam_thread->start();
 
-    // AnaROV kamera (WebSocket @ 192.168.1.116:85)
-    anarov_thread = new AnaRovThread("192.168.1.116", this);
-    connect(anarov_thread, &AnaRovThread::image_signal,  this, &PixhawkGUI::update_anarov_frame);
-    connect(anarov_thread, &AnaRovThread::status_signal, this, &PixhawkGUI::update_anarov_status);
-    connect(anarov_thread, &AnaRovThread::stats_signal,  this, &PixhawkGUI::update_anarov_stats);
+    // AnaROV kamera (MJPEG @ 192.168.2.220:81/stream - bkz. AnaRovCamera/AnaRov.ino,
+    // Espressif CameraWebServer ornegi: ana sunucu 80'de, stream sunucusu 80+1=81'de acilir)
+    anarov_thread = new CameraThread("192.168.2.220:81", this);
+    connect(anarov_thread, &CameraThread::image_signal,  this, &RovGUI::update_anarov_frame);
+    connect(anarov_thread, &CameraThread::status_signal, this, &RovGUI::update_anarov_status);
+    connect(anarov_thread, &CameraThread::stats_signal,  this, &RovGUI::update_anarov_stats);
     anarov_thread->start();
 }
 
-void PixhawkGUI::show_screen_warning(const QString &msg) {
+void RovGUI::show_screen_warning(const QString &msg) {
     statusBar()->setStyleSheet("background-color:#dc2626;color:white;font-weight:bold;font-size:14px;padding:4px;");
     statusBar()->showMessage("⚠ " + msg, 6000);
 }
 
 // ==================== Log ====================
-void PixhawkGUI::log_message(const QString &msg, int target) {
+void RovGUI::log_message(const QString &msg, int target) {
     QString ts = QDateTime::currentDateTime().toString("HH:mm:ss.zzz");
     QString line = QString("[%1] %2").arg(ts, msg);
 
@@ -239,7 +240,7 @@ void PixhawkGUI::log_message(const QString &msg, int target) {
 }
 
 // ==================== ESP32 8 motor karisimi ====================
-std::array<int, 8> PixhawkGUI::compute_motor_mix(float surge, float lateral, float yaw, float vertical,
+std::array<int, 8> RovGUI::compute_motor_mix(float surge, float lateral, float yaw, float vertical,
                                                   float rollCorr, float pitchCorr) {
     std::array<int, 8> m{};
     for (int i = 0; i < 4; ++i) {
@@ -263,7 +264,7 @@ std::array<int, 8> PixhawkGUI::compute_motor_mix(float surge, float lateral, flo
     return m;
 }
 
-void PixhawkGUI::apply_ana_motor_mix(float surge, float lateral, float yaw, float vertical) {
+void RovGUI::apply_ana_motor_mix(float surge, float lateral, float yaw, float vertical) {
     if (!ana_esp_thread) return;
     float rollCorr = 0.0f, pitchCorr = 0.0f;
     if (ana_stabilize) {
@@ -284,7 +285,7 @@ void PixhawkGUI::apply_ana_motor_mix(float surge, float lateral, float yaw, floa
     ui.anaRovPanel->motor_diagram->set_motor_pulses(pulses, correctionUs);
 }
 
-void PixhawkGUI::apply_mini_motor_mix(float surge, float lateral, float yaw, float vertical) {
+void RovGUI::apply_mini_motor_mix(float surge, float lateral, float yaw, float vertical) {
     if (!mini_esp_thread) return;
     auto pulses = compute_motor_mix(surge, lateral, yaw, vertical);
     mini_esp_thread->set_motors(pulses);
@@ -292,14 +293,14 @@ void PixhawkGUI::apply_mini_motor_mix(float surge, float lateral, float yaw, flo
     ui.miniRovPanel->motor_diagram->set_motor_pulses(pulses);
 }
 
-void PixhawkGUI::send_motor_heartbeat() {
+void RovGUI::send_motor_heartbeat() {
     if (ana_esp_thread && ana_armed) ana_esp_thread->set_motors(ana_last_pulses);
     if (mini_esp_thread && mini_armed) mini_esp_thread->set_motors(mini_last_pulses);
 }
 
 // ==================== Ana ROV Bağlantı (ESP32 seri port) ====================
-void PixhawkGUI::toggle_ana_connection() {
-    PixhawkPanel *A = ui.anaRovPanel;
+void RovGUI::toggle_ana_connection() {
+    RovPanel *A = ui.anaRovPanel;
     QString activeStyle = "background-color: #10b981; color: white; border: 2px solid #047857; font-weight: bold; font-size: 13px; border-radius: 4px;";
 
     if (ana_esp_thread) {
@@ -325,24 +326,24 @@ void PixhawkGUI::toggle_ana_connection() {
     QString port = A->port_combo->currentText();
     int baud = A->baud_combo->currentText().toInt();
     ana_esp_thread = new EspRovThread(port, baud, this);
-    connect(ana_esp_thread, &EspRovThread::status_signal, this, &PixhawkGUI::update_ana_status);
-    connect(ana_esp_thread, &EspRovThread::armed_signal,  this, &PixhawkGUI::update_ana_armed);
-    connect(ana_esp_thread, &EspRovThread::attitude_signal, this, &PixhawkGUI::update_ana_attitude);
-    connect(ana_esp_thread, &EspRovThread::depth_signal, this, &PixhawkGUI::update_ana_depth);
+    connect(ana_esp_thread, &EspRovThread::status_signal, this, &RovGUI::update_ana_status);
+    connect(ana_esp_thread, &EspRovThread::armed_signal,  this, &RovGUI::update_ana_armed);
+    connect(ana_esp_thread, &EspRovThread::attitude_signal, this, &RovGUI::update_ana_attitude);
+    connect(ana_esp_thread, &EspRovThread::depth_signal, this, &RovGUI::update_ana_depth);
     ana_esp_thread->start();
     A->btn_connect->setText("Kes");
     A->btn_connect->setStyleSheet(activeStyle);
     log_message("Ana ROV (ESP32) bağlantısı başlatılıyor: " + port, 0);
 }
 
-void PixhawkGUI::update_ana_status(const QString &msg) {
+void RovGUI::update_ana_status(const QString &msg) {
     ui.anaRovPanel->lbl_status->setText("Durum: " + msg);
     log_message("[ANA] " + msg, 0);
 }
 
-void PixhawkGUI::update_ana_armed(bool armed) {
+void RovGUI::update_ana_armed(bool armed) {
     ana_armed = armed;
-    PixhawkPanel *A = ui.anaRovPanel;
+    RovPanel *A = ui.anaRovPanel;
     if (armed) {
         A->btn_stabilize->setText("DISARM Et");
         A->btn_stabilize->setStyleSheet("background-color:#dc2626;color:white;font-weight:bold;border:1px solid #991b1b;border-radius:4px;font-size:16px;");
@@ -354,10 +355,10 @@ void PixhawkGUI::update_ana_armed(bool armed) {
     }
 }
 
-void PixhawkGUI::update_ana_attitude(float roll, float pitch) {
+void RovGUI::update_ana_attitude(float roll, float pitch) {
     ana_roll = roll;
     ana_pitch = pitch;
-    PixhawkPanel *A = ui.anaRovPanel;
+    RovPanel *A = ui.anaRovPanel;
     A->lbl_roll->setText(QString::number(roll, 'f', 1) + "°");
     A->lbl_pitch->setText(QString::number(pitch, 'f', 1) + "°");
     A->attitude_indicator->set_attitude(roll, pitch);
@@ -374,11 +375,11 @@ void PixhawkGUI::update_ana_attitude(float roll, float pitch) {
     }
 }
 
-void PixhawkGUI::update_ana_depth(float meters, float vertical_speed_ms) {
-    PixhawkPanel *A = ui.anaRovPanel;
+void RovGUI::update_ana_depth(float meters, float vertical_speed_ms) {
+    RovPanel *A = ui.anaRovPanel;
     A->lbl_alt->setText(QString::number(meters, 'f', 2));
     // Dikey bar 0-100 araliginda; varsayilan olcek 0-20m'yi tam bara yayar
-    // (bkz. PixhawkPanel.cpp bar_alt->setRange(0,100)). Daha derin calisilacaksa
+    // (bkz. RovPanel.cpp bar_alt->setRange(0,100)). Daha derin calisilacaksa
     // asagidaki 20.0f'i gercek maksimum derinlige gore guncelle.
     int barVal = qBound(0, 100, static_cast<int>(meters / 20.0f * 100.0f));
     A->bar_alt->setValue(barVal);
@@ -389,8 +390,8 @@ void PixhawkGUI::update_ana_depth(float meters, float vertical_speed_ms) {
 }
 
 // ==================== Mini ROV Bağlantı (ESP32 seri port) ====================
-void PixhawkGUI::toggle_mini_connection() {
-    PixhawkPanel *M = ui.miniRovPanel;
+void RovGUI::toggle_mini_connection() {
+    RovPanel *M = ui.miniRovPanel;
     QString activeStyle = "background-color: #10b981; color: white; border: 2px solid #047857; font-weight: bold; font-size: 13px; border-radius: 4px;";
 
     if (mini_esp_thread) {
@@ -410,22 +411,22 @@ void PixhawkGUI::toggle_mini_connection() {
     QString port = M->port_combo->currentText();
     int baud = M->baud_combo->currentText().toInt();
     mini_esp_thread = new EspRovThread(port, baud, this);
-    connect(mini_esp_thread, &EspRovThread::status_signal, this, &PixhawkGUI::update_mini_status);
-    connect(mini_esp_thread, &EspRovThread::armed_signal,  this, &PixhawkGUI::update_mini_armed);
+    connect(mini_esp_thread, &EspRovThread::status_signal, this, &RovGUI::update_mini_status);
+    connect(mini_esp_thread, &EspRovThread::armed_signal,  this, &RovGUI::update_mini_armed);
     mini_esp_thread->start();
     M->btn_connect->setText("Kes");
     M->btn_connect->setStyleSheet(activeStyle);
     log_message("Mini ROV (ESP32) bağlantısı başlatılıyor: " + port, 1);
 }
 
-void PixhawkGUI::update_mini_status(const QString &msg) {
+void RovGUI::update_mini_status(const QString &msg) {
     ui.miniRovPanel->lbl_status->setText("Durum: " + msg);
     log_message("[MİNİ] " + msg, 1);
 }
 
-void PixhawkGUI::update_mini_armed(bool armed) {
+void RovGUI::update_mini_armed(bool armed) {
     mini_armed = armed;
-    PixhawkPanel *M = ui.miniRovPanel;
+    RovPanel *M = ui.miniRovPanel;
     if (armed) {
         M->btn_stabilize->setText("DISARM Et");
         M->btn_stabilize->setStyleSheet("background-color:#dc2626;color:white;font-weight:bold;border:1px solid #991b1b;border-radius:4px;font-size:16px;");
@@ -438,8 +439,8 @@ void PixhawkGUI::update_mini_armed(bool armed) {
 }
 
 // ==================== Joystick ====================
-void PixhawkGUI::toggle_ana_joystick() {
-    PixhawkPanel *A = ui.anaRovPanel;
+void RovGUI::toggle_ana_joystick() {
+    RovPanel *A = ui.anaRovPanel;
     if (ana_joy_thread) {
         ana_joy_thread->stop();
         delete ana_joy_thread;
@@ -457,15 +458,15 @@ void PixhawkGUI::toggle_ana_joystick() {
     }
     QString dev = A->joy_combo->currentText();
     ana_joy_thread = new JoystickThread(dev, this);
-    connect(ana_joy_thread, &JoystickThread::status_signal, this, &PixhawkGUI::update_ana_joy_status);
-    connect(ana_joy_thread, &JoystickThread::button_signal, this, &PixhawkGUI::update_ana_joy_button);
-    connect(ana_joy_thread, &JoystickThread::axis_signal,   this, &PixhawkGUI::update_ana_joy_axis);
+    connect(ana_joy_thread, &JoystickThread::status_signal, this, &RovGUI::update_ana_joy_status);
+    connect(ana_joy_thread, &JoystickThread::button_signal, this, &RovGUI::update_ana_joy_button);
+    connect(ana_joy_thread, &JoystickThread::axis_signal,   this, &RovGUI::update_ana_joy_axis);
     ana_joy_thread->start();
     A->btn_joy_connect->setText("Kes");
 }
 
-void PixhawkGUI::toggle_mini_joystick() {
-    PixhawkPanel *M = ui.miniRovPanel;
+void RovGUI::toggle_mini_joystick() {
+    RovPanel *M = ui.miniRovPanel;
     if (mini_joy_thread) {
         mini_joy_thread->stop();
         delete mini_joy_thread;
@@ -483,14 +484,14 @@ void PixhawkGUI::toggle_mini_joystick() {
     }
     QString dev = M->joy_combo->currentText();
     mini_joy_thread = new JoystickThread(dev, this);
-    connect(mini_joy_thread, &JoystickThread::status_signal, this, &PixhawkGUI::update_mini_joy_status);
-    connect(mini_joy_thread, &JoystickThread::button_signal, this, &PixhawkGUI::update_mini_joy_button);
-    connect(mini_joy_thread, &JoystickThread::axis_signal,   this, &PixhawkGUI::update_mini_joy_axis);
+    connect(mini_joy_thread, &JoystickThread::status_signal, this, &RovGUI::update_mini_joy_status);
+    connect(mini_joy_thread, &JoystickThread::button_signal, this, &RovGUI::update_mini_joy_button);
+    connect(mini_joy_thread, &JoystickThread::axis_signal,   this, &RovGUI::update_mini_joy_axis);
     mini_joy_thread->start();
     M->btn_joy_connect->setText("Kes");
 }
 
-void PixhawkGUI::update_ana_joy_status(const QString &msg) {
+void RovGUI::update_ana_joy_status(const QString &msg) {
     QLabel *lbl = ui.anaRovPanel->lbl_pad_status;
     lbl->setText("Durum: " + msg);
     if (msg.contains("Bağlandı")) {
@@ -501,7 +502,7 @@ void PixhawkGUI::update_ana_joy_status(const QString &msg) {
     log_message("[ANA-KOL] " + msg, 0);
 }
 
-void PixhawkGUI::update_ana_joy_button(int btn_id, int state) {
+void RovGUI::update_ana_joy_button(int btn_id, int state) {
     QString name = button_map.value(btn_id, QString("BTN%1").arg(btn_id));
     if (state) ana_pressed_buttons.insert(name);
     else       ana_pressed_buttons.remove(name);
@@ -525,7 +526,7 @@ void PixhawkGUI::update_ana_joy_button(int btn_id, int state) {
     }
 }
 
-void PixhawkGUI::update_ana_joy_axis(int axis_id, float value) {
+void RovGUI::update_ana_joy_axis(int axis_id, float value) {
     if (axis_id == AXIS_LEFT_X)  ana_axes_state[0] = value;
     if (axis_id == AXIS_LEFT_Y)  ana_axes_state[1] = value;
     if (axis_id == AXIS_RIGHT_X) ana_axes_state[2] = value;
@@ -544,7 +545,7 @@ void PixhawkGUI::update_ana_joy_axis(int axis_id, float value) {
     }
 }
 
-void PixhawkGUI::update_mini_joy_status(const QString &msg) {
+void RovGUI::update_mini_joy_status(const QString &msg) {
     QLabel *lbl = ui.miniRovPanel->lbl_pad_status;
     lbl->setText("Durum: " + msg);
     if (msg.contains("Bağlandı")) {
@@ -555,7 +556,7 @@ void PixhawkGUI::update_mini_joy_status(const QString &msg) {
     log_message("[MİNİ-KOL] " + msg, 1);
 }
 
-void PixhawkGUI::update_mini_joy_button(int btn_id, int state) {
+void RovGUI::update_mini_joy_button(int btn_id, int state) {
     QString name = button_map.value(btn_id, QString("BTN%1").arg(btn_id));
     if (state) mini_pressed_buttons.insert(name);
     else       mini_pressed_buttons.remove(name);
@@ -578,7 +579,7 @@ void PixhawkGUI::update_mini_joy_button(int btn_id, int state) {
     }
 }
 
-void PixhawkGUI::update_mini_joy_axis(int axis_id, float value) {
+void RovGUI::update_mini_joy_axis(int axis_id, float value) {
     if (!minirov_launched) return;
     if (axis_id == AXIS_LEFT_X)  mini_axes_state[0] = value;
     if (axis_id == AXIS_LEFT_Y)  mini_axes_state[1] = value;
@@ -598,32 +599,32 @@ void PixhawkGUI::update_mini_joy_axis(int axis_id, float value) {
 }
 
 // ==================== Kamera Frame ====================
-void PixhawkGUI::update_camera_frame(const QImage &img) {
+void RovGUI::update_camera_frame(const QImage &img) {
     QLabel *lbl = ui.miniRovPanel->lbl_cam_stream;
     lbl->setPixmap(QPixmap::fromImage(img).scaled(lbl->size(),
                                                   Qt::KeepAspectRatio,
                                                   Qt::SmoothTransformation));
 }
 
-void PixhawkGUI::update_camera_status(const QString &msg) {
+void RovGUI::update_camera_status(const QString &msg) {
     log_message("[CAM-MİNİ] " + msg, 1);
 }
 
-void PixhawkGUI::update_camera_stats(int fps, float kbps, int w, int h) {
-    PixhawkPanel *M = ui.miniRovPanel;
+void RovGUI::update_camera_stats(int fps, float kbps, int w, int h) {
+    RovPanel *M = ui.miniRovPanel;
     M->lbl_cam_fps->setText(QString("FPS: %1").arg(fps));
     M->lbl_cam_bitrate->setText(QString("Veri Hızı: %1 KB/s").arg(kbps, 0, 'f', 1));
     M->lbl_cam_res->setText(QString("Çözünürlük: %1x%2").arg(w).arg(h));
 }
 
-void PixhawkGUI::update_anarov_frame(const QImage &img) {
+void RovGUI::update_anarov_frame(const QImage &img) {
     QLabel *lbl = ui.anaRovPanel->lbl_cam_stream;
     lbl->setPixmap(QPixmap::fromImage(img).scaled(lbl->size(),
                                                   Qt::KeepAspectRatio,
                                                   Qt::SmoothTransformation));
 }
 
-void PixhawkGUI::update_anarov_status(const QString &msg) {
+void RovGUI::update_anarov_status(const QString &msg) {
     if (msg.contains("Bağlandı")) {
         ana_cam_connected = true;
     } else if (msg.contains("Koptu") || msg.contains("Hatası")) {
@@ -633,15 +634,15 @@ void PixhawkGUI::update_anarov_status(const QString &msg) {
     log_message("[CAM-ANA] " + msg, 0);
 }
 
-void PixhawkGUI::update_anarov_stats(int fps, float kbps, int w, int h) {
-    PixhawkPanel *A = ui.anaRovPanel;
+void RovGUI::update_anarov_stats(int fps, float kbps, int w, int h) {
+    RovPanel *A = ui.anaRovPanel;
     A->lbl_cam_fps->setText(QString("FPS: %1").arg(fps));
     A->lbl_cam_bitrate->setText(QString("Veri Hızı: %1 KB/s").arg(kbps, 0, 'f', 1));
     A->lbl_cam_res->setText(QString("Çözünürlük: %1x%2").arg(w).arg(h));
 }
 
 // ==================== Ping ====================
-void PixhawkGUI::read_cam_ping() {
+void RovGUI::read_cam_ping() {
     if (!cam_ping_proc) return;
     QByteArray data = cam_ping_proc->readAllStandardOutput();
     QString text = QString::fromUtf8(data);
@@ -651,7 +652,7 @@ void PixhawkGUI::read_cam_ping() {
     }
 }
 
-void PixhawkGUI::read_anarov_ping() {
+void RovGUI::read_anarov_ping() {
     if (!anarov_ping_proc) return;
     QByteArray data = anarov_ping_proc->readAllStandardOutput();
     QString text = QString::fromUtf8(data);
@@ -662,7 +663,7 @@ void PixhawkGUI::read_anarov_ping() {
 }
 
 // ==================== Yön Butonları ====================
-void PixhawkGUI::ana_dir_pressed() {
+void RovGUI::ana_dir_pressed() {
     if (!ana_esp_thread) {
         log_message("[ANA] Önce bağlanın!", 0);
         return;
@@ -673,7 +674,7 @@ void PixhawkGUI::ana_dir_pressed() {
     }
     QPushButton *b = qobject_cast<QPushButton*>(sender());
     if (!b) return;
-    PixhawkPanel *A = ui.anaRovPanel;
+    RovPanel *A = ui.anaRovPanel;
     if      (b == A->btn_forward)    { apply_ana_motor_mix(1, 0, 0, 0);  log_message("[ANA] İleri", 0); }
     else if (b == A->btn_backward)   { apply_ana_motor_mix(-1, 0, 0, 0); log_message("[ANA] Geri", 0); }
     else if (b == A->btn_left)       { apply_ana_motor_mix(0, -1, 0, 0); log_message("[ANA] Sol", 0); }
@@ -684,7 +685,7 @@ void PixhawkGUI::ana_dir_pressed() {
     else if (b == A->btn_turn_right) { apply_ana_motor_mix(0, 0, 1, 0);  log_message("[ANA] Sağa Dön", 0); }
 }
 
-void PixhawkGUI::ana_dir_released() {
+void RovGUI::ana_dir_released() {
     if (!ana_esp_thread) return;
     if (ana_autonomous) return;
     QPushButton *b = qobject_cast<QPushButton*>(sender());
@@ -692,7 +693,7 @@ void PixhawkGUI::ana_dir_released() {
     apply_ana_motor_mix(0, 0, 0, 0);
 }
 
-void PixhawkGUI::mini_dir_pressed() {
+void RovGUI::mini_dir_pressed() {
     if (!mini_esp_thread) {
         log_message("[MİNİ] Önce bağlanın!", 1);
         return;
@@ -703,7 +704,7 @@ void PixhawkGUI::mini_dir_pressed() {
     }
     QPushButton *b = qobject_cast<QPushButton*>(sender());
     if (!b) return;
-    PixhawkPanel *M = ui.miniRovPanel;
+    RovPanel *M = ui.miniRovPanel;
     if      (b == M->btn_forward)    { apply_mini_motor_mix(1, 0, 0, 0);  log_message("[MİNİ] İleri", 1); }
     else if (b == M->btn_backward)   { apply_mini_motor_mix(-1, 0, 0, 0); log_message("[MİNİ] Geri", 1); }
     else if (b == M->btn_left)       { apply_mini_motor_mix(0, -1, 0, 0); log_message("[MİNİ] Sol", 1); }
@@ -714,7 +715,7 @@ void PixhawkGUI::mini_dir_pressed() {
     else if (b == M->btn_turn_right) { apply_mini_motor_mix(0, 0, 1, 0);  log_message("[MİNİ] Sağa Dön", 1); }
 }
 
-void PixhawkGUI::mini_dir_released() {
+void RovGUI::mini_dir_released() {
     if (!mini_esp_thread) return;
     if (!minirov_launched) return;
     QPushButton *b = qobject_cast<QPushButton*>(sender());
@@ -723,21 +724,21 @@ void PixhawkGUI::mini_dir_released() {
 }
 
 // ==================== Hızlı Komutlar ====================
-void PixhawkGUI::on_emergency_ana() {
+void RovGUI::on_emergency_ana() {
     apply_ana_motor_mix(0, 0, 0, 0);
     if (ana_esp_thread) ana_esp_thread->disarm();
     log_message("[ANA] ACİL DURDURMA tetiklendi! DISARM gönderildi.", 0);
     show_screen_warning("ANA ROV: ACİL DURDURMA tetiklendi! Motorlar sıfırlandı, DISARM gönderildi.");
 }
 
-void PixhawkGUI::on_emergency_mini() {
+void RovGUI::on_emergency_mini() {
     apply_mini_motor_mix(0, 0, 0, 0);
     if (mini_esp_thread) mini_esp_thread->disarm();
     log_message("[MİNİ] ACİL DURDURMA tetiklendi! DISARM gönderildi.", 1);
     show_screen_warning("MİNİ ROV: ACİL DURDURMA tetiklendi! Motorlar sıfırlandı, DISARM gönderildi.");
 }
 
-void PixhawkGUI::on_stabilize_ana() {
+void RovGUI::on_stabilize_ana() {
     if (!ana_esp_thread) {
         log_message("[ANA] Önce bağlanın!", 0);
         return;
@@ -751,7 +752,7 @@ void PixhawkGUI::on_stabilize_ana() {
     }
 }
 
-void PixhawkGUI::on_stabilize_mini() {
+void RovGUI::on_stabilize_mini() {
     if (!mini_esp_thread) {
         log_message("[MİNİ] Önce bağlanın!", 1);
         return;
@@ -765,7 +766,7 @@ void PixhawkGUI::on_stabilize_mini() {
     }
 }
 
-void PixhawkGUI::on_autonomous_ana() {
+void RovGUI::on_autonomous_ana() {
     if (!ana_cam_connected) {
         log_message("[ANA] Kamera bağlı değil, otonom moda geçilemez!", 0);
         show_screen_warning("Kamera bağlı değil! Otonom moda geçilemez.");
@@ -782,14 +783,14 @@ void PixhawkGUI::on_autonomous_ana() {
     log_message("[ANA] Otonom moda geçildi", 0);
 }
 
-void PixhawkGUI::on_manual_ana() {
+void RovGUI::on_manual_ana() {
     ana_autonomous = false;
     set_led(ui.anaRovPanel->led_manual, true);
     set_led(ui.anaRovPanel->led_autonomous, false);
     log_message("[ANA] Manuel moda geçildi", 0);
 }
 
-void PixhawkGUI::toggle_stabilize_mode_ana() {
+void RovGUI::toggle_stabilize_mode_ana() {
     ana_stabilize = !ana_stabilize;
     QLabel *lbl = ui.anaRovPanel->lbl_stabilize_status;
     if (ana_stabilize) {
@@ -818,13 +819,13 @@ void PixhawkGUI::toggle_stabilize_mode_ana() {
     }
 }
 
-void PixhawkGUI::on_minirov_launch() {
+void RovGUI::on_minirov_launch() {
     minirov_launched = true;
     set_led(ui.anaRovPanel->led_minirov, true);
     log_message("[ANA] MiniROV Bırakıldı! (not: ayrı bırakma donanımı bu ESP32 kartında tanımlı değil, sadece arayüz durumu güncellendi)", 0);
 }
 
-void PixhawkGUI::on_torpedo_fire() {
+void RovGUI::on_torpedo_fire() {
     if (torpedo_ready) {
         torpedo_ready = false;
         set_led(ui.anaRovPanel->led_torpedo, true); // Active state (Green)
@@ -842,7 +843,7 @@ void PixhawkGUI::on_torpedo_fire() {
     }
 }
 
-void PixhawkGUI::on_lamp_on_ana() {
+void RovGUI::on_lamp_on_ana() {
     ana_lamp_on = true;
     set_led(ui.anaRovPanel->led_lamp_on, true);
     set_led(ui.anaRovPanel->led_lamp_off, false);
@@ -851,7 +852,7 @@ void PixhawkGUI::on_lamp_on_ana() {
     log_message("[ANA] Lamba Açıldı (not: ayrı lamba çıkışı bu ESP32 kartında tanımlı değil, sadece arayüz durumu)", 0);
 }
 
-void PixhawkGUI::on_lamp_off_ana() {
+void RovGUI::on_lamp_off_ana() {
     ana_lamp_on = false;
     set_led(ui.anaRovPanel->led_lamp_on, false);
     set_led(ui.anaRovPanel->led_lamp_off, true);
@@ -860,7 +861,7 @@ void PixhawkGUI::on_lamp_off_ana() {
     log_message("[ANA] Lamba Kapatıldı", 0);
 }
 
-void PixhawkGUI::on_lamp_on_mini() {
+void RovGUI::on_lamp_on_mini() {
     mini_lamp_on = true;
     set_led(ui.miniRovPanel->led_lamp_on, true);
     set_led(ui.miniRovPanel->led_lamp_off, false);
@@ -869,7 +870,7 @@ void PixhawkGUI::on_lamp_on_mini() {
     log_message("[MİNİ] Lamba Açıldı (not: ayrı lamba çıkışı bu ESP32 kartında tanımlı değil, sadece arayüz durumu)", 1);
 }
 
-void PixhawkGUI::on_lamp_off_mini() {
+void RovGUI::on_lamp_off_mini() {
     mini_lamp_on = false;
     set_led(ui.miniRovPanel->led_lamp_on, false);
     set_led(ui.miniRovPanel->led_lamp_off, true);
@@ -879,7 +880,7 @@ void PixhawkGUI::on_lamp_off_mini() {
 }
 
 // ==================== Yardımcılar ====================
-void PixhawkGUI::reset_labels(PixhawkPanel *panel) {
+void RovGUI::reset_labels(RovPanel *panel) {
     panel->lbl_roll->setText("---");
     panel->lbl_pitch->setText("---");
     panel->lbl_yaw->setText("---");
@@ -892,7 +893,7 @@ void PixhawkGUI::reset_labels(PixhawkPanel *panel) {
     panel->bar_alt->setValue(0);
 }
 
-void PixhawkGUI::set_led(QLabel *led, bool on) {
+void RovGUI::set_led(QLabel *led, bool on) {
     if (!led) return;
 
     bool isGreen = led->property("isGreen").toBool();
@@ -928,7 +929,7 @@ void PixhawkGUI::set_led(QLabel *led, bool on) {
     }
 
     // Dynamically style the corresponding button for feedback
-    PixhawkPanel *panel = nullptr;
+    RovPanel *panel = nullptr;
     if (led == ui.anaRovPanel->led_autonomous || led == ui.anaRovPanel->led_manual ||
         led == ui.anaRovPanel->led_minirov || led == ui.anaRovPanel->led_torpedo ||
         led == ui.anaRovPanel->led_lamp_on || led == ui.anaRovPanel->led_lamp_off) {
@@ -968,7 +969,7 @@ void PixhawkGUI::set_led(QLabel *led, bool on) {
     }
 }
 
-void PixhawkGUI::toggle_theme() {
+void RovGUI::toggle_theme() {
     dark_mode = !dark_mode;
     ui.apply_styles(this, dark_mode);
     ui.apply_styles(centralWidget(), dark_mode);

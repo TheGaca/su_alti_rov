@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QFile>
 #include <QScreen>
-#include "PixhawkGUI.hpp"
+#include "RovGUI.hpp"
 #include <cstdlib>
 
 int main(int argc, char *argv[]) {
@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
     app.setApplicationName("Su Altı ROV Kontrol");
     app.setOrganizationName("ROV Team");
 
-    PixhawkGUI window;
+    RovGUI window;
 
     // showFullScreen() bazi pencere yoneticilerinde/masaustu ortamlarinda
     // (WM'nin _NET_WM_STATE_FULLSCREEN'i tam desteklememesi/gormezden

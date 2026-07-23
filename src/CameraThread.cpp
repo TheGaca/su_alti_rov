@@ -21,14 +21,23 @@ void CameraThread::run() {
     int bytes_count = 0;
     double start_time = QDateTime::currentMSecsSinceEpoch() / 1000.0;
 
+    bool connectedNotified = false;
+
     auto connectStream = [&]() {
         buffer.clear();
+        connectedNotified = false;
         QNetworkRequest request(QUrl(QString("http://%1/stream").arg(ipAddr)));
         request.setAttribute(QNetworkRequest::HttpPipeliningAllowedAttribute, true);
         reply = manager.get(request);
 
         QObject::connect(reply, &QNetworkReply::readyRead, [&]() {
-            emit status_signal("Kamera Bağlandı!");
+            // readyRead her yeni veri parcasinda (pratikte her karede, saniyede
+            // onlarca kez) tetiklenir; "Baglandi" durumunu sadece ilk seferinde
+            // bildiriyoruz, yoksa log ekrani ayni mesajla dolup taşiyor.
+            if (!connectedNotified) {
+                connectedNotified = true;
+                emit status_signal("Kamera Bağlandı!");
+            }
             if (!reply) return;
 
             QByteArray chunk = reply->readAll();

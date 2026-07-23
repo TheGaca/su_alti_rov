@@ -1,5 +1,5 @@
 /****************************************************************************
-** Meta object code from reading C++ file 'PixhawkPanel.hpp'
+** Meta object code from reading C++ file 'RovPanel.hpp'
 **
 ** Created by: The Qt Meta Object Compiler version 67 (Qt 5.15.13)
 **
@@ -7,11 +7,11 @@
 *****************************************************************************/
 
 #include <memory>
-#include "../../../include/PixhawkPanel.hpp"
+#include "../../../include/RovPanel.hpp"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)
-#error "The header file 'PixhawkPanel.hpp' doesn't include <QObject>."
+#error "The header file 'RovPanel.hpp' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
 #error "This file was generated using the moc from 5.15.13. It"
 #error "cannot be used with the include files from this version of Qt."
@@ -21,25 +21,25 @@
 QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
-struct qt_meta_stringdata_PixhawkPanel_t {
+struct qt_meta_stringdata_RovPanel_t {
     QByteArrayData data[1];
-    char stringdata0[13];
+    char stringdata0[9];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_PixhawkPanel_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_RovPanel_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_PixhawkPanel_t qt_meta_stringdata_PixhawkPanel = {
+static const qt_meta_stringdata_RovPanel_t qt_meta_stringdata_RovPanel = {
     {
-QT_MOC_LITERAL(0, 0, 12) // "PixhawkPanel"
+QT_MOC_LITERAL(0, 0, 8) // "RovPanel"
 
     },
-    "PixhawkPanel"
+    "RovPanel"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_PixhawkPanel[] = {
+static const uint qt_meta_data_RovPanel[] = {
 
  // content:
        8,       // revision
@@ -55,7 +55,7 @@ static const uint qt_meta_data_PixhawkPanel[] = {
        0        // eod
 };
 
-void PixhawkPanel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void RovPanel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     (void)_o;
     (void)_id;
@@ -63,30 +63,30 @@ void PixhawkPanel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
     (void)_a;
 }
 
-QT_INIT_METAOBJECT const QMetaObject PixhawkPanel::staticMetaObject = { {
+QT_INIT_METAOBJECT const QMetaObject RovPanel::staticMetaObject = { {
     QMetaObject::SuperData::link<QWidget::staticMetaObject>(),
-    qt_meta_stringdata_PixhawkPanel.data,
-    qt_meta_data_PixhawkPanel,
+    qt_meta_stringdata_RovPanel.data,
+    qt_meta_data_RovPanel,
     qt_static_metacall,
     nullptr,
     nullptr
 } };
 
 
-const QMetaObject *PixhawkPanel::metaObject() const
+const QMetaObject *RovPanel::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *PixhawkPanel::qt_metacast(const char *_clname)
+void *RovPanel::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_PixhawkPanel.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_RovPanel.stringdata0))
         return static_cast<void*>(this);
     return QWidget::qt_metacast(_clname);
 }
 
-int PixhawkPanel::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int RovPanel::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QWidget::qt_metacall(_c, _id, _a);
     return _id;

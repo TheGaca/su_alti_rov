@@ -49,46 +49,6 @@ static const char *_STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %
 httpd_handle_t stream_httpd = NULL;
 httpd_handle_t camera_httpd = NULL;
 
-typedef struct {
-  size_t size;   //number of values used for filtering
-  size_t index;  //current value index
-  size_t count;  //value count
-  int sum;
-  int *values;  //array to be filled with values
-} ra_filter_t;
-
-static ra_filter_t ra_filter;
-
-static ra_filter_t *ra_filter_init(ra_filter_t *filter, size_t sample_size) {
-  memset(filter, 0, sizeof(ra_filter_t));
-
-  filter->values = (int *)malloc(sample_size * sizeof(int));
-  if (!filter->values) {
-    return NULL;
-  }
-  memset(filter->values, 0, sample_size * sizeof(int));
-
-  filter->size = sample_size;
-  return filter;
-}
-
-#if ARDUHAL_LOG_LEVEL >= ARDUHAL_LOG_LEVEL_INFO
-static int ra_filter_run(ra_filter_t *filter, int value) {
-  if (!filter->values) {
-    return value;
-  }
-  filter->sum -= filter->values[filter->index];
-  filter->values[filter->index] = value;
-  filter->sum += filter->values[filter->index];
-  filter->index++;
-  filter->index = filter->index % filter->size;
-  if (filter->count < filter->size) {
-    filter->count++;
-  }
-  return filter->sum / filter->count;
-}
-#endif
-
 #if defined(LED_GPIO_NUM)
 void enable_led(bool en) {  // Turn LED On or Off
   int duty = en ? led_duty : 0;
@@ -217,11 +177,6 @@ static esp_err_t stream_handler(httpd_req_t *req) {
   uint8_t *_jpg_buf = NULL;
   char *part_buf[128];
 
-  static int64_t last_frame = 0;
-  if (!last_frame) {
-    last_frame = esp_timer_get_time();
-  }
-
   res = httpd_resp_set_type(req, _STREAM_CONTENT_TYPE);
   if (res != ESP_OK) {
     return res;
@@ -278,19 +233,8 @@ static esp_err_t stream_handler(httpd_req_t *req) {
       log_e("Send frame failed");
       break;
     }
-    int64_t fr_end = esp_timer_get_time();
-
-    int64_t frame_time = fr_end - last_frame;
-    last_frame = fr_end;
-
-    frame_time /= 1000;
-#if ARDUHAL_LOG_LEVEL >= ARDUHAL_LOG_LEVEL_INFO
-    uint32_t avg_frame_time = ra_filter_run(&ra_filter, frame_time);
-#endif
-    log_i(
-      "MJPG: %" PRIu32 "B %" PRId32 "ms (%.1ffps), AVG: %" PRIu32 "ms (%.1ffps)", (uint32_t)_jpg_buf_len, (int32_t)frame_time, 1000.0 / frame_time,
-      avg_frame_time, 1000.0 / avg_frame_time
-    );
+    // Not: her karede fps/sure logu (log_i) burada kasten yok - streaming
+    // sirasinda saniyede 15-30 kez Serial'a yazip log kirliligine yol aciyordu.
   }
 
 #if defined(LED_GPIO_NUM)
@@ -818,8 +762,6 @@ void startCameraServer() {
     .supported_subprotocol = NULL
 #endif
   };
-
-  ra_filter_init(&ra_filter, 20);
 
   log_i("Starting web server on port: '%u'", config.server_port);
   if (httpd_start(&camera_httpd, &config) == ESP_OK) {

@@ -295,7 +295,7 @@ CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qabstractbutton.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qicon.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
- /home/lagaca/Desktop/su_alti_rov/include/PixhawkPanel.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/RovPanel.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGridLayout \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgridlayout.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLabel \

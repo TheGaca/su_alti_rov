@@ -6,7 +6,7 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 
-#include "PixhawkPanel.hpp"
+#include "RovPanel.hpp"
 
 class Ui_MainWindow {
 public:
@@ -14,8 +14,8 @@ public:
     QVBoxLayout *main_layout;
 
     QHBoxLayout *panels_layout;
-    PixhawkPanel *anaRovPanel;
-    PixhawkPanel *miniRovPanel;
+    RovPanel *anaRovPanel;
+    RovPanel *miniRovPanel;
     QPushButton *btn_theme;
 
     void setupUi(QWidget *MainWindow);

@@ -1,5 +1,5 @@
-#ifndef PIXHAWKGUI_H
-#define PIXHAWKGUI_H
+#ifndef ROVGUI_H
+#define ROVGUI_H
 
 #include <QMainWindow>
 #include <QSet>
@@ -14,13 +14,12 @@
 #include "EspRovThread.hpp"
 #include "JoystickThread.hpp"
 #include "CameraThread.hpp"
-#include "AnaRovThread.hpp"
 
-class PixhawkGUI : public QMainWindow {
+class RovGUI : public QMainWindow {
     Q_OBJECT
 public:
-    explicit PixhawkGUI(QWidget *parent = nullptr);
-    ~PixhawkGUI();
+    explicit RovGUI(QWidget *parent = nullptr);
+    ~RovGUI();
 
     void log_message(const QString &msg, int target = -1); // 0: Ana, 1: Mini, -1: Her ikisi
     void show_screen_warning(const QString &msg); // Ekrani engellemeyen, kendiliginden kapanan uyari
@@ -96,7 +95,7 @@ private slots:
 private:
     void connect_signals();
     void start_camera_threads();
-    void reset_labels(PixhawkPanel *panel);
+    void reset_labels(RovPanel *panel);
     void set_led(QLabel *led, bool on);
 
     // ESP32 8 motor karisimi: surge (ileri+), lateral (sag+), yaw (saga don+),
@@ -116,7 +115,7 @@ private:
     JoystickThread *ana_joy_thread;
     JoystickThread *mini_joy_thread;
     CameraThread *cam_thread;       // MiniROV kamera (MJPEG)
-    AnaRovThread *anarov_thread;    // AnaROV kamera (WebSocket)
+    CameraThread *anarov_thread;    // AnaROV kamera (MJPEG @ AnaRov.ino)
 
     // Joystick durum: [0]=Sol Stick X, [1]=Sol Stick Y, [2]=Sağ Stick X, [3]=Sağ Stick Y
     QMap<int, QString> button_map;
@@ -158,4 +157,4 @@ private:
     QTextStream *log_stream;
 };
 
-#endif // PIXHAWKGUI_H
+#endif // ROVGUI_H

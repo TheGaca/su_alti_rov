@@ -1,5 +1,5 @@
-#ifndef PIXHAWKPANEL_H
-#define PIXHAWKPANEL_H
+#ifndef ROVPANEL_H
+#define ROVPANEL_H
 
 #include <QWidget>
 #include <QVBoxLayout>
@@ -17,11 +17,11 @@
 #include "MotorDiagramWidget.hpp"
 
 // Tek bir ROV (Ana ya da Mini) icin tum panel
-class PixhawkPanel : public QWidget {
+class RovPanel : public QWidget {
     Q_OBJECT
 public:
-    explicit PixhawkPanel(const QString &title, QWidget *parent = nullptr);
-    explicit PixhawkPanel(const QString &title, bool mini, QWidget *parent = nullptr);
+    explicit RovPanel(const QString &title, QWidget *parent = nullptr);
+    explicit RovPanel(const QString &title, bool mini, QWidget *parent = nullptr);
     // Note: mini flag indicates Mini ROV panel
     bool isMini = false;
 
@@ -123,4 +123,4 @@ public:
     QTextEdit *terminal_log;
 };
 
-#endif // PIXHAWKPANEL_H
+#endif // ROVPANEL_H

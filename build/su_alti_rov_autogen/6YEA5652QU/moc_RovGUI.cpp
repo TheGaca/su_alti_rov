@@ -1,5 +1,5 @@
 /****************************************************************************
-** Meta object code from reading C++ file 'PixhawkGUI.hpp'
+** Meta object code from reading C++ file 'RovGUI.hpp'
 **
 ** Created by: The Qt Meta Object Compiler version 67 (Qt 5.15.13)
 **
@@ -7,11 +7,11 @@
 *****************************************************************************/
 
 #include <memory>
-#include "../../../include/PixhawkGUI.hpp"
+#include "../../../include/RovGUI.hpp"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)
-#error "The header file 'PixhawkGUI.hpp' doesn't include <QObject>."
+#error "The header file 'RovGUI.hpp' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
 #error "This file was generated using the moc from 5.15.13. It"
 #error "cannot be used with the include files from this version of Qt."
@@ -21,80 +21,80 @@
 QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
-struct qt_meta_stringdata_PixhawkGUI_t {
+struct qt_meta_stringdata_RovGUI_t {
     QByteArrayData data[60];
-    char stringdata0[909];
+    char stringdata0[905];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_PixhawkGUI_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_RovGUI_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_PixhawkGUI_t qt_meta_stringdata_PixhawkGUI = {
+static const qt_meta_stringdata_RovGUI_t qt_meta_stringdata_RovGUI = {
     {
-QT_MOC_LITERAL(0, 0, 10), // "PixhawkGUI"
-QT_MOC_LITERAL(1, 11, 21), // "toggle_ana_connection"
-QT_MOC_LITERAL(2, 33, 0), // ""
-QT_MOC_LITERAL(3, 34, 17), // "update_ana_status"
-QT_MOC_LITERAL(4, 52, 3), // "msg"
-QT_MOC_LITERAL(5, 56, 16), // "update_ana_armed"
-QT_MOC_LITERAL(6, 73, 5), // "armed"
-QT_MOC_LITERAL(7, 79, 19), // "update_ana_attitude"
-QT_MOC_LITERAL(8, 99, 4), // "roll"
-QT_MOC_LITERAL(9, 104, 5), // "pitch"
-QT_MOC_LITERAL(10, 110, 16), // "update_ana_depth"
-QT_MOC_LITERAL(11, 127, 6), // "meters"
-QT_MOC_LITERAL(12, 134, 17), // "vertical_speed_ms"
-QT_MOC_LITERAL(13, 152, 22), // "toggle_mini_connection"
-QT_MOC_LITERAL(14, 175, 18), // "update_mini_status"
-QT_MOC_LITERAL(15, 194, 17), // "update_mini_armed"
-QT_MOC_LITERAL(16, 212, 19), // "toggle_ana_joystick"
-QT_MOC_LITERAL(17, 232, 20), // "toggle_mini_joystick"
-QT_MOC_LITERAL(18, 253, 21), // "update_ana_joy_status"
-QT_MOC_LITERAL(19, 275, 21), // "update_ana_joy_button"
-QT_MOC_LITERAL(20, 297, 6), // "btn_id"
-QT_MOC_LITERAL(21, 304, 5), // "state"
-QT_MOC_LITERAL(22, 310, 19), // "update_ana_joy_axis"
-QT_MOC_LITERAL(23, 330, 7), // "axis_id"
-QT_MOC_LITERAL(24, 338, 5), // "value"
-QT_MOC_LITERAL(25, 344, 22), // "update_mini_joy_status"
-QT_MOC_LITERAL(26, 367, 22), // "update_mini_joy_button"
-QT_MOC_LITERAL(27, 390, 20), // "update_mini_joy_axis"
-QT_MOC_LITERAL(28, 411, 19), // "update_camera_frame"
-QT_MOC_LITERAL(29, 431, 3), // "img"
-QT_MOC_LITERAL(30, 435, 20), // "update_camera_status"
-QT_MOC_LITERAL(31, 456, 19), // "update_camera_stats"
-QT_MOC_LITERAL(32, 476, 3), // "fps"
-QT_MOC_LITERAL(33, 480, 4), // "kbps"
-QT_MOC_LITERAL(34, 485, 1), // "w"
-QT_MOC_LITERAL(35, 487, 1), // "h"
-QT_MOC_LITERAL(36, 489, 19), // "update_anarov_frame"
-QT_MOC_LITERAL(37, 509, 20), // "update_anarov_status"
-QT_MOC_LITERAL(38, 530, 19), // "update_anarov_stats"
-QT_MOC_LITERAL(39, 550, 13), // "read_cam_ping"
-QT_MOC_LITERAL(40, 564, 16), // "read_anarov_ping"
-QT_MOC_LITERAL(41, 581, 15), // "ana_dir_pressed"
-QT_MOC_LITERAL(42, 597, 16), // "ana_dir_released"
-QT_MOC_LITERAL(43, 614, 16), // "mini_dir_pressed"
-QT_MOC_LITERAL(44, 631, 17), // "mini_dir_released"
-QT_MOC_LITERAL(45, 649, 20), // "send_motor_heartbeat"
-QT_MOC_LITERAL(46, 670, 16), // "on_emergency_ana"
-QT_MOC_LITERAL(47, 687, 17), // "on_emergency_mini"
-QT_MOC_LITERAL(48, 705, 16), // "on_stabilize_ana"
-QT_MOC_LITERAL(49, 722, 17), // "on_stabilize_mini"
-QT_MOC_LITERAL(50, 740, 17), // "on_autonomous_ana"
-QT_MOC_LITERAL(51, 758, 13), // "on_manual_ana"
-QT_MOC_LITERAL(52, 772, 17), // "on_minirov_launch"
-QT_MOC_LITERAL(53, 790, 15), // "on_torpedo_fire"
-QT_MOC_LITERAL(54, 806, 14), // "on_lamp_on_ana"
-QT_MOC_LITERAL(55, 821, 15), // "on_lamp_off_ana"
-QT_MOC_LITERAL(56, 837, 15), // "on_lamp_on_mini"
-QT_MOC_LITERAL(57, 853, 16), // "on_lamp_off_mini"
-QT_MOC_LITERAL(58, 870, 12), // "toggle_theme"
-QT_MOC_LITERAL(59, 883, 25) // "toggle_stabilize_mode_ana"
+QT_MOC_LITERAL(0, 0, 6), // "RovGUI"
+QT_MOC_LITERAL(1, 7, 21), // "toggle_ana_connection"
+QT_MOC_LITERAL(2, 29, 0), // ""
+QT_MOC_LITERAL(3, 30, 17), // "update_ana_status"
+QT_MOC_LITERAL(4, 48, 3), // "msg"
+QT_MOC_LITERAL(5, 52, 16), // "update_ana_armed"
+QT_MOC_LITERAL(6, 69, 5), // "armed"
+QT_MOC_LITERAL(7, 75, 19), // "update_ana_attitude"
+QT_MOC_LITERAL(8, 95, 4), // "roll"
+QT_MOC_LITERAL(9, 100, 5), // "pitch"
+QT_MOC_LITERAL(10, 106, 16), // "update_ana_depth"
+QT_MOC_LITERAL(11, 123, 6), // "meters"
+QT_MOC_LITERAL(12, 130, 17), // "vertical_speed_ms"
+QT_MOC_LITERAL(13, 148, 22), // "toggle_mini_connection"
+QT_MOC_LITERAL(14, 171, 18), // "update_mini_status"
+QT_MOC_LITERAL(15, 190, 17), // "update_mini_armed"
+QT_MOC_LITERAL(16, 208, 19), // "toggle_ana_joystick"
+QT_MOC_LITERAL(17, 228, 20), // "toggle_mini_joystick"
+QT_MOC_LITERAL(18, 249, 21), // "update_ana_joy_status"
+QT_MOC_LITERAL(19, 271, 21), // "update_ana_joy_button"
+QT_MOC_LITERAL(20, 293, 6), // "btn_id"
+QT_MOC_LITERAL(21, 300, 5), // "state"
+QT_MOC_LITERAL(22, 306, 19), // "update_ana_joy_axis"
+QT_MOC_LITERAL(23, 326, 7), // "axis_id"
+QT_MOC_LITERAL(24, 334, 5), // "value"
+QT_MOC_LITERAL(25, 340, 22), // "update_mini_joy_status"
+QT_MOC_LITERAL(26, 363, 22), // "update_mini_joy_button"
+QT_MOC_LITERAL(27, 386, 20), // "update_mini_joy_axis"
+QT_MOC_LITERAL(28, 407, 19), // "update_camera_frame"
+QT_MOC_LITERAL(29, 427, 3), // "img"
+QT_MOC_LITERAL(30, 431, 20), // "update_camera_status"
+QT_MOC_LITERAL(31, 452, 19), // "update_camera_stats"
+QT_MOC_LITERAL(32, 472, 3), // "fps"
+QT_MOC_LITERAL(33, 476, 4), // "kbps"
+QT_MOC_LITERAL(34, 481, 1), // "w"
+QT_MOC_LITERAL(35, 483, 1), // "h"
+QT_MOC_LITERAL(36, 485, 19), // "update_anarov_frame"
+QT_MOC_LITERAL(37, 505, 20), // "update_anarov_status"
+QT_MOC_LITERAL(38, 526, 19), // "update_anarov_stats"
+QT_MOC_LITERAL(39, 546, 13), // "read_cam_ping"
+QT_MOC_LITERAL(40, 560, 16), // "read_anarov_ping"
+QT_MOC_LITERAL(41, 577, 15), // "ana_dir_pressed"
+QT_MOC_LITERAL(42, 593, 16), // "ana_dir_released"
+QT_MOC_LITERAL(43, 610, 16), // "mini_dir_pressed"
+QT_MOC_LITERAL(44, 627, 17), // "mini_dir_released"
+QT_MOC_LITERAL(45, 645, 20), // "send_motor_heartbeat"
+QT_MOC_LITERAL(46, 666, 16), // "on_emergency_ana"
+QT_MOC_LITERAL(47, 683, 17), // "on_emergency_mini"
+QT_MOC_LITERAL(48, 701, 16), // "on_stabilize_ana"
+QT_MOC_LITERAL(49, 718, 17), // "on_stabilize_mini"
+QT_MOC_LITERAL(50, 736, 17), // "on_autonomous_ana"
+QT_MOC_LITERAL(51, 754, 13), // "on_manual_ana"
+QT_MOC_LITERAL(52, 768, 17), // "on_minirov_launch"
+QT_MOC_LITERAL(53, 786, 15), // "on_torpedo_fire"
+QT_MOC_LITERAL(54, 802, 14), // "on_lamp_on_ana"
+QT_MOC_LITERAL(55, 817, 15), // "on_lamp_off_ana"
+QT_MOC_LITERAL(56, 833, 15), // "on_lamp_on_mini"
+QT_MOC_LITERAL(57, 849, 16), // "on_lamp_off_mini"
+QT_MOC_LITERAL(58, 866, 12), // "toggle_theme"
+QT_MOC_LITERAL(59, 879, 25) // "toggle_stabilize_mode_ana"
 
     },
-    "PixhawkGUI\0toggle_ana_connection\0\0"
+    "RovGUI\0toggle_ana_connection\0\0"
     "update_ana_status\0msg\0update_ana_armed\0"
     "armed\0update_ana_attitude\0roll\0pitch\0"
     "update_ana_depth\0meters\0vertical_speed_ms\0"
@@ -122,7 +122,7 @@ QT_MOC_LITERAL(59, 883, 25) // "toggle_stabilize_mode_ana"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_PixhawkGUI[] = {
+static const uint qt_meta_data_RovGUI[] = {
 
  // content:
        8,       // revision
@@ -228,10 +228,10 @@ static const uint qt_meta_data_PixhawkGUI[] = {
        0        // eod
 };
 
-void PixhawkGUI::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void RovGUI::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
-        auto *_t = static_cast<PixhawkGUI *>(_o);
+        auto *_t = static_cast<RovGUI *>(_o);
         (void)_t;
         switch (_id) {
         case 0: _t->toggle_ana_connection(); break;
@@ -282,30 +282,30 @@ void PixhawkGUI::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
     }
 }
 
-QT_INIT_METAOBJECT const QMetaObject PixhawkGUI::staticMetaObject = { {
+QT_INIT_METAOBJECT const QMetaObject RovGUI::staticMetaObject = { {
     QMetaObject::SuperData::link<QMainWindow::staticMetaObject>(),
-    qt_meta_stringdata_PixhawkGUI.data,
-    qt_meta_data_PixhawkGUI,
+    qt_meta_stringdata_RovGUI.data,
+    qt_meta_data_RovGUI,
     qt_static_metacall,
     nullptr,
     nullptr
 } };
 
 
-const QMetaObject *PixhawkGUI::metaObject() const
+const QMetaObject *RovGUI::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *PixhawkGUI::qt_metacast(const char *_clname)
+void *RovGUI::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_PixhawkGUI.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_RovGUI.stringdata0))
         return static_cast<void*>(this);
     return QMainWindow::qt_metacast(_clname);
 }
 
-int PixhawkGUI::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int RovGUI::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QMainWindow::qt_metacall(_c, _id, _a);
     if (_id < 0)

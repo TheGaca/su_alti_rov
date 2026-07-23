@@ -155,30 +155,6 @@ su_alti_rov_autogen/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov_autogen.dir/build.make CMakeFiles/su_alti_rov_autogen.dir/build
 .PHONY : su_alti_rov_autogen/fast
 
-src/AnaRovThread.o: src/AnaRovThread.cpp.o
-.PHONY : src/AnaRovThread.o
-
-# target to build an object file
-src/AnaRovThread.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o
-.PHONY : src/AnaRovThread.cpp.o
-
-src/AnaRovThread.i: src/AnaRovThread.cpp.i
-.PHONY : src/AnaRovThread.i
-
-# target to preprocess a source file
-src/AnaRovThread.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.i
-.PHONY : src/AnaRovThread.cpp.i
-
-src/AnaRovThread.s: src/AnaRovThread.cpp.s
-.PHONY : src/AnaRovThread.s
-
-# target to generate assembly for a file
-src/AnaRovThread.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.s
-.PHONY : src/AnaRovThread.cpp.s
-
 src/AttitudeIndicator.o: src/AttitudeIndicator.cpp.o
 .PHONY : src/AttitudeIndicator.o
 
@@ -323,53 +299,53 @@ src/MotorDiagramWidget.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.s
 .PHONY : src/MotorDiagramWidget.cpp.s
 
-src/PixhawkGUI.o: src/PixhawkGUI.cpp.o
-.PHONY : src/PixhawkGUI.o
+src/RovGUI.o: src/RovGUI.cpp.o
+.PHONY : src/RovGUI.o
 
 # target to build an object file
-src/PixhawkGUI.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o
-.PHONY : src/PixhawkGUI.cpp.o
+src/RovGUI.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.o
+.PHONY : src/RovGUI.cpp.o
 
-src/PixhawkGUI.i: src/PixhawkGUI.cpp.i
-.PHONY : src/PixhawkGUI.i
+src/RovGUI.i: src/RovGUI.cpp.i
+.PHONY : src/RovGUI.i
 
 # target to preprocess a source file
-src/PixhawkGUI.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.i
-.PHONY : src/PixhawkGUI.cpp.i
+src/RovGUI.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.i
+.PHONY : src/RovGUI.cpp.i
 
-src/PixhawkGUI.s: src/PixhawkGUI.cpp.s
-.PHONY : src/PixhawkGUI.s
+src/RovGUI.s: src/RovGUI.cpp.s
+.PHONY : src/RovGUI.s
 
 # target to generate assembly for a file
-src/PixhawkGUI.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.s
-.PHONY : src/PixhawkGUI.cpp.s
+src/RovGUI.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.s
+.PHONY : src/RovGUI.cpp.s
 
-src/PixhawkPanel.o: src/PixhawkPanel.cpp.o
-.PHONY : src/PixhawkPanel.o
+src/RovPanel.o: src/RovPanel.cpp.o
+.PHONY : src/RovPanel.o
 
 # target to build an object file
-src/PixhawkPanel.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o
-.PHONY : src/PixhawkPanel.cpp.o
+src/RovPanel.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.o
+.PHONY : src/RovPanel.cpp.o
 
-src/PixhawkPanel.i: src/PixhawkPanel.cpp.i
-.PHONY : src/PixhawkPanel.i
+src/RovPanel.i: src/RovPanel.cpp.i
+.PHONY : src/RovPanel.i
 
 # target to preprocess a source file
-src/PixhawkPanel.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.i
-.PHONY : src/PixhawkPanel.cpp.i
+src/RovPanel.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.i
+.PHONY : src/RovPanel.cpp.i
 
-src/PixhawkPanel.s: src/PixhawkPanel.cpp.s
-.PHONY : src/PixhawkPanel.s
+src/RovPanel.s: src/RovPanel.cpp.s
+.PHONY : src/RovPanel.s
 
 # target to generate assembly for a file
-src/PixhawkPanel.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.s
-.PHONY : src/PixhawkPanel.cpp.s
+src/RovPanel.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/su_alti_rov.dir/build.make CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.s
+.PHONY : src/RovPanel.cpp.s
 
 src/Ui_MainWindow.o: src/Ui_MainWindow.cpp.o
 .PHONY : src/Ui_MainWindow.o
@@ -454,9 +430,6 @@ help:
 	@echo "... su_alti_rov_autogen"
 	@echo "... su_alti_rov_autogen_timestamp_deps"
 	@echo "... su_alti_rov"
-	@echo "... src/AnaRovThread.o"
-	@echo "... src/AnaRovThread.i"
-	@echo "... src/AnaRovThread.s"
 	@echo "... src/AttitudeIndicator.o"
 	@echo "... src/AttitudeIndicator.i"
 	@echo "... src/AttitudeIndicator.s"
@@ -475,12 +448,12 @@ help:
 	@echo "... src/MotorDiagramWidget.o"
 	@echo "... src/MotorDiagramWidget.i"
 	@echo "... src/MotorDiagramWidget.s"
-	@echo "... src/PixhawkGUI.o"
-	@echo "... src/PixhawkGUI.i"
-	@echo "... src/PixhawkGUI.s"
-	@echo "... src/PixhawkPanel.o"
-	@echo "... src/PixhawkPanel.i"
-	@echo "... src/PixhawkPanel.s"
+	@echo "... src/RovGUI.o"
+	@echo "... src/RovGUI.i"
+	@echo "... src/RovGUI.s"
+	@echo "... src/RovPanel.o"
+	@echo "... src/RovPanel.i"
+	@echo "... src/RovPanel.s"
 	@echo "... src/Ui_MainWindow.o"
 	@echo "... src/Ui_MainWindow.i"
 	@echo "... src/Ui_MainWindow.s"

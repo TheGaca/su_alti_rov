@@ -38,6 +38,14 @@
  *   o andaki basinc "yuzey/atmosfer" referansi olarak kalibre edilir. Sudayken
  *   acarsan derinlik yanlis (sifirdan farkli baslar) okunur.
  *
+ * OTA (kablosuz kod yukleme): ESP32 kendi WiFi erisim noktasini (AP) acar;
+ * disarida bir router/internet GEREKMEZ, bilgisayarindan dogrudan OTA_AP_SSID
+ * agina baglanip Arduino IDE'de Tools > Port'tan agdaki OTA_HOSTNAME
+ * cihazini secerek kod atabilirsin (Arduino IDE bunu birkac saniyede otomatik bulur).
+ * Bu SADECE firmware guncellemek icin; motor komutlari halen USB Serial'dan
+ * geliyor, yukaridaki seri protokol degismedi. OTA sirasinda guncelleme
+ * baslar baslamaz motorlar guvenlik icin DISARM edilir (bkz. setupOTA()).
+ *
  * IMU (MPU-6050, I2C) baglantisi:
  *   VCC -> 3V3        GND -> GND
  *   SCL -> GPIO 22    SDA -> GPIO 21
@@ -55,6 +63,15 @@
  */
 #include <Arduino.h>
 #include <Wire.h>
+#include <WiFi.h>
+#include <ArduinoOTA.h>
+
+// ---- OTA (kablosuz kod yukleme) ayarlari ----
+// ESP32 kendi erisim noktasini actigi icin dis bir WiFi agina/internete ihtiyac yok.
+#define OTA_AP_SSID     "AnaROV(DenizAlti)"
+#define OTA_AP_PASS     "sualti123"  // WPA2 min. 8 karakter sart - 6 harfli "sualti" AP'nin hic acilmamasina yol aciyordu
+#define OTA_PASSWORD    "sualti123"  // Arduino IDE kod atarken ayrica sorulan OTA sifresi
+#define OTA_HOSTNAME    "Ana-Rov-DenizAlti"  // mDNS hostname: sadece harf/rakam/tire gecerli, parantez/bosluk KULLANMA (Tools>Port'ta cihazi bulmayi engeller)
 
 #define PWM_FREQ_HZ   50
 #define PWM_RES       16
@@ -444,6 +461,32 @@ void handleLine(const String &line) {
     }
 }
 
+// ESP32'yi kendi WiFi erisim noktasi (AP) yapar; PC/telefon dogrudan bu aga
+// baglanip Arduino IDE'den kablosuz kod atabilir. Router/internet gerekmez -
+// tamamen yerel, tezgah/dokta kullanim icindir (motor komutlari bundan
+// etkilenmez, onlar hala USB Serial'dan geliyor).
+void setupOTA() {
+    WiFi.mode(WIFI_AP);
+    WiFi.softAP(OTA_AP_SSID, OTA_AP_PASS);
+    Serial.print("OTA AP acildi -> SSID: ");
+    Serial.print(OTA_AP_SSID);
+    Serial.print("  IP: ");
+    Serial.println(WiFi.softAPIP());
+
+    ArduinoOTA.setHostname(OTA_HOSTNAME);
+    ArduinoOTA.setPassword(OTA_PASSWORD);
+    ArduinoOTA.onStart([]() {
+        // Yukleme sirasinda loop() duzenli calismayabilir; motorlari guvenlik
+        // icin onceden kapat (DISARM) - yoksa failsafe de tetiklenemeyebilir.
+        disarmNow();
+        Serial.println("OTA: guncelleme basladi, motorlar DISARM edildi.");
+    });
+    ArduinoOTA.onError([](ota_error_t error) {
+        Serial.printf("OTA HATA[%u]\n", error);
+    });
+    ArduinoOTA.begin();
+}
+
 void setup() {
     Serial.begin(115200);
     for (int i = 0; i < 8; i++) motorPulse[i] = NEUTRAL_US;
@@ -452,9 +495,13 @@ void setup() {
 
     analogSetPinAttenuation(DEPTH_ADC_PIN, ADC_11db); // 0-3.3V tam araligi kullan
     depthCalibrateSurface();
+
+    setupOTA();
 }
 
 void loop() {
+    ArduinoOTA.handle();
+
     while (Serial.available()) {
         String line = Serial.readStringUntil('\n');
         line.trim();

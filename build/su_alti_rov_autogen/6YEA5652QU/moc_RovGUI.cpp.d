@@ -1,13 +1,12 @@
-/home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/moc_PixhawkGUI.cpp: /home/lagaca/Desktop/su_alti_rov/include/PixhawkGUI.hpp \
+/home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/moc_RovGUI.cpp: /home/lagaca/Desktop/su_alti_rov/include/RovGUI.hpp \
   /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/moc_predefs.h \
-  /home/lagaca/Desktop/su_alti_rov/include/AnaRovThread.hpp \
   /home/lagaca/Desktop/su_alti_rov/include/AttitudeIndicator.hpp \
   /home/lagaca/Desktop/su_alti_rov/include/CameraThread.hpp \
   /home/lagaca/Desktop/su_alti_rov/include/ColorPickerButton.hpp \
   /home/lagaca/Desktop/su_alti_rov/include/EspRovThread.hpp \
   /home/lagaca/Desktop/su_alti_rov/include/JoystickThread.hpp \
   /home/lagaca/Desktop/su_alti_rov/include/MotorDiagramWidget.hpp \
-  /home/lagaca/Desktop/su_alti_rov/include/PixhawkPanel.hpp \
+  /home/lagaca/Desktop/su_alti_rov/include/RovPanel.hpp \
   /home/lagaca/Desktop/su_alti_rov/include/Ui_MainWindow.hpp \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \

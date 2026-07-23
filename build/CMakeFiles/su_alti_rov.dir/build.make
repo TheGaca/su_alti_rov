@@ -132,24 +132,10 @@ CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.s"
 	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su_alti_rov/src/CameraThread.cpp -o CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.s
 
-CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
-CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o: /home/lagaca/Desktop/su_alti_rov/src/AnaRovThread.cpp
-CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o -c /home/lagaca/Desktop/su_alti_rov/src/AnaRovThread.cpp
-
-CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.i"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su_alti_rov/src/AnaRovThread.cpp > CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.i
-
-CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.s"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su_alti_rov/src/AnaRovThread.cpp -o CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.s
-
 CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
 CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o: /home/lagaca/Desktop/su_alti_rov/src/EspRovThread.cpp
 CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o"
 	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o -c /home/lagaca/Desktop/su_alti_rov/src/EspRovThread.cpp
 
 CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.i: cmake_force
@@ -163,7 +149,7 @@ CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.s: cmake_force
 CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
 CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o: /home/lagaca/Desktop/su_alti_rov/src/ColorPickerButton.cpp
 CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o"
 	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o -c /home/lagaca/Desktop/su_alti_rov/src/ColorPickerButton.cpp
 
 CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.i: cmake_force
@@ -177,7 +163,7 @@ CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.s: cmake_force
 CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
 CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o: /home/lagaca/Desktop/su_alti_rov/src/AttitudeIndicator.cpp
 CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o"
 	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o -c /home/lagaca/Desktop/su_alti_rov/src/AttitudeIndicator.cpp
 
 CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.i: cmake_force
@@ -191,7 +177,7 @@ CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.s: cmake_force
 CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
 CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o: /home/lagaca/Desktop/su_alti_rov/src/MotorDiagramWidget.cpp
 CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o"
 	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o -c /home/lagaca/Desktop/su_alti_rov/src/MotorDiagramWidget.cpp
 
 CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.i: cmake_force
@@ -202,24 +188,24 @@ CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.s"
 	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su_alti_rov/src/MotorDiagramWidget.cpp -o CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.s
 
-CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
-CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o: /home/lagaca/Desktop/su_alti_rov/src/PixhawkPanel.cpp
-CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o -c /home/lagaca/Desktop/su_alti_rov/src/PixhawkPanel.cpp
+CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
+CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.o: /home/lagaca/Desktop/su_alti_rov/src/RovPanel.cpp
+CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.o -c /home/lagaca/Desktop/su_alti_rov/src/RovPanel.cpp
 
-CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.i"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su_alti_rov/src/PixhawkPanel.cpp > CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.i
+CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.i"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su_alti_rov/src/RovPanel.cpp > CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.i
 
-CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.s"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su_alti_rov/src/PixhawkPanel.cpp -o CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.s
+CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.s"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su_alti_rov/src/RovPanel.cpp -o CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.s
 
 CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
 CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o: /home/lagaca/Desktop/su_alti_rov/src/Ui_MainWindow.cpp
 CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o"
 	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o -c /home/lagaca/Desktop/su_alti_rov/src/Ui_MainWindow.cpp
 
 CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.i: cmake_force
@@ -230,19 +216,19 @@ CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.s"
 	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su_alti_rov/src/Ui_MainWindow.cpp -o CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.s
 
-CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
-CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o: /home/lagaca/Desktop/su_alti_rov/src/PixhawkGUI.cpp
-CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o -c /home/lagaca/Desktop/su_alti_rov/src/PixhawkGUI.cpp
+CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.o: CMakeFiles/su_alti_rov.dir/flags.make
+CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.o: /home/lagaca/Desktop/su_alti_rov/src/RovGUI.cpp
+CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.o: CMakeFiles/su_alti_rov.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.o"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.o -MF CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.o.d -o CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.o -c /home/lagaca/Desktop/su_alti_rov/src/RovGUI.cpp
 
-CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.i"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su_alti_rov/src/PixhawkGUI.cpp > CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.i
+CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.i"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lagaca/Desktop/su_alti_rov/src/RovGUI.cpp > CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.i
 
-CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.s"
-	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su_alti_rov/src/PixhawkGUI.cpp -o CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.s
+CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.s"
+	/usr/lib/ccache/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lagaca/Desktop/su_alti_rov/src/RovGUI.cpp -o CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.s
 
 # Object files for target su_alti_rov
 su_alti_rov_OBJECTS = \
@@ -250,14 +236,13 @@ su_alti_rov_OBJECTS = \
 "CMakeFiles/su_alti_rov.dir/src/main.cpp.o" \
 "CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.o" \
 "CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.o" \
-"CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o" \
 "CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o" \
 "CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o" \
 "CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o" \
 "CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o" \
-"CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o" \
+"CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.o" \
 "CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o" \
-"CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o"
+"CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.o"
 
 # External object files for target su_alti_rov
 su_alti_rov_EXTERNAL_OBJECTS =
@@ -266,78 +251,21 @@ su_alti_rov: CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp
 su_alti_rov: CMakeFiles/su_alti_rov.dir/src/main.cpp.o
 su_alti_rov: CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.o
 su_alti_rov: CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.o
-su_alti_rov: CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o
 su_alti_rov: CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o
 su_alti_rov: CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o
 su_alti_rov: CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o
 su_alti_rov: CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o
-su_alti_rov: CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o
+su_alti_rov: CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.o
 su_alti_rov: CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o
-su_alti_rov: CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o
+su_alti_rov: CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.o
 su_alti_rov: CMakeFiles/su_alti_rov.dir/build.make
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libQt5SerialPort.so.5.15.13
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libQt5WebSockets.so.5.15.13
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_stitching.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_alphamat.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_aruco.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_barcode.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_bgsegm.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_bioinspired.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_ccalib.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_cvv.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_dnn_objdetect.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_dnn_superres.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_dpm.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_face.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_freetype.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_fuzzy.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_hdf.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_hfs.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_img_hash.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_intensity_transform.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_line_descriptor.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_mcc.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_quality.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_rapid.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_reg.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_rgbd.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_saliency.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_shape.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_stereo.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_structured_light.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_superres.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_surface_matching.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_tracking.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_videostab.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_viz.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_wechat_qrcode.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_xobjdetect.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_xphoto.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libQt5Network.so.5.15.13
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_highgui.so.4.6.0
 su_alti_rov: /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5.15.13
+su_alti_rov: /usr/lib/x86_64-linux-gnu/libQt5Network.so.5.15.13
+su_alti_rov: /usr/lib/x86_64-linux-gnu/libQt5SerialPort.so.5.15.13
 su_alti_rov: /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.15.13
 su_alti_rov: /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.15.13
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_datasets.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_plot.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_text.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_ml.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_phase_unwrapping.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_optflow.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_ximgproc.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_video.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_videoio.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_imgcodecs.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_objdetect.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_calib3d.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_dnn.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_features2d.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_flann.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_photo.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_imgproc.so.4.6.0
-su_alti_rov: /usr/lib/x86_64-linux-gnu/libopencv_core.so.4.6.0
 su_alti_rov: CMakeFiles/su_alti_rov.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Linking CXX executable su_alti_rov"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/lagaca/Desktop/su_alti_rov/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX executable su_alti_rov"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/su_alti_rov.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -1,4 +1,4 @@
-/home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/moc_PixhawkPanel.cpp: /home/lagaca/Desktop/su_alti_rov/include/PixhawkPanel.hpp \
+/home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/moc_RovPanel.cpp: /home/lagaca/Desktop/su_alti_rov/include/RovPanel.hpp \
   /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/moc_predefs.h \
   /home/lagaca/Desktop/su_alti_rov/include/AttitudeIndicator.hpp \
   /home/lagaca/Desktop/su_alti_rov/include/ColorPickerButton.hpp \

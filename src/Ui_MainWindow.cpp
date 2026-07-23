@@ -38,8 +38,8 @@ void Ui_MainWindow::setupUi(QWidget *MainWindow) {
     panels_layout = new QHBoxLayout();
     panels_layout->setSpacing(8);
 
-    anaRovPanel  = new PixhawkPanel("ANA ROV",  false);
-    miniRovPanel = new PixhawkPanel("MİNİ ROV", true);
+    anaRovPanel  = new RovPanel("ANA ROV",  false);
+    miniRovPanel = new RovPanel("MİNİ ROV", true);
 
     panels_layout->addWidget(anaRovPanel,  1);
     panels_layout->addWidget(miniRovPanel, 1);

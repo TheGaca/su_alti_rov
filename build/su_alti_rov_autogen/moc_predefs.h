@@ -348,7 +348,6 @@
 #define __FLT64X_MAX_EXP__ 16384
 #define __UINT_FAST64_TYPE__ long unsigned int
 #define __cpp_inline_variables 201606L
-#define QT_WEBSOCKETS_LIB 1
 #define __BFLT16_MIN_EXP__ (-125)
 #define __INT_MAX__ 0x7fffffff
 #define __linux__ 1

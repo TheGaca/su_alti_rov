@@ -280,7 +280,7 @@ CMakeFiles/su_alti_rov.dir/src/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qregion.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qdatastream.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qline.h \
- /home/lagaca/Desktop/su_alti_rov/include/PixhawkGUI.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/RovGUI.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QMainWindow \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qmainwindow.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
@@ -336,7 +336,7 @@ CMakeFiles/su_alti_rov.dir/src/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QPushButton \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qpushbutton.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qabstractbutton.h \
- /home/lagaca/Desktop/su_alti_rov/include/PixhawkPanel.hpp \
+ /home/lagaca/Desktop/su_alti_rov/include/RovPanel.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGridLayout \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgridlayout.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLabel \
@@ -393,5 +393,4 @@ CMakeFiles/su_alti_rov.dir/src/main.cpp.o: \
  /home/lagaca/Desktop/su_alti_rov/include/JoystickThread.hpp \
  /home/lagaca/Desktop/su_alti_rov/include/CameraThread.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QImage \
- /usr/include/x86_64-linux-gnu/qt5/QtGui/qimage.h \
- /home/lagaca/Desktop/su_alti_rov/include/AnaRovThread.hpp
+ /usr/include/x86_64-linux-gnu/qt5/QtGui/qimage.h

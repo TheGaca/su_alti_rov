@@ -1,10 +1,10 @@
-#include "PixhawkPanel.hpp"
+#include "RovPanel.hpp"
 
 #include <QSerialPortInfo>
 #include <QDir>
 #include <QFileInfoList>
 
-PixhawkPanel::PixhawkPanel(const QString &title, bool mini, QWidget *parent)
+RovPanel::RovPanel(const QString &title, bool mini, QWidget *parent)
     : QWidget(parent), isMini(mini) {
 
     // Bir butonun altina, kumandadaki karsiligini kucuk gri yaziyla ekler
@@ -254,7 +254,7 @@ PixhawkPanel::PixhawkPanel(const QString &title, bool mini, QWidget *parent)
 
     // Left Column (Turn) - vertically centered
     // Donus (Sola/Saga Don) ve derinlik (Z+/Z-) kumandada Sag Stick ile,
-    // ileri/geri/sol/sag ise Sol Stick ile kontrol edilir (bkz. PixhawkGUI
+    // ileri/geri/sol/sag ise Sol Stick ile kontrol edilir (bkz. RovGUI
     // update_ana_joy_axis / update_mini_joy_axis).
     QVBoxLayout *turnCol = new QVBoxLayout();
     turnCol->setSpacing(6);

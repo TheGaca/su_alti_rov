@@ -9,15 +9,14 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "" "su_alti_rov_autogen/timestamp" "custom" "su_alti_rov_autogen/deps"
-  "/home/lagaca/Desktop/su_alti_rov/src/AnaRovThread.cpp" "CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o" "gcc" "CMakeFiles/su_alti_rov.dir/src/AnaRovThread.cpp.o.d"
   "/home/lagaca/Desktop/su_alti_rov/src/AttitudeIndicator.cpp" "CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o" "gcc" "CMakeFiles/su_alti_rov.dir/src/AttitudeIndicator.cpp.o.d"
   "/home/lagaca/Desktop/su_alti_rov/src/CameraThread.cpp" "CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.o" "gcc" "CMakeFiles/su_alti_rov.dir/src/CameraThread.cpp.o.d"
   "/home/lagaca/Desktop/su_alti_rov/src/ColorPickerButton.cpp" "CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o" "gcc" "CMakeFiles/su_alti_rov.dir/src/ColorPickerButton.cpp.o.d"
   "/home/lagaca/Desktop/su_alti_rov/src/EspRovThread.cpp" "CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o" "gcc" "CMakeFiles/su_alti_rov.dir/src/EspRovThread.cpp.o.d"
   "/home/lagaca/Desktop/su_alti_rov/src/JoystickThread.cpp" "CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.o" "gcc" "CMakeFiles/su_alti_rov.dir/src/JoystickThread.cpp.o.d"
   "/home/lagaca/Desktop/su_alti_rov/src/MotorDiagramWidget.cpp" "CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o" "gcc" "CMakeFiles/su_alti_rov.dir/src/MotorDiagramWidget.cpp.o.d"
-  "/home/lagaca/Desktop/su_alti_rov/src/PixhawkGUI.cpp" "CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o" "gcc" "CMakeFiles/su_alti_rov.dir/src/PixhawkGUI.cpp.o.d"
-  "/home/lagaca/Desktop/su_alti_rov/src/PixhawkPanel.cpp" "CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o" "gcc" "CMakeFiles/su_alti_rov.dir/src/PixhawkPanel.cpp.o.d"
+  "/home/lagaca/Desktop/su_alti_rov/src/RovGUI.cpp" "CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.o" "gcc" "CMakeFiles/su_alti_rov.dir/src/RovGUI.cpp.o.d"
+  "/home/lagaca/Desktop/su_alti_rov/src/RovPanel.cpp" "CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.o" "gcc" "CMakeFiles/su_alti_rov.dir/src/RovPanel.cpp.o.d"
   "/home/lagaca/Desktop/su_alti_rov/src/Ui_MainWindow.cpp" "CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o" "gcc" "CMakeFiles/su_alti_rov.dir/src/Ui_MainWindow.cpp.o.d"
   "/home/lagaca/Desktop/su_alti_rov/src/main.cpp" "CMakeFiles/su_alti_rov.dir/src/main.cpp.o" "gcc" "CMakeFiles/su_alti_rov.dir/src/main.cpp.o.d"
   "/home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/mocs_compilation.cpp" "CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o" "gcc" "CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o.d"
