@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QProcess>
+#include <QTimer>
 #include <array>
 
 #include "Ui_MainWindow.hpp"
@@ -67,6 +68,14 @@ private slots:
     void ana_dir_released();
     void mini_dir_pressed();
     void mini_dir_released();
+
+    // ESP32 tarafindaki FAILSAFE_MS (500ms) suresi icinde yeni komut gelmezse
+    // motorlar notrlenir. Kumanda/tus basili tutulurken eksen ya da buton olayi
+    // tekrar tetiklenmedigi surece (ornegin stick sabit bir konumda tutulunca)
+    // yeni komut gitmez; bu da "bir kere calisip duruyor" sorununa yol acar.
+    // Bu heartbeat, basili tutulan yon oldugu surece son komutu periyodik olarak
+    // tekrar gonderip failsafe'i tetiklenmeden once tazeler.
+    void send_motor_heartbeat();
 
     // Hizli komutlar
     void on_emergency_ana();
@@ -137,6 +146,12 @@ private:
     // Ping islemleri
     QProcess *cam_ping_proc;
     QProcess *anarov_ping_proc;
+
+    // Kumanda/tus basili tutulurken ESP32 failsafe'ini (500ms) tazelemek icin
+    // son gonderilen motor darbelerini tutar ve periyodik olarak yeniden gonderir.
+    QTimer *motor_heartbeat_timer;
+    std::array<int, 8> ana_last_pulses;
+    std::array<int, 8> mini_last_pulses;
 
     // Log
     QFile *log_file;

@@ -341,6 +341,9 @@ CMakeFiles/su_alti_rov.dir/su_alti_rov_autogen/mocs_compilation.cpp.o: \
  /usr/include/c++/13/variant \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QProcess \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qprocess.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QTimer \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qtimer.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qbasictimer.h \
  /home/lagaca/Desktop/su_alti_rov/build/su_alti_rov_autogen/6YEA5652QU/../../../include/Ui_MainWindow.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QVBoxLayout \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qboxlayout.h \

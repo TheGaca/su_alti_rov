@@ -416,7 +416,7 @@ cmake .. && make -j$(nproc)
 # Çalıştır
 ./su_alti_rov
 ```
-
+cd su_alti_rov
 ---
 
 **Sürüm:** 2.0 (ESP32 8 motor mimarisi, MAVLink/Pixhawk kaldırıldı)

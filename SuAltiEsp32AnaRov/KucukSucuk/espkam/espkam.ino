@@ -7,9 +7,9 @@
 // =======================================================
 // STRAPPING (BOOT) ENGELİNE TAKILMAYAN GÜVENLİ YENİ PİNLER
 // =======================================================
-#define ETH_SPI_MOSI  23  // VSPI Ortak Data Hattı
-#define ETH_SPI_MISO  19  // VSPI Ortak Data Hattı
-#define ETH_SPI_SCLK  18  // VSPI Ortak Saat Hattı
+#define ETH_SPI_MOSI  13  // 23'ten 13'e alındı (kamera HREF ile çakışıyordu)
+#define ETH_SPI_MISO  14  // 19'dan 14'e alındı (kamera Y5 ile çakışıyordu)
+#define ETH_SPI_SCLK  15  // 18'den 15'e alındı (kamera Y4 ile çakışıyordu)
 #define ETH_SPI_CS    32  // 13'ten 32'ye alındı (Boot engeli bitti!)
 #define ETH_SPI_RST   33  // 12'den 33'e alındı (Boot engeli bitti!)
 
@@ -87,9 +87,17 @@ void setup() {
   IPAddress subnet(255, 255, 255, 0);
 
   ETH.config(local_IP, gateway, subnet);
-  
+
+  // ONEMLI: SPI hattini ETH_SPI_* ile tanimladigimiz pinlere (13/14/15) gercekten
+  // tasiyan tek satir burasi. Bu cagri olmadan SPI donanimi varsayilan VSPI
+  // pinlerini (SCLK=18, MISO=19, MOSI=23) kullanmaya devam eder ve W5500'e
+  // hicbir veri gitmez (kamera pinleriyle ayni oldugu icin de karisirdi).
+  SPI.begin(ETH_SPI_SCLK, ETH_SPI_MISO, ETH_SPI_MOSI, ETH_SPI_CS);
+
   // Modülü donanımsal SPI hattı ve yeni güvenli pinlerle başlatıyoruz
-  ETH.begin(ETH_PHY_W5500, -1, ETH_SPI_CS, ETH_SPI_RST, -1, SPI);
+  // begin(type, phy_addr, cs, irq, rst, spi) -> RST pini burada dogru yere (5. parametre) verildi
+  // SPI hizi varsayilan 20MHz'den 4MHz'e dusuruldu (jumper kablo/breadboard'da 20MHz cok hata verebiliyor)
+  ETH.begin(ETH_PHY_W5500, -1, ETH_SPI_CS, -1, ETH_SPI_RST, SPI, 4);
   
   delay(1500); 
 

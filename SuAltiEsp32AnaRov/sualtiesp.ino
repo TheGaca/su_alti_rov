@@ -7,9 +7,9 @@
  * motorPins dizisindeki index 0..7, motor numarasi 1..8'e karsilik gelir.
  *
  * Seri protokol (115200 baud, satir sonu '\n'):
- *   "ARM"                     -> ESC'leri ARM eder (2sn 1000us tutar, sonra notre gecer)
+ *   "ARM"                     -> ESC'leri ARM eder (2sn 850us tutar, sonra notre gecer)
  *   "DISARM"                  -> Tum pinlerden PWM sinyalini tamamen keser (ESC durur)
- *   "M:p1,p2,p3,p4,p5,p6,p7,p8" -> motor 1..8 icin darbe genisligi (us, 1000-2000)
+ *   "M:p1,p2,p3,p4,p5,p6,p7,p8" -> motor 1..8 icin darbe genisligi (us, 850-1850)
  * Cihaz durum bildirimi icin "READY", "ARMING", "ARMED", "DISARMED", "ERR:..." satirlari yollar.
  * IMU takiliysa 100ms'de bir "ATT:roll,pitch" (derece) satiri da yollanir.
  * Basinc sensoru takiliysa 200ms'de bir "DEPTH:metre,dikey_hiz_buyuklugu_m/s"
@@ -21,6 +21,13 @@
  *
  * Guvenlik: ARMED durumdayken 500ms boyunca yeni "M:" komutu gelmezse
  * (baglanti kopmasi ihtimaline karsi) tum motorlar otomatik notre (1490us) cekilir.
+ *
+ * PWM darbe sinirlari (ESC): MIN_US=850us (tam geri), NEUTRAL_US=1490us (notr/dur),
+ * MAX_US=1850us (tam ileri). "M:" ile gelen hedef darbeler dogrudan uygulanmaz;
+ * ani tam-ileri<->tam-geri gibi sicramalarda ESC'lerin takilmasini/stall olmasini
+ * onlemek icin motorPulse, updateMotorSlew() tarafindan MOTOR_SLEW_STEP_US
+ * adimlarla (varsayilan: 20ms'de 40us, yani ~500ms'de tam MIN_US<->MAX_US) hedefe
+ * yaklastirilir.
  *
  * Basinc/Derinlik sensoru (analog, 5V, 0.5-4.5V cikis, 0-1.6 MPa) baglantisi:
  *   Kirmizi (V+)    -> ESP32 kartinin 5V/VIN pini (3.3V DEGIL, sensor 5V ister)
@@ -52,10 +59,15 @@
 #define PWM_FREQ_HZ   50
 #define PWM_RES       16
 #define NEUTRAL_US    1490
-#define MIN_US        1000
-#define MAX_US        2000
+#define MIN_US        850
+#define MAX_US        1850
 #define ARM_HOLD_MS   2000
 #define FAILSAFE_MS   500
+#define MOTOR_SLEW_STEP_US    40  // her slew adiminda izin verilen max darbe degisimi (us)
+#define MOTOR_SLEW_PERIOD_MS  20  // slew adimlari arasi sure (ms); 40us/20ms = 1000us'luk tam
+                                   // aralik (MIN_US<->MAX_US) yaklasik 500ms'de kat edilir.
+                                   // Ani yon degisiminde (ors. tam ileri -> tam geri) ESC'lerin
+                                   // takilmasini/stall olmasini onlemek icin PWM kademeli degisir.
 
 #define IMU_SDA_PIN   21
 #define IMU_SCL_PIN   22
@@ -310,7 +322,9 @@ enum RovState { DISARMED, ARMING, ARMED };
 RovState state = DISARMED;
 unsigned long armStartedAt = 0;
 unsigned long lastCommandAt = 0;
+unsigned long lastSlewAt = 0;
 uint16_t motorPulse[8];
+uint16_t motorTarget[8]; // handleMotorCommand'in yazdigi hedef; motorPulse buna kademeli yaklasir
 
 uint32_t usToDuty(uint16_t pulse_us) {
     if (pulse_us < MIN_US) pulse_us = MIN_US;
@@ -341,9 +355,28 @@ void allMotorsTo(uint16_t pulse_us) {
     for (int i = 0; i < 8; i++) writeMotor(i, pulse_us);
 }
 
+void allTargetsTo(uint16_t pulse_us) {
+    for (int i = 0; i < 8; i++) motorTarget[i] = pulse_us;
+}
+
+// motorPulse'u motorTarget'a MOTOR_SLEW_STEP_US adimlarla yaklastirir; boylece
+// M: komutuyla gelen ani tam-ileri<->tam-geri gibi hedef degisiklikleri
+// motorlara tek adimda degil kademeli uygulanir.
+void updateMotorSlew() {
+    if (millis() - lastSlewAt < MOTOR_SLEW_PERIOD_MS) return;
+    lastSlewAt = millis();
+    for (int i = 0; i < 8; i++) {
+        int diff = (int)motorTarget[i] - (int)motorPulse[i];
+        if (diff == 0) continue;
+        int step = (diff > 0) ? min(diff, MOTOR_SLEW_STEP_US) : max(diff, -MOTOR_SLEW_STEP_US);
+        writeMotor(i, (uint16_t)((int)motorPulse[i] + step));
+    }
+}
+
 void startArming() {
     attachMotors();
     for (int i = 0; i < 8; i++) writeMotor(i, MIN_US); // ESC arm sinyali (dusuk darbe)
+    allTargetsTo(MIN_US);
     armStartedAt = millis();
     state = ARMING;
     Serial.println("ARMING");
@@ -351,6 +384,7 @@ void startArming() {
 
 void finishArming() {
     allMotorsTo(NEUTRAL_US);
+    allTargetsTo(NEUTRAL_US);
     lastCommandAt = millis();
     state = ARMED;
     Serial.println("ARMED");
@@ -358,6 +392,10 @@ void finishArming() {
 
 void disarmNow() {
     detachMotors(); // pinlere hic sinyal gitmez
+    // Donanima yazmadan (ledcWrite detach sonrasi gecersiz) sadece durum
+    // dizilerini sifirla; sonraki ARM'da slew eski hedeften baslamasin.
+    for (int i = 0; i < 8; i++) motorPulse[i] = NEUTRAL_US;
+    allTargetsTo(NEUTRAL_US);
     state = DISARMED;
     Serial.println("DISARMED");
 }
@@ -381,7 +419,16 @@ void handleMotorCommand(const String &line) {
         Serial.println("ERR:BADFORMAT");
         return;
     }
-    for (int i = 0; i < 8; i++) writeMotor(i, (uint16_t)vals[i]);
+    // Dogrudan writeMotor yerine hedefi guncelliyoruz; gercek darbe
+    // updateMotorSlew() tarafindan kademeli olarak buna yaklastirilir (bkz.
+    // MOTOR_SLEW_STEP_US) - ani tam-ileri/tam-geri komutlarinda ESC'lerin
+    // takilmasini/stall olmasini onler.
+    for (int i = 0; i < 8; i++) {
+        int v = vals[i];
+        if (v < MIN_US) v = MIN_US;
+        if (v > MAX_US) v = MAX_US;
+        motorTarget[i] = (uint16_t)v;
+    }
     lastCommandAt = millis();
 }
 
@@ -420,6 +467,11 @@ void loop() {
 
     if (state == ARMED && millis() - lastCommandAt > FAILSAFE_MS) {
         allMotorsTo(NEUTRAL_US);
+        allTargetsTo(NEUTRAL_US); // hedefi de sifirla, yoksa baglanti donunce eski komuta ani sicrar
+    }
+
+    if (state == ARMED) {
+        updateMotorSlew();
     }
 
     if (imuReady && millis() - lastImuAt >= IMU_PERIOD_MS) {

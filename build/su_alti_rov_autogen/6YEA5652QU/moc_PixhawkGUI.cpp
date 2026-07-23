@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_PixhawkGUI_t {
-    QByteArrayData data[59];
-    char stringdata0[888];
+    QByteArrayData data[60];
+    char stringdata0[909];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -77,20 +77,21 @@ QT_MOC_LITERAL(41, 581, 15), // "ana_dir_pressed"
 QT_MOC_LITERAL(42, 597, 16), // "ana_dir_released"
 QT_MOC_LITERAL(43, 614, 16), // "mini_dir_pressed"
 QT_MOC_LITERAL(44, 631, 17), // "mini_dir_released"
-QT_MOC_LITERAL(45, 649, 16), // "on_emergency_ana"
-QT_MOC_LITERAL(46, 666, 17), // "on_emergency_mini"
-QT_MOC_LITERAL(47, 684, 16), // "on_stabilize_ana"
-QT_MOC_LITERAL(48, 701, 17), // "on_stabilize_mini"
-QT_MOC_LITERAL(49, 719, 17), // "on_autonomous_ana"
-QT_MOC_LITERAL(50, 737, 13), // "on_manual_ana"
-QT_MOC_LITERAL(51, 751, 17), // "on_minirov_launch"
-QT_MOC_LITERAL(52, 769, 15), // "on_torpedo_fire"
-QT_MOC_LITERAL(53, 785, 14), // "on_lamp_on_ana"
-QT_MOC_LITERAL(54, 800, 15), // "on_lamp_off_ana"
-QT_MOC_LITERAL(55, 816, 15), // "on_lamp_on_mini"
-QT_MOC_LITERAL(56, 832, 16), // "on_lamp_off_mini"
-QT_MOC_LITERAL(57, 849, 12), // "toggle_theme"
-QT_MOC_LITERAL(58, 862, 25) // "toggle_stabilize_mode_ana"
+QT_MOC_LITERAL(45, 649, 20), // "send_motor_heartbeat"
+QT_MOC_LITERAL(46, 670, 16), // "on_emergency_ana"
+QT_MOC_LITERAL(47, 687, 17), // "on_emergency_mini"
+QT_MOC_LITERAL(48, 705, 16), // "on_stabilize_ana"
+QT_MOC_LITERAL(49, 722, 17), // "on_stabilize_mini"
+QT_MOC_LITERAL(50, 740, 17), // "on_autonomous_ana"
+QT_MOC_LITERAL(51, 758, 13), // "on_manual_ana"
+QT_MOC_LITERAL(52, 772, 17), // "on_minirov_launch"
+QT_MOC_LITERAL(53, 790, 15), // "on_torpedo_fire"
+QT_MOC_LITERAL(54, 806, 14), // "on_lamp_on_ana"
+QT_MOC_LITERAL(55, 821, 15), // "on_lamp_off_ana"
+QT_MOC_LITERAL(56, 837, 15), // "on_lamp_on_mini"
+QT_MOC_LITERAL(57, 853, 16), // "on_lamp_off_mini"
+QT_MOC_LITERAL(58, 870, 12), // "toggle_theme"
+QT_MOC_LITERAL(59, 883, 25) // "toggle_stabilize_mode_ana"
 
     },
     "PixhawkGUI\0toggle_ana_connection\0\0"
@@ -110,13 +111,14 @@ QT_MOC_LITERAL(58, 862, 25) // "toggle_stabilize_mode_ana"
     "read_cam_ping\0read_anarov_ping\0"
     "ana_dir_pressed\0ana_dir_released\0"
     "mini_dir_pressed\0mini_dir_released\0"
-    "on_emergency_ana\0on_emergency_mini\0"
-    "on_stabilize_ana\0on_stabilize_mini\0"
-    "on_autonomous_ana\0on_manual_ana\0"
-    "on_minirov_launch\0on_torpedo_fire\0"
-    "on_lamp_on_ana\0on_lamp_off_ana\0"
-    "on_lamp_on_mini\0on_lamp_off_mini\0"
-    "toggle_theme\0toggle_stabilize_mode_ana"
+    "send_motor_heartbeat\0on_emergency_ana\0"
+    "on_emergency_mini\0on_stabilize_ana\0"
+    "on_stabilize_mini\0on_autonomous_ana\0"
+    "on_manual_ana\0on_minirov_launch\0"
+    "on_torpedo_fire\0on_lamp_on_ana\0"
+    "on_lamp_off_ana\0on_lamp_on_mini\0"
+    "on_lamp_off_mini\0toggle_theme\0"
+    "toggle_stabilize_mode_ana"
 };
 #undef QT_MOC_LITERAL
 
@@ -126,7 +128,7 @@ static const uint qt_meta_data_PixhawkGUI[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-      42,   14, // methods
+      43,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -134,48 +136,49 @@ static const uint qt_meta_data_PixhawkGUI[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,  224,    2, 0x08 /* Private */,
-       3,    1,  225,    2, 0x08 /* Private */,
-       5,    1,  228,    2, 0x08 /* Private */,
-       7,    2,  231,    2, 0x08 /* Private */,
-      10,    2,  236,    2, 0x08 /* Private */,
-      13,    0,  241,    2, 0x08 /* Private */,
-      14,    1,  242,    2, 0x08 /* Private */,
-      15,    1,  245,    2, 0x08 /* Private */,
-      16,    0,  248,    2, 0x08 /* Private */,
-      17,    0,  249,    2, 0x08 /* Private */,
-      18,    1,  250,    2, 0x08 /* Private */,
-      19,    2,  253,    2, 0x08 /* Private */,
-      22,    2,  258,    2, 0x08 /* Private */,
-      25,    1,  263,    2, 0x08 /* Private */,
-      26,    2,  266,    2, 0x08 /* Private */,
-      27,    2,  271,    2, 0x08 /* Private */,
-      28,    1,  276,    2, 0x08 /* Private */,
-      30,    1,  279,    2, 0x08 /* Private */,
-      31,    4,  282,    2, 0x08 /* Private */,
-      36,    1,  291,    2, 0x08 /* Private */,
-      37,    1,  294,    2, 0x08 /* Private */,
-      38,    4,  297,    2, 0x08 /* Private */,
-      39,    0,  306,    2, 0x08 /* Private */,
-      40,    0,  307,    2, 0x08 /* Private */,
-      41,    0,  308,    2, 0x08 /* Private */,
-      42,    0,  309,    2, 0x08 /* Private */,
-      43,    0,  310,    2, 0x08 /* Private */,
-      44,    0,  311,    2, 0x08 /* Private */,
-      45,    0,  312,    2, 0x08 /* Private */,
-      46,    0,  313,    2, 0x08 /* Private */,
-      47,    0,  314,    2, 0x08 /* Private */,
-      48,    0,  315,    2, 0x08 /* Private */,
-      49,    0,  316,    2, 0x08 /* Private */,
-      50,    0,  317,    2, 0x08 /* Private */,
-      51,    0,  318,    2, 0x08 /* Private */,
-      52,    0,  319,    2, 0x08 /* Private */,
-      53,    0,  320,    2, 0x08 /* Private */,
-      54,    0,  321,    2, 0x08 /* Private */,
-      55,    0,  322,    2, 0x08 /* Private */,
-      56,    0,  323,    2, 0x08 /* Private */,
-      57,    0,  324,    2, 0x08 /* Private */,
-      58,    0,  325,    2, 0x08 /* Private */,
+       1,    0,  229,    2, 0x08 /* Private */,
+       3,    1,  230,    2, 0x08 /* Private */,
+       5,    1,  233,    2, 0x08 /* Private */,
+       7,    2,  236,    2, 0x08 /* Private */,
+      10,    2,  241,    2, 0x08 /* Private */,
+      13,    0,  246,    2, 0x08 /* Private */,
+      14,    1,  247,    2, 0x08 /* Private */,
+      15,    1,  250,    2, 0x08 /* Private */,
+      16,    0,  253,    2, 0x08 /* Private */,
+      17,    0,  254,    2, 0x08 /* Private */,
+      18,    1,  255,    2, 0x08 /* Private */,
+      19,    2,  258,    2, 0x08 /* Private */,
+      22,    2,  263,    2, 0x08 /* Private */,
+      25,    1,  268,    2, 0x08 /* Private */,
+      26,    2,  271,    2, 0x08 /* Private */,
+      27,    2,  276,    2, 0x08 /* Private */,
+      28,    1,  281,    2, 0x08 /* Private */,
+      30,    1,  284,    2, 0x08 /* Private */,
+      31,    4,  287,    2, 0x08 /* Private */,
+      36,    1,  296,    2, 0x08 /* Private */,
+      37,    1,  299,    2, 0x08 /* Private */,
+      38,    4,  302,    2, 0x08 /* Private */,
+      39,    0,  311,    2, 0x08 /* Private */,
+      40,    0,  312,    2, 0x08 /* Private */,
+      41,    0,  313,    2, 0x08 /* Private */,
+      42,    0,  314,    2, 0x08 /* Private */,
+      43,    0,  315,    2, 0x08 /* Private */,
+      44,    0,  316,    2, 0x08 /* Private */,
+      45,    0,  317,    2, 0x08 /* Private */,
+      46,    0,  318,    2, 0x08 /* Private */,
+      47,    0,  319,    2, 0x08 /* Private */,
+      48,    0,  320,    2, 0x08 /* Private */,
+      49,    0,  321,    2, 0x08 /* Private */,
+      50,    0,  322,    2, 0x08 /* Private */,
+      51,    0,  323,    2, 0x08 /* Private */,
+      52,    0,  324,    2, 0x08 /* Private */,
+      53,    0,  325,    2, 0x08 /* Private */,
+      54,    0,  326,    2, 0x08 /* Private */,
+      55,    0,  327,    2, 0x08 /* Private */,
+      56,    0,  328,    2, 0x08 /* Private */,
+      57,    0,  329,    2, 0x08 /* Private */,
+      58,    0,  330,    2, 0x08 /* Private */,
+      59,    0,  331,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
@@ -200,6 +203,7 @@ static const uint qt_meta_data_PixhawkGUI[] = {
     QMetaType::Void, QMetaType::QImage,   29,
     QMetaType::Void, QMetaType::QString,    4,
     QMetaType::Void, QMetaType::Int, QMetaType::Float, QMetaType::Int, QMetaType::Int,   32,   33,   34,   35,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -258,20 +262,21 @@ void PixhawkGUI::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 25: _t->ana_dir_released(); break;
         case 26: _t->mini_dir_pressed(); break;
         case 27: _t->mini_dir_released(); break;
-        case 28: _t->on_emergency_ana(); break;
-        case 29: _t->on_emergency_mini(); break;
-        case 30: _t->on_stabilize_ana(); break;
-        case 31: _t->on_stabilize_mini(); break;
-        case 32: _t->on_autonomous_ana(); break;
-        case 33: _t->on_manual_ana(); break;
-        case 34: _t->on_minirov_launch(); break;
-        case 35: _t->on_torpedo_fire(); break;
-        case 36: _t->on_lamp_on_ana(); break;
-        case 37: _t->on_lamp_off_ana(); break;
-        case 38: _t->on_lamp_on_mini(); break;
-        case 39: _t->on_lamp_off_mini(); break;
-        case 40: _t->toggle_theme(); break;
-        case 41: _t->toggle_stabilize_mode_ana(); break;
+        case 28: _t->send_motor_heartbeat(); break;
+        case 29: _t->on_emergency_ana(); break;
+        case 30: _t->on_emergency_mini(); break;
+        case 31: _t->on_stabilize_ana(); break;
+        case 32: _t->on_stabilize_mini(); break;
+        case 33: _t->on_autonomous_ana(); break;
+        case 34: _t->on_manual_ana(); break;
+        case 35: _t->on_minirov_launch(); break;
+        case 36: _t->on_torpedo_fire(); break;
+        case 37: _t->on_lamp_on_ana(); break;
+        case 38: _t->on_lamp_off_ana(); break;
+        case 39: _t->on_lamp_on_mini(); break;
+        case 40: _t->on_lamp_off_mini(); break;
+        case 41: _t->toggle_theme(); break;
+        case 42: _t->toggle_stabilize_mode_ana(); break;
         default: ;
         }
     }
@@ -306,13 +311,13 @@ int PixhawkGUI::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 42)
+        if (_id < 43)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 42;
+        _id -= 43;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 42)
+        if (_id < 43)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 42;
+        _id -= 43;
     }
     return _id;
 }

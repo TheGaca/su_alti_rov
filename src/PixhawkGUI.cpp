@@ -45,7 +45,8 @@ PixhawkGUI::PixhawkGUI(QWidget *parent)
       ana_armed(false), mini_armed(false), ana_cam_connected(false),
       ana_stabilize(false), ana_roll(0.0f), ana_pitch(0.0f),
       cam_ping_proc(nullptr), anarov_ping_proc(nullptr),
-      log_file(nullptr), log_stream(nullptr)
+      log_file(nullptr), log_stream(nullptr),
+      motor_heartbeat_timer(nullptr)
 {
     QWidget *central = new QWidget(this);
     setCentralWidget(central);
@@ -55,6 +56,8 @@ PixhawkGUI::PixhawkGUI(QWidget *parent)
         ana_axes_state[i] = 0.0f;
         mini_axes_state[i] = 0.0f;
     }
+    ana_last_pulses.fill(ESP_NEUTRAL_US);
+    mini_last_pulses.fill(ESP_NEUTRAL_US);
 
     // Uygulama fullscreen açıldığı için pencere çerçevesi/kapatma düğmesi görünmez;
     // Ctrl+Q veya Esc ile çıkış kısayolu (Alt+F4 zaten pencere yöneticisi tarafından desteklenir)
@@ -119,6 +122,13 @@ PixhawkGUI::PixhawkGUI(QWidget *parent)
 
     set_led(ui.miniRovPanel->led_lamp_on, false);
     set_led(ui.miniRovPanel->led_lamp_off, true);
+
+    // ESP32 tarafindaki FAILSAFE_MS 500ms; kumanda/tus basili tutulup eksen/buton
+    // olayi tekrar tetiklenmeyince (stick sabit konumda) yeni komut gitmiyor ve
+    // motorlar notrleniyordu. 150ms'de bir son komutu tazeleyerek bunu onluyoruz.
+    motor_heartbeat_timer = new QTimer(this);
+    connect(motor_heartbeat_timer, &QTimer::timeout, this, &PixhawkGUI::send_motor_heartbeat);
+    motor_heartbeat_timer->start(150);
 }
 
 PixhawkGUI::~PixhawkGUI() {
@@ -262,6 +272,7 @@ void PixhawkGUI::apply_ana_motor_mix(float surge, float lateral, float yaw, floa
     }
     auto pulses = compute_motor_mix(surge, lateral, yaw, vertical, rollCorr, pitchCorr);
     ana_esp_thread->set_motors(pulses);
+    ana_last_pulses = pulses;
 
     // Motor diyagraminda hangi motorlara ne kadar stabilize duzeltmesi
     // gittigini gostermek icin (bkz. compute_motor_mix'teki M5-M8 isaretleri).
@@ -277,7 +288,13 @@ void PixhawkGUI::apply_mini_motor_mix(float surge, float lateral, float yaw, flo
     if (!mini_esp_thread) return;
     auto pulses = compute_motor_mix(surge, lateral, yaw, vertical);
     mini_esp_thread->set_motors(pulses);
+    mini_last_pulses = pulses;
     ui.miniRovPanel->motor_diagram->set_motor_pulses(pulses);
+}
+
+void PixhawkGUI::send_motor_heartbeat() {
+    if (ana_esp_thread && ana_armed) ana_esp_thread->set_motors(ana_last_pulses);
+    if (mini_esp_thread && mini_armed) mini_esp_thread->set_motors(mini_last_pulses);
 }
 
 // ==================== Ana ROV Bağlantı (ESP32 seri port) ====================
@@ -757,6 +774,11 @@ void PixhawkGUI::on_autonomous_ana() {
     ana_autonomous = true;
     set_led(ui.anaRovPanel->led_autonomous, true);
     set_led(ui.anaRovPanel->led_manual, false);
+    // Otonom moda gecerken elde kalan son manuel komutu notrle: yoksa heartbeat
+    // (bkz. send_motor_heartbeat) eski manuel hareketi otonom modda da göndermeye
+    // devam eder - burada henuz gercek bir otonom surus mantigi olmadigi icin
+    // guvenli varsayilan tam durmadir.
+    apply_ana_motor_mix(0, 0, 0, 0);
     log_message("[ANA] Otonom moda geçildi", 0);
 }
 
@@ -784,6 +806,15 @@ void PixhawkGUI::toggle_stabilize_mode_ana() {
         }
         log_message("[ANA] Sabitleme modu KAPANDI (%100 manuel).", 0);
         show_screen_warning("Sabitleme modu kapandı: %100 manuel kontrol.");
+    }
+
+    // Mod degisir degismez mevcut eksen durumuyla mixi yeniden hesaplayip
+    // gonder: aksi halde bir sonraki eksen/buton olayina kadar eski moddan
+    // kalma (ornegin sabitleme duzeltmesi icermis) darbeler heartbeat
+    // tarafindan degismeden tekrar tekrar gonderilmeye devam eder.
+    if (ana_esp_thread && !ana_autonomous) {
+        apply_ana_motor_mix(-ana_axes_state[1], ana_axes_state[0],
+                             ana_axes_state[2], -ana_axes_state[3]);
     }
 }
 

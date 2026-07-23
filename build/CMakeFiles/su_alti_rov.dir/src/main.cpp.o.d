@@ -320,6 +320,9 @@ CMakeFiles/su_alti_rov.dir/src/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qtextstream.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QProcess \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qprocess.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QTimer \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qtimer.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qbasictimer.h \
  /home/lagaca/Desktop/su_alti_rov/include/Ui_MainWindow.hpp \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
