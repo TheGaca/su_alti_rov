@@ -23,6 +23,14 @@ class QIODevice;
 // ESP32 taraf: "READY" / "ARMING" / "ARMED" / "DISARMED" / "ERR:..." satirlari yollar.
 // ESP32 ayrica IMU (BNO055) varsa periyodik "ATT:roll,pitch,yaw" (derece) satiri yollar.
 // Basinc sensoru takiliysa "DEPTH:metre,dikey_hiz_m/s" satiri da yollar.
+// DHT11 nem/sicaklik sensoru takiliysa "NEM:nem_yuzde,sicaklik_C" satiri da yollar.
+//   "TORPEDO"                    -> siradaki torpidoyu ates alir (kalan sayi ve
+//                                    10sn bekleme suresi ESP32 tarafinda yonetilir)
+// ESP32 taraf ates alma sonrasi "TORPEDO:kalan_sayi" satiri yollar; kalan yoksa
+// veya bekleme suresi dolmadiysa "ERR:TORPEDOEMPTY" / "ERR:TORPEDOCOOLDOWN" doner.
+// Kamera ESP'si (Motor ESP degil) WegSh goruntu analiziyle periyodik
+// "WEGSH:yaw,gorunur" (yaw -1..1, gorunur 0/1) satiri yollar - bu Motor ESP'ye
+// hic gitmez, sadece PC'nin otonom mod motor karisimina girdi olarak kullanilir.
 class EspRovThread : public QThread {
     Q_OBJECT
 public:
@@ -35,12 +43,16 @@ public:
     void arm();
     void disarm();
     void set_motors(const std::array<int, 8> &pulses_us);
+    void torpedo();
 
 signals:
     void status_signal(const QString &msg);
     void armed_signal(bool armed);
     void attitude_signal(float roll, float pitch, float yaw);
     void depth_signal(float meters, float vertical_speed_ms);
+    void nem_signal(float humidity_pct, float temperature_c);
+    void torpedo_signal(int remaining);
+    void wegsh_signal(float yaw, bool visible);
 
 protected:
     void run() override;

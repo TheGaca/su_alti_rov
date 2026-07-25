@@ -34,6 +34,9 @@ private slots:
     void update_ana_armed(bool armed);
     void update_ana_attitude(float roll, float pitch, float yaw);
     void update_ana_depth(float meters, float vertical_speed_ms);
+    void update_ana_nem(float humidity_pct, float temperature_c);
+    void update_ana_torpedo(int remaining);
+    void update_ana_wegsh(float yaw, bool visible);
 
     // Mini ROV baglanti (ESP32 seri port)
     void toggle_mini_connection();
@@ -107,6 +110,15 @@ private:
     void apply_ana_motor_mix(float surge, float lateral, float yaw, float vertical);
     void apply_mini_motor_mix(float surge, float lateral, float yaw, float vertical);
 
+    // Otonom moddaki motor karisimini tek bir yerden hesaplar: WegSh'in yaw
+    // kararini (goruntu isleme, Kamera ESP'den) mevcut derinlik-hold ve
+    // roll/pitch stabilizasyonuyla (IMU, Motor ESP'den) birlestirir. ATT:/
+    // DEPTH:/WEGSH: satirlarindan HANGISI gelirse gelsin (uc ayri kaynaktan,
+    // farkli hizlarda), son bilinen degerlerle bu fonksiyon cagrilir - boylece
+    // uc yerde ayni mantik tekrar edilmez ve tek bir M: komutu (Motor ESP'ye)
+    // uretilir, cakisan/birbirini gecersiz kilan iki ayri komut kaynagi olmaz.
+    void recompute_ana_autonomous_mix();
+
     Ui_MainWindow ui;
 
     // Thread'ler
@@ -144,6 +156,21 @@ private:
     float ana_yaw; // BNO055'in manyetometreli pusulasindan; su an sadece
                     // gosterge/log icin - motor karisimina henuz dahil edilmiyor
                     // (yaw-hold ileride istenirse buradan baslanir).
+
+    // Otonom moda gecince otomatik acilan irtifa (derinlik) sabitleme: hedef
+    // derinlik, otonoma gecildigi andaki mevcut derinlige kilitlenir; sonraki
+    // her derinlik okumasinda bu hedeften sapma dikey itkiye duzeltme olarak
+    // eklenir (bkz. update_ana_depth()). ana_current_depth manuel modda da
+    // guncellenir (hedefi yakalamak icin), duzeltme ise sadece ana_autonomous
+    // acikken uygulanir.
+    float ana_current_depth;
+    float ana_depth_target;
+
+    // WegSh (Kamera ESP uzerindeki kirmizi serit tespiti) - en son bilinen
+    // yaw sapmasi (-1..1) ve serit gorunuyor mu. Sadece ana_autonomous
+    // acikken recompute_ana_autonomous_mix() icinde kullanilir.
+    float ana_wegsh_yaw;
+    bool ana_wegsh_visible;
 
     // Ping islemleri
     QProcess *cam_ping_proc;

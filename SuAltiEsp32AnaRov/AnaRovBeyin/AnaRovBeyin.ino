@@ -6,11 +6,11 @@
  *   5,6,7,8 = dikey (derinlik) itki motorlari
  * motorPins dizisindeki index 0..7, motor numarasi 1..8'e karsilik gelir.
  *
- * Seri protokol (115200 baud, satir sonu '\n'). Komutlar SADECE kamera
- * ESP'sine giden kopruden (Serial2, GPIO16=RX/GPIO17=TX - bkz. BRIDGE_*
- * tanimlari) okunur; USB (Serial) artik komut dinlemez, sadece durum
- * satirlarini da alan bir debug/bench-test ciktisi olarak calisir (bkz.
- * sendStatus()) - denizde zaten USB baglanmayacak, sadece guc (VIN/GND) gider:
+ * Seri protokol (satir sonu '\n'). Komutlar SADECE kamera ESP'sinden
+ * (AnaRovKamera.ino) ESP-NOW (kablosuz, bkz. asagidaki ESPNOW_* tanimlari)
+ * ile gelir; USB (Serial) artik komut dinlemez, sadece durum satirlarini da
+ * alan bir debug/bench-test ciktisi olarak calisir (bkz. sendStatus()) -
+ * denizde zaten USB baglanmayacak, sadece guc (VIN/GND) gider:
  *   "ARM"                     -> ESC'leri ARM eder (2sn 850us tutar, sonra notre gecer)
  *   "DISARM"                  -> Tum pinlerden PWM sinyalini tamamen keser (ESC durur)
  *   "M:p1,p2,p3,p4,p5,p6,p7,p8" -> motor 1..8 icin darbe genisligi (us, 850-1850)
@@ -46,9 +46,9 @@
  * disarida bir router/internet GEREKMEZ, bilgisayarindan dogrudan OTA_AP_SSID
  * agina baglanip Arduino IDE'de Tools > Port'tan agdaki OTA_HOSTNAME
  * cihazini secerek kod atabilirsin (Arduino IDE bunu birkac saniyede otomatik bulur).
- * Bu SADECE firmware guncellemek icin; motor komutlari halen USB Serial'dan
- * geliyor, yukaridaki seri protokol degismedi. OTA sirasinda guncelleme
- * baslar baslamaz motorlar guvenlik icin DISARM edilir (bkz. setupOTA()).
+ * Bu SADECE firmware guncellemek icin; motor komutlari halen kamera ESP'sinden
+ * ESP-NOW ile geliyor, yukaridaki seri protokol degismedi. OTA sirasinda
+ * guncelleme baslar baslamaz motorlar guvenlik icin DISARM edilir (bkz. setupOTA()).
  *
  * IMU (Adafruit BNO055, 9-DOF fusion, I2C) baglantisi:
  *   VIN -> 3V3         GND -> GND
@@ -75,9 +75,13 @@
 #include <Wire.h>
 #include <WiFi.h>
 #include <ArduinoOTA.h>
+#include <esp_now.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/queue.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
+#include <DHT.h>
 
 // ---- OTA (kablosuz kod yukleme) ayarlari ----
 // ESP32 kendi erisim noktasini actigi icin dis bir WiFi agina/internete ihtiyac yok.
@@ -86,16 +90,36 @@
 #define OTA_PASSWORD    "sualti123"  // Arduino IDE kod atarken ayrica sorulan OTA sifresi
 #define OTA_HOSTNAME    "Ana-Rov-DenizAlti"  // mDNS hostname: sadece harf/rakam/tire gecerli, parantez/bosluk KULLANMA (Tools>Port'ta cihazi bulmayi engeller)
 
-// ---- Kamera ESP'sine (AnaRovKamera.ino) UART koprusu ----
-// PC artik komutlari USB yerine Ethernet uzerinden kamera ESP'sine gonderiyor;
-// kamera ESP'si bunlari bu ikinci donanimsal seri porttan (Serial2) bu karta
-// iletiyor. USB (Serial) debug/bench test icin ayrica calismaya devam ediyor -
-// iki kaynaktan da ayni komutlar kabul edilir (bkz. loop()).
-// Kablolama: kamera ESP GPIO33(TX) -> bu kart GPIO16(RX), kamera ESP GPIO32(RX)
-// <- bu kart GPIO17(TX), GND ortak.
-#define BRIDGE_RX_PIN 16
-#define BRIDGE_TX_PIN 17
-#define BRIDGE_BAUD   115200
+// ---- Kamera ESP'sine (AnaRovKamera.ino) ESP-NOW koprusu ----
+// PC komutlari (Ethernet/TCP) once kamera ESP'sine ulasir, o da bunlari
+// kablosuz ESP-NOW ile bu karta iletir - iki kart arasinda artik fiziksel
+// kablo YOK (eskiden Serial2/UART kullaniliyordu, GPIO16/17 kabloluydu; bu
+// pinler artik bosta - ileride eklenecek ek motor kanallari icin
+// kullanilabilir). ESP-NOW baglantisiz/dusuk gecikmeli bir protokol; her
+// paket zaten trim edilmis tek bir protokol satiridir ("ARM", "M:..." vb.),
+// ek framing gerekmez (bkz. espNowSendLine(), onEspNowRecv()).
+//
+// Kanal, PMK/LMK ve karsi tarafin (Kamera ESP) MAC adresi her iki kartta da
+// BIREBIR AYNI olmali - biri degisirse diger kart da guncellenip yeniden
+// flaslanmali.
+#define ESPNOW_CHANNEL 1
+
+// Kamera ESP'sinin WiFi(AP) MAC adresi. Bring-up: her iki kartta setup()
+// icindeki "Serial.println(WiFi.macAddress())" satiriyla kendi MAC'ini
+// USB Serial Monitor'a bastirir; Kamera ESP'nin bastirdigi MAC'i buraya
+// yazip bu karti YENIDEN flasla. SIFIRLARLA birakilirsa ESP-NOW calismaz.
+uint8_t cameraEspMac[6] = {0xC0, 0x49, 0xEF, 0x30, 0xE9, 0x8D};
+
+// ESP-NOW yerlesik sifrelemesi (PMK/LMK) - sabit/hardcoded anahtar, rotasyon
+// yok; amac rastgele/firsatci mudahaleye karsi ucuz bir bariyer olmak,
+// kriptografik olarak guclu bir garanti degil. Her iki kartta BIREBIR AYNI
+// olmali (16 bayt).
+// String literal yerine acik byte listesi kullanildi: bir string literal
+// array boyutuyla (16) TAM eslesirse bazi derleyiciler (bu toolchain dahil)
+// null-sonlandiriciyi dusurme konusunda hataya dusuyor ("initializer-string...
+// too long") - acik liste bu belirsizligi tamamen ortadan kaldirir.
+static const uint8_t ESPNOW_PMK[16] = {'S','u','A','l','t','i','R','o','v','P','M','K','2','0','2','6'};
+static const uint8_t ESPNOW_LMK[16] = {'S','u','A','l','t','i','R','o','v','L','M','K','2','0','2','6'};
 
 #define PWM_FREQ_HZ   50
 #define PWM_RES       16
@@ -104,6 +128,10 @@
 #define MAX_US        1850
 #define ARM_HOLD_MS   2000
 #define FAILSAFE_MS   500
+#define BOOT_SETTLE_MS 2000 // acilistan sonra bu sure boyunca ESP-NOW'dan gelen komutlar yok
+                             // sayilir - ucuz savunma katmani (eskiden fiziksel UART hattinda
+                             // olusabilen gurultuye karsiydi; ESP-NOW'a gecince o risk yapisal
+                             // olarak ortadan kalkti ama bu koruma zarasiz oldugu icin duruyor)
 #define MOTOR_SLEW_STEP_US    40  // her slew adiminda izin verilen max darbe degisimi (us)
 #define MOTOR_SLEW_PERIOD_MS  20  // slew adimlari arasi sure (ms); 40us/20ms = 1000us'luk tam
                                    // aralik (MIN_US<->MAX_US) yaklasik 500ms'de kat edilir.
@@ -115,6 +143,90 @@
 #define IMU_PERIOD_MS 100
 
 const int motorPins[8] = {13, 4, 14, 27, 26, 25, 33, 32};
+
+// ==================== Torpido pinleri ====================
+// 18/19/23 PcbReadme'de zaten "Torpido" olarak kablolu ama kodda hic
+// kullanilmamisti. 16/17 ESP-NOW'a gecince bosalan (eskiden Serial2/UART
+// bridge) guvenli pinler - toplam 5 torpido pini bu ikisiyle tamamlaniyor.
+// setup() icinde hepsi aciktan LOW (pasif) yazilarak baslatilir.
+//
+// Ates alma sirali: "TORPEDO" komutu her geldiginde torpedoPins[torpedoIndex]
+// kisa bir sure HIGH'a cekilir (TORPEDO_PULSE_MS), sonra torpedoIndex bir
+// artar - hangi torpidonun dolu/bos oldugunu operatorun elle takip etmesine
+// gerek kalmaz. Ard arda yanlislikla ates almayi onlemek icin ates alma
+// sonrasi TORPEDO_COOLDOWN_MS boyunca yeni komut reddedilir (ERR:TORPEDOCOOLDOWN).
+// Kalan torpido sayisi her ates almada "TORPEDO:kalan" olarak PC'ye bildirilir.
+#define TORPEDO_PULSE_MS    1000  // pin bu kadar sure HIGH tutulur - mekanizmaya gore ayarlanabilir
+#define TORPEDO_COOLDOWN_MS 10000 // ates alma sonrasi bir sonrakine kadar bekleme suresi
+
+const int torpedoPins[5] = {18, 19, 23, 16, 17};
+int torpedoIndex = 0;                // siradaki (henuz atilmamis) torpido, 0-4
+int torpedoesRemaining = 5;
+unsigned long torpedoCooldownUntil = 0;
+int torpedoFiringPin = -1;           // su an HIGH tutulan pin (-1 = yok)
+unsigned long torpedoPulseOffAt = 0;
+
+void fireTorpedo() {
+    unsigned long now = millis();
+    if (torpedoesRemaining <= 0) {
+        sendStatus("ERR:TORPEDOEMPTY");
+        return;
+    }
+    if (now < torpedoCooldownUntil) {
+        sendStatus("ERR:TORPEDOCOOLDOWN");
+        return;
+    }
+    torpedoFiringPin = torpedoPins[torpedoIndex];
+    digitalWrite(torpedoFiringPin, HIGH);
+    torpedoPulseOffAt = now + TORPEDO_PULSE_MS;
+    torpedoIndex++;
+    torpedoesRemaining--;
+    torpedoCooldownUntil = now + TORPEDO_COOLDOWN_MS;
+    sendStatus("TORPEDO:" + String(torpedoesRemaining));
+}
+
+// loop() icinden her turda cagirilir - pulse suresi dolan torpido pinini
+// (delay() kullanmadan, failsafe/heartbeat'i bloklamadan) LOW'a geri ceker.
+void updateTorpedoPulse() {
+    if (torpedoFiringPin != -1 && millis() >= torpedoPulseOffAt) {
+        digitalWrite(torpedoFiringPin, LOW);
+        torpedoFiringPin = -1;
+    }
+}
+
+// ==================== DHT11 Nem/Sicaklik Sensoru ====================
+// GPIO5: strapping pini ama acilista guvenli/varsayilan durumu zaten HIGH
+// (GPIO12'nin aksine) - DHT11 modulunun DATA hattindaki pull-up de onu
+// HIGH'a cektigi icin herhangi bir acilis catismasi olusmuyor.
+// Kablolama: modul VCC->3V3, GND->GND, OUT/DATA/SIG->GPIO5.
+#define DHT_PIN  5
+#define DHT_TYPE DHT11
+#define NEM_PERIOD_MS 2000 // DHT11 yavastir, saniyede birden fazla okuma guvenilmez
+
+DHT dht(DHT_PIN, DHT_TYPE);
+unsigned long lastNemAt = 0;
+float humidityPct = 0.0f;
+float dhtTempC = 0.0f;
+
+// ==================== ESP-NOW aktivite LED'i ====================
+// Kamera ESP'sine (PC'ye) her veri gonderildiginde kisa bir sure yanip
+// soner - Kamera ESP'deki ayni mantigin (GPIO2 uzerindeki Ethernet LED'i)
+// karsiligi. GPIO2 motorPins/IMU/derinlik pinleriyle cakismiyor, bosta.
+#define LED_PIN 2
+#define LED_FLASH_MS 50
+volatile unsigned long ledOffAtMs = 0;
+
+void flashLed() {
+    digitalWrite(LED_PIN, HIGH);
+    ledOffAtMs = millis() + LED_FLASH_MS;
+}
+
+void updateLed() {
+    if (ledOffAtMs != 0 && millis() >= ledOffAtMs) {
+        digitalWrite(LED_PIN, LOW);
+        ledOffAtMs = 0;
+    }
+}
 
 // ==================== Basinc/Derinlik Sensoru ====================
 #define DEPTH_ADC_PIN      34   // input-only pin, baska hicbir seyle cakismaz
@@ -157,13 +269,22 @@ float depthReadPressureMPa() {
     return (pressureMPa < 0) ? 0 : pressureMPa;
 }
 
-// Protokol/durum satirlarini (READY, ARMED, ATT:, DEPTH: vb.) HEM USB'ye HEM
-// de kamera ESP'sine giden koprude (Serial2) yollar - PC hangisinden baglanmis
-// olursa olsun ayni bilgiyi gorur. Sadece yerel/bench debug mesajlari (IMU I2C
-// tarama, OTA kurulum vs.) icin Serial.print kullanilmaya devam eder.
+// Onemli/nadir durum satirlarini (READY, ARMING, ARMED, DISARMED, ERR:...,
+// derinlik kalibrasyonu vb.) HEM USB konsoluna HEM de kamera ESP'sine
+// ESP-NOW ile yollar, LED'i yakar. ATT:/DEPTH: gibi cok sik (100-200ms'de
+// bir) tekrarlayan telemetri icin bunun yerine sendStatusQuiet() kullanilir
+// - USB konsolu bu kadar sik veriyle bogulmasin diye.
 void sendStatus(const String &line) {
     Serial.println(line);
-    Serial2.println(line);
+    espNowSendLine(line);
+    flashLed();
+}
+
+// ATT:/DEPTH: gibi sik tekrarlayan telemetri satirlari icin: PC'ye ESP-NOW
+// ile gonderir ve LED'i yakar, ama USB konsoluna YAZMAZ.
+void sendStatusQuiet(const String &line) {
+    espNowSendLine(line);
+    flashLed();
 }
 
 // Acilista (ROV suya girmeden once) o anki basinci "yuzey" referansi olarak kaydeder.
@@ -243,18 +364,8 @@ bool imuInit() {
 // ayni mantik, ama artik BNO055'in filtrelenmis/motor-titresimine dayanikli
 // ciktisiyla). Boylece eksen atamasi/isareti dogru sekilde degistirilebilir.
 //
-// GECICI TEHIS MODU: Dogru gx/gy/gz -> roll/pitch eslemesi henuz kesinlesmedi;
-// asagidaki Serial.print ile ham degerleri USB'den izleyip (Serial Monitor,
-// 115200) ROV'u elle hareket ettirerek hangi eksenin hangi harekete tepki
-// verdigini gorebiliriz. Bu satirlari kaldirmadan once bu veriyi paylas.
 void imuUpdate() {
     imu::Vector<3> gravity = bno.getVector(Adafruit_BNO055::VECTOR_GRAVITY);
-    Serial.print("GRAV: gx=");
-    Serial.print(gravity.x(), 2);
-    Serial.print(" gy=");
-    Serial.print(gravity.y(), 2);
-    Serial.print(" gz=");
-    Serial.println(gravity.z(), 2);
 
     // Ilk denemede eksenler arasi sizinti (coupling) yoktu, sadece ikisinin de
     // isareti tersti (yukari kaldirinca asagi, sola yatirinca saga gosteriyordu)
@@ -272,6 +383,7 @@ RovState state = DISARMED;
 unsigned long armStartedAt = 0;
 unsigned long lastCommandAt = 0;
 unsigned long lastSlewAt = 0;
+unsigned long bootSettleUntil = 0;
 uint16_t motorPulse[8];
 uint16_t motorTarget[8]; // handleMotorCommand'in yazdigi hedef; motorPulse buna kademeli yaklasir
 
@@ -388,18 +500,105 @@ void handleLine(const String &line) {
         disarmNow();
     } else if (line.startsWith("M:")) {
         handleMotorCommand(line);
+    } else if (line == "TORPEDO") {
+        fireTorpedo();
     } else {
         sendStatus("ERR:UNKNOWN");
+    }
+}
+
+// ==================== ESP-NOW (Kamera ESP koprusu) ====================
+// ESP-NOW paketleri WiFi/LWIP task context'inde (gercek ISR degil) gelir;
+// onEspNowRecv() burada agir is yapmadan (Serial.print bile YAZMADAN) sadece
+// gonderici MAC'ini dogrulayip veriyi bir kuyruga koyar, gercek isleme
+// (handleLine) loop() icinde, ana dongude yapilir - Serial2.available() ile
+// ayni "once topla, sonra isle" deseni.
+struct EspNowMsg {
+    uint8_t len;
+    uint8_t data[251]; // +1: null sonlandirma icin (esp_now payload max 250 bayt)
+};
+
+QueueHandle_t espNowRxQueue = nullptr;
+
+void onEspNowRecv(const esp_now_recv_info_t *info, const uint8_t *data, int len) {
+    if (memcmp(info->src_addr, cameraEspMac, 6) != 0) return; // beklenmeyen gonderici, yok say
+    if (len <= 0 || len > 250) return;
+    EspNowMsg msg;
+    msg.len = (uint8_t)len;
+    memcpy(msg.data, data, len);
+    msg.data[len] = '\0';
+    xQueueSend(espNowRxQueue, &msg, 0); // kuyruk doluysa mesaj sessizce dusurulur
+}
+
+// sendStatus()'un kamera ESP'sine gonderdigi her satiri (\n eklemeden) ESP-NOW
+// paketi olarak yollar - 250 bayt siniri protokoldeki en uzun satirdan
+// (M: komutu, ~40 bayt) fazlasiyla genis.
+void espNowSendLine(const String &line) {
+    if (line.length() > 250) return; // olmamasi gereken bir durum, savunma amacli
+    esp_now_send(cameraEspMac, (const uint8_t *)line.c_str(), line.length());
+}
+
+// ==================== ESP-NOW baglanti durumu ====================
+// ESP-NOW baglantisiz bir protokol (TCP gibi "bagli/kopuk" kavrami yok),
+// ama esp_now_send() her paket sonrasi MAC-katmani ACK'ine gore basarili/
+// basarisiz bilgisi verir (bkz. onEspNowSent()). Bu bilgiyi kullanarak kendi
+// "baglanti var/yok" durumumuzu turetiyoruz: ESPNOW_LINK_TIMEOUT_MS suresince
+// hic basarili gonderim olmazsa "YOK" sayilir. Sadece durum DEGISTIGINDE
+// (surekli degil) konsola yazilir - PC/kamera ESP baglantisi kesilip
+// gelince fark edilsin diye.
+#define ESPNOW_LINK_TIMEOUT_MS 1000
+unsigned long espNowLastOkAt = 0;
+bool espNowLinkUp = false;
+
+// NOT: bu core surumunde (arduino-esp32 3.3.8) esp_now_send_cb_t imzasi
+// eski "const uint8_t *mac_addr" yerine "const wifi_tx_info_t *tx_info"
+// bekliyor (onEspNowRecv()'deki esp_now_recv_info_t degisikligiyle ayni
+// turden bir API guncellemesi) - mac adresine burada zaten ihtiyacimiz yok.
+void onEspNowSent(const wifi_tx_info_t *tx_info, esp_now_send_status_t status) {
+    if (status == ESP_NOW_SEND_SUCCESS) {
+        espNowLastOkAt = millis();
+    }
+}
+
+void updateEspNowLinkStatus() {
+    bool nowUp = espNowLastOkAt != 0 && (millis() - espNowLastOkAt < ESPNOW_LINK_TIMEOUT_MS);
+    if (nowUp != espNowLinkUp) {
+        espNowLinkUp = nowUp;
+        Serial.println(espNowLinkUp ? "Kamera ESP: ESP-NOW baglantisi VAR" : "Kamera ESP: ESP-NOW baglantisi YOK");
+    }
+}
+
+void setupEspNow() {
+    espNowRxQueue = xQueueCreate(8, sizeof(EspNowMsg));
+
+    if (esp_now_init() != ESP_OK) {
+        Serial.println("ESP-NOW: baslatilamadi!");
+        return;
+    }
+    esp_now_set_pmk(ESPNOW_PMK);
+    esp_now_register_recv_cb(onEspNowRecv);
+    esp_now_register_send_cb(onEspNowSent);
+
+    esp_now_peer_info_t peerInfo = {};
+    memcpy(peerInfo.peer_addr, cameraEspMac, 6);
+    peerInfo.channel = ESPNOW_CHANNEL;
+    peerInfo.ifidx = WIFI_IF_AP; // bu kart sadece WIFI_AP modunda (STA yok) - arayuz acikca belirtilmezse varsayilan STA(0) olur ve gonderim basarisiz olur
+    peerInfo.encrypt = true;
+    memcpy(peerInfo.lmk, ESPNOW_LMK, 16);
+    if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+        Serial.println("ESP-NOW: peer eklenemedi!");
     }
 }
 
 // ESP32'yi kendi WiFi erisim noktasi (AP) yapar; PC/telefon dogrudan bu aga
 // baglanip Arduino IDE'den kablosuz kod atabilir. Router/internet gerekmez -
 // tamamen yerel, tezgah/dokta kullanim icindir (motor komutlari bundan
-// etkilenmez, onlar USB Serial ve/veya kamera ESP koprusunden (Serial2) geliyor).
+// etkilenmez, onlar USB Serial ve/veya kamera ESP koprusunden (ESP-NOW) geliyor).
+// ESPNOW_CHANNEL'a sabitlenmis kanal, kamera ESP'siyle ESP-NOW gorusmesi icin
+// ikisinin de ayni kanalda olmasini garanti eder.
 void setupOTA() {
     WiFi.mode(WIFI_AP);
-    WiFi.softAP(OTA_AP_SSID, OTA_AP_PASS);
+    WiFi.softAP(OTA_AP_SSID, OTA_AP_PASS, ESPNOW_CHANNEL, 0, 4);
     Serial.print("OTA AP acildi -> SSID: ");
     Serial.print(OTA_AP_SSID);
     Serial.print("  IP: ");
@@ -421,28 +620,69 @@ void setupOTA() {
 
 void setup() {
     Serial.begin(115200);
-    Serial2.begin(BRIDGE_BAUD, SERIAL_8N1, BRIDGE_RX_PIN, BRIDGE_TX_PIN);
     for (int i = 0; i < 8; i++) motorPulse[i] = NEUTRAL_US;
+
+    pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, LOW);
+
+    // Torpido pinleri - hicbir komut mantigi yok, sadece pasif/LOW baslatiliyor
+    // ki acilista/yanlislikla aktif olmasinlar.
+    for (int i = 0; i < 5; i++) {
+        pinMode(torpedoPins[i], OUTPUT);
+        digitalWrite(torpedoPins[i], LOW);
+    }
+
+    // ESP-NOW, sendStatus() (dolayisiyla asagidaki imuInit()/depthCalibrateSurface()
+    // gibi sendStatus() cagiran her sey) kullanilmadan ONCE hazir olmali - aksi
+    // halde esp_now_send() henuz baslatilmamis bir surucuye erisir ve cip cakilir
+    // (LoadProhibited crash - bu sirayla yasandi, bkz. commit mesaji/konusma).
+    setupOTA();     // WiFi.mode(WIFI_AP) burada baslar - ESP-NOW'dan once gerekli
+    setupEspNow();
+
+    // Bring-up icin: bu karti MAC adresini USB Serial Monitor'a basar. ONEMLI:
+    // WiFi.macAddress() STA arayuzunun MAC'ini dondurur - biz STA hic acmiyoruz
+    // (sadece WIFI_AP), o yuzden o hep 00:00:00:00:00:00 basardi. ESP-NOW'u
+    // WIFI_IF_AP'a baglamis olduk (bkz. setupEspNow()), o yuzden gercek/kullanilan
+    // adres softAPmacAddress()'tir.
+    Serial.print("Bu kartin WiFi MAC adresi (ESP-NOW bring-up icin): ");
+    Serial.println(WiFi.softAPmacAddress());
+
     imuReady = imuInit();
-    sendStatus(imuReady ? "SUALTIESP32 READY (IMU OK)" : "SUALTIESP32 READY (IMU YOK)");
 
     analogSetPinAttenuation(DEPTH_ADC_PIN, ADC_11db); // 0-3.3V tam araligi kullan
     depthCalibrateSurface();
 
-    setupOTA();
+    dht.begin();
+
+    sendStatus((imuReady ? String("SUALTIESP32 READY (IMU OK) MAC=") : String("SUALTIESP32 READY (IMU YOK) MAC=")) + WiFi.softAPmacAddress());
+    sendStatus("TORPEDO:" + String(torpedoesRemaining)); // GUI acilista "5/5" gorsun diye
+
+    bootSettleUntil = millis() + BOOT_SETTLE_MS;
 }
 
 void loop() {
     ArduinoOTA.handle();
+    updateLed(); // flashLed() ile yakilan LED'i zamani gelince sondurur
+    updateEspNowLinkStatus(); // baglanti VAR/YOK degistiginde konsola yazar
+    updateTorpedoPulse(); // pulse suresi dolan torpido pinini LOW'a geri ceker
 
-    // Komutlar artik SADECE kamera ESP'sinden (AnaRovKamera.ino) gelen kopruden
-    // (Serial2) okunuyor - USB (Serial) dinlenmiyor, sadece debug/durum ciktisi
-    // icin acik kaliyor (bkz. sendStatus()). Denizde zaten USB kablosu
-    // olmayacagi icin bu dinleme gereksizdi.
-    while (Serial2.available()) {
-        String line = Serial2.readStringUntil('\n');
-        line.trim();
-        if (line.length() > 0) handleLine(line);
+    // Komutlar artik SADECE kamera ESP'sinden (AnaRovKamera.ino) ESP-NOW ile
+    // geliyor - USB (Serial) dinlenmiyor, sadece debug/durum ciktisi icin acik
+    // kaliyor (bkz. sendStatus()). Denizde zaten USB kablosu olmayacagi icin
+    // bu dinleme gereksizdi. onEspNowRecv() zaten gonderici MAC'ini dogrulamis
+    // olarak kuyruga koyuyor; burada sadece isliyoruz.
+    {
+        EspNowMsg msg;
+        int drained = 0;
+        while (drained++ < 32 && xQueueReceive(espNowRxQueue, &msg, 0) == pdTRUE) {
+            // Acilistan sonraki BOOT_SETTLE_MS boyunca hatta ne gelirse gelsin
+            // yok say - ESP-NOW paketleri MAC-katmaninda dogrulanmis olsa da bu
+            // ucuz savunma katmani korunuyor (bkz. tanimindaki not).
+            if (millis() < bootSettleUntil) continue;
+            String line((const char *)msg.data);
+            line.trim();
+            if (line.length() > 0) handleLine(line);
+        }
     }
 
     if (state == ARMING && millis() - armStartedAt >= ARM_HOLD_MS) {
@@ -461,7 +701,7 @@ void loop() {
     if (imuReady && millis() - lastImuAt >= IMU_PERIOD_MS) {
         lastImuAt = millis();
         imuUpdate();
-        sendStatus("ATT:" + String(rollDeg, 1) + "," + String(pitchDeg, 1) + "," + String(yawDeg, 1));
+        sendStatusQuiet("ATT:" + String(rollDeg, 1) + "," + String(pitchDeg, 1) + "," + String(yawDeg, 1));
     }
 
     // IMU baslangicta bulunamadiysa (kablolama gec duzeltildiyse, gevsek
@@ -475,6 +715,17 @@ void loop() {
     if (millis() - lastDepthAt >= DEPTH_PERIOD_MS) {
         lastDepthAt = millis();
         depthUpdate();
-        sendStatus("DEPTH:" + String(depthMeters, 2) + "," + String(depthSpeedMs, 3));
+        sendStatusQuiet("DEPTH:" + String(depthMeters, 2) + "," + String(depthSpeedMs, 3));
+    }
+
+    if (millis() - lastNemAt >= NEM_PERIOD_MS) {
+        lastNemAt = millis();
+        float h = dht.readHumidity();
+        float t = dht.readTemperature();
+        if (!isnan(h) && !isnan(t)) { // DHT11 okuma hatasinda NaN doner - o turu atla
+            humidityPct = h;
+            dhtTempC = t;
+            sendStatusQuiet("NEM:" + String(humidityPct, 1) + "," + String(dhtTempC, 1));
+        }
     }
 }

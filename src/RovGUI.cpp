@@ -34,6 +34,17 @@ constexpr int AXIS_RIGHT_Y = 4; // Sağ stick Y  -> yukarı/aşağı (derinlik)
 // ile ~22.5 derece egimde tam duzeltme (doygunluk) uygulanir. Havuzda asiri/az
 // tepki gorulurse bu degeri ayarla; yon ters gelirse isaretini cevir.
 constexpr float STAB_GAIN = 4.0f;
+
+// Otonom modda irtifa (derinlik) sabitleme: hedef-mevcut derinlik farki (metre)
+// * DEPTH_HOLD_GAIN, dikey itki olarak uygulanir (-1..1 sinirli). GAIN=2.0 ile
+// ~0.5m sapmada tam duzeltme (doygunluk). Cok yavas/hizli tepki gorulurse ayarla;
+// yon ters gelirse isaretini cevir.
+constexpr float DEPTH_HOLD_GAIN = 2.0f;
+
+// Otonom modda WegSh (kirmizi serit takibi) izi gorurken uygulanan sabit,
+// dusuk ileri itki. Izi kaybedince (visible=false) surge 0'a duser - iz
+// gorunmuyorsa korlemesine ilerlemek yerine dur.
+constexpr float WEGSH_AUTONOMOUS_SURGE = 0.25f;
 }
 
 RovGUI::RovGUI(QWidget *parent)
@@ -44,6 +55,8 @@ RovGUI::RovGUI(QWidget *parent)
       ana_lamp_on(false), mini_lamp_on(false), ana_autonomous(false), torpedo_ready(true), minirov_launched(false), dark_mode(false),
       ana_armed(false), mini_armed(false), ana_cam_connected(false),
       ana_stabilize(false), ana_roll(0.0f), ana_pitch(0.0f), ana_yaw(0.0f),
+      ana_current_depth(0.0f), ana_depth_target(0.0f),
+      ana_wegsh_yaw(0.0f), ana_wegsh_visible(false),
       cam_ping_proc(nullptr), anarov_ping_proc(nullptr),
       log_file(nullptr), log_stream(nullptr),
       motor_heartbeat_timer(nullptr)
@@ -129,6 +142,12 @@ RovGUI::RovGUI(QWidget *parent)
     motor_heartbeat_timer = new QTimer(this);
     connect(motor_heartbeat_timer, &QTimer::timeout, this, &RovGUI::send_motor_heartbeat);
     motor_heartbeat_timer->start(150);
+
+    // Ana ROV sabit IP/port'a baglandigi (elle secilecek bir port/baudrate yok)
+    // icin uygulama acilir acilmaz otomatik baglanir - elle "Bağlan" tiklamaya
+    // gerek kalmaz. Mini ROV gercek seri port sectirdigi icin otomatik
+    // baglanmiyor, kullanici port'u secip elle baglanmaya devam ediyor.
+    toggle_ana_connection();
 }
 
 RovGUI::~RovGUI() {
@@ -265,7 +284,13 @@ std::array<int, 8> RovGUI::compute_motor_mix(float surge, float lateral, float y
 }
 
 void RovGUI::apply_ana_motor_mix(float surge, float lateral, float yaw, float vertical) {
-    if (!ana_esp_thread) return;
+    // ARM edilmeden (ana_armed=false) motor komutu gonderilmesin - ESP32
+    // firmware'i zaten ARMED olmayan durumda M: komutlarini reddediyor
+    // (ERR:NOTARMED), ama bunu burada da kontrol etmek ikinci bir guvenlik
+    // katmani: ornegin ESP32 onceki bir oturumdan hala fiilen armed kalmis
+    // olsa bile (GUI yeniden baglaninca ana_armed sifirlanir) operator bu
+    // oturumda ARM'a basmadan kumandayla motor hareket ettiremez.
+    if (!ana_esp_thread || !ana_armed) return;
     float rollCorr = 0.0f, pitchCorr = 0.0f;
     if (ana_stabilize) {
         rollCorr  = qBound(-1.0f, (ana_roll  / 90.0f) * STAB_GAIN, 1.0f);
@@ -334,6 +359,9 @@ void RovGUI::toggle_ana_connection() {
     connect(ana_esp_thread, &EspRovThread::armed_signal,  this, &RovGUI::update_ana_armed);
     connect(ana_esp_thread, &EspRovThread::attitude_signal, this, &RovGUI::update_ana_attitude);
     connect(ana_esp_thread, &EspRovThread::depth_signal, this, &RovGUI::update_ana_depth);
+    connect(ana_esp_thread, &EspRovThread::nem_signal, this, &RovGUI::update_ana_nem);
+    connect(ana_esp_thread, &EspRovThread::wegsh_signal, this, &RovGUI::update_ana_wegsh);
+    connect(ana_esp_thread, &EspRovThread::torpedo_signal, this, &RovGUI::update_ana_torpedo);
     ana_esp_thread->start();
     A->btn_connect->setText("Kes");
     A->btn_connect->setStyleSheet(activeStyle);
@@ -379,10 +407,17 @@ void RovGUI::update_ana_attitude(float roll, float pitch, float yaw) {
     if (ana_stabilize && ana_esp_thread && !ana_autonomous) {
         apply_ana_motor_mix(-ana_axes_state[1], ana_axes_state[0],
                              ana_axes_state[2], -ana_axes_state[3]);
+    } else if (ana_autonomous) {
+        // apply_ana_motor_mix() roll/pitch duzeltmesini (ana_stabilize acikken)
+        // her cagrida kendi icinde ekliyor; otonom modda da bu IMU okumasi tek
+        // basina degisince guncel kalsin diye WegSh/derinlik girdileriyle
+        // birlikte yeniden hesaplanip gonderiyoruz.
+        recompute_ana_autonomous_mix();
     }
 }
 
 void RovGUI::update_ana_depth(float meters, float vertical_speed_ms) {
+    ana_current_depth = meters;
     RovPanel *A = ui.anaRovPanel;
     A->lbl_alt->setText(QString::number(meters, 'f', 2));
     // Dikey bar 0-100 araliginda; varsayilan olcek 0-20m'yi tam bara yayar
@@ -394,6 +429,62 @@ void RovGUI::update_ana_depth(float meters, float vertical_speed_ms) {
     // NOT: Bu SADECE dikey (batma/yukselme) hizidir - basinc sensorunden
     // turetiliyor. Ileri/yanal hiz icin DVL/akis sensoru gerekir, bu ROV'da yok.
     A->lbl_speed->setText(QString::number(vertical_speed_ms, 'f', 2));
+
+    // Otonom modda irtifa (derinlik) sabitleme: her yeni derinlik okumasinda
+    // hedeften sapmayi dikey itkiye duzeltme olarak uygula (bkz. on_autonomous_ana()
+    // - hedef oraya gecerken kilitlenir). Surge/yaw WegSh'ten gelir (bkz.
+    // recompute_ana_autonomous_mix()).
+    if (ana_autonomous && ana_esp_thread) {
+        recompute_ana_autonomous_mix();
+    }
+}
+
+// DHT11 nem/sicaklik sensorunden gelen periyodik veri - gemi govdesi icinde
+// nem yukselmesi (su sizintisi belirtisi) takibi icin.
+void RovGUI::update_ana_nem(float humidity_pct, float temperature_c) {
+    RovPanel *A = ui.anaRovPanel;
+    if (A->lbl_humidity) A->lbl_humidity->setText(QString::number(humidity_pct, 'f', 1) + "%");
+    if (A->lbl_dht_temp) A->lbl_dht_temp->setText(QString::number(temperature_c, 'f', 1) + "°C");
+}
+
+// ESP32'nin "TORPEDO:kalan" satirina karsilik gelir - hangi torpidonun
+// dolu/bos oldugunu operatorun elle takip etmesine gerek kalmasin diye
+// "Torpido Durumu" "Hazır" yerine "kalan/5" seklinde gosterilir.
+void RovGUI::update_ana_torpedo(int remaining) {
+    torpedo_ready = remaining > 0;
+    ui.anaRovPanel->lbl_servo_status->setText(QString("%1/5").arg(remaining));
+    set_led(ui.anaRovPanel->led_torpedo, torpedo_ready);
+}
+
+// Kamera ESP'sinin WegSh (kirmizi serit tespiti) analizinden gelen periyodik
+// "WEGSH:yaw,gorunur" verisi - motor komutuna DOGRUDAN degil, sadece son
+// bilinen deger olarak kaydedilip recompute_ana_autonomous_mix() araciligiyla
+// islenir (bkz. o fonksiyonun yorumu).
+void RovGUI::update_ana_wegsh(float yaw, bool visible) {
+    ana_wegsh_yaw = yaw;
+    ana_wegsh_visible = visible;
+    if (ana_autonomous && ana_esp_thread) {
+        recompute_ana_autonomous_mix();
+    }
+}
+
+// Otonom moddaki tek M: komutunu ureten ortak yer: WegSh'in yaw kararini
+// (Kamera ESP, goruntu isleme) mevcut derinlik-hold duzeltmesiyle (Motor ESP,
+// basinc sensoru) birlestirir. ATT:/DEPTH:/WEGSH: satirlarindan hangisi
+// gelirse gelsin, son bilinen degerlerle burasi cagrilir - boylece uc ayri
+// guncelleme yerinde ayni mantik tekrarlanmaz ve Motor ESP'ye cakisan iki
+// ayri komut kaynagi gitmez (roll/pitch duzeltmesi apply_ana_motor_mix()
+// icinde, ana_stabilize acikken, ayrica ekleniyor).
+void RovGUI::recompute_ana_autonomous_mix() {
+    if (!ana_autonomous || !ana_esp_thread) return;
+
+    float surge = ana_wegsh_visible ? WEGSH_AUTONOMOUS_SURGE : 0.0f;
+    float yaw = ana_wegsh_visible ? ana_wegsh_yaw : 0.0f;
+
+    float depthErr = ana_depth_target - ana_current_depth; // pozitif: hedeften daha sigda, asagi itki gerekir
+    float depthCorr = qBound(-1.0f, depthErr * DEPTH_HOLD_GAIN, 1.0f);
+
+    apply_ana_motor_mix(surge, 0.0f, yaw, -depthCorr);
 }
 
 // ==================== Mini ROV Bağlantı (ESP32 seri port) ====================
@@ -782,18 +873,37 @@ void RovGUI::on_autonomous_ana() {
     ana_autonomous = true;
     set_led(ui.anaRovPanel->led_autonomous, true);
     set_led(ui.anaRovPanel->led_manual, false);
+
+    // Otonom moda gecince roll/pitch sabitleme otomatik acilir ve mevcut
+    // derinlik "hedef" olarak kilitlenir - update_ana_depth() her yeni okumada
+    // bu hedeften sapmayi dikey itkiye duzeltme olarak ekleyip ROV'u ne yukari
+    // ne asagi kacirmadan oldugu derinlikte tutmaya calisir.
+    ana_stabilize = true;
+    if (ui.anaRovPanel->lbl_stabilize_status) {
+        ui.anaRovPanel->lbl_stabilize_status->setText("Açık");
+        ui.anaRovPanel->lbl_stabilize_status->setStyleSheet("color:#2ecc71;font-weight:bold;font-size:14px;");
+    }
+    ana_depth_target = ana_current_depth;
+
     // Otonom moda gecerken elde kalan son manuel komutu notrle: yoksa heartbeat
     // (bkz. send_motor_heartbeat) eski manuel hareketi otonom modda da göndermeye
-    // devam eder - burada henuz gercek bir otonom surus mantigi olmadigi icin
-    // guvenli varsayilan tam durmadir.
+    // devam eder. WegSh henuz taze bir "gorunur" verisi vermediyse surge/yaw
+    // guvenli varsayilan olan 0'dir (bkz. recompute_ana_autonomous_mix());
+    // dikey eksen bir sonraki derinlik okumasinda depth-hold tarafindan,
+    // yon ise bir sonraki WEGSH: satirinda WegSh tarafindan devralinacak.
     apply_ana_motor_mix(0, 0, 0, 0);
-    log_message("[ANA] Otonom moda geçildi", 0);
+    log_message(QString("[ANA] Otonom moda geçildi - sabitleme açıldı, hedef derinlik: %1m")
+                     .arg(ana_depth_target, 0, 'f', 2), 0);
 }
 
 void RovGUI::on_manual_ana() {
     ana_autonomous = false;
     set_led(ui.anaRovPanel->led_manual, true);
     set_led(ui.anaRovPanel->led_autonomous, false);
+    // Otonom moddan cikarken kalan otonom itkiyi (ornegin derinlik-sabitleme
+    // duzeltmesi) sifirla - aksi halde kumanda o an notrde olsa bile motorlar
+    // bir sonraki gercek eksen hareketine kadar eski otonom komutta kalirdi.
+    apply_ana_motor_mix(0, 0, 0, 0);
     log_message("[ANA] Manuel moda geçildi", 0);
 }
 
@@ -832,22 +942,17 @@ void RovGUI::on_minirov_launch() {
     log_message("[ANA] MiniROV Bırakıldı! (not: ayrı bırakma donanımı bu ESP32 kartında tanımlı değil, sadece arayüz durumu güncellendi)", 0);
 }
 
+// Gercek ates alma isini (sirali secim, kalan sayi, 10sn bekleme) artik ESP32
+// yapiyor (bkz. AnaRovBeyin.ino fireTorpedo()) - burada sadece komut
+// gonderiyoruz; sonuc (kalan sayi veya ERR:TORPEDOEMPTY/COOLDOWN)
+// update_ana_torpedo()/update_ana_status() uzerinden geri doner.
 void RovGUI::on_torpedo_fire() {
-    if (torpedo_ready) {
-        torpedo_ready = false;
-        set_led(ui.anaRovPanel->led_torpedo, true); // Active state (Green)
-        ui.anaRovPanel->btn_torpedo->setText("Torpidoyu\nHazırla");
-        ui.anaRovPanel->lbl_servo_status->setText("Fırlatıldı");
-        ui.anaRovPanel->lbl_servo_status->setStyleSheet("color:#2ecc71;font-weight:bold;font-size:14px;");
-        log_message("[ANA] Torpido Fırlatıldı! (not: ayrı torpido çıkışı bu ESP32 kartında tanımlı değil)", 0);
-    } else {
-        torpedo_ready = true;
-        set_led(ui.anaRovPanel->led_torpedo, false); // Inactive state (Red)
-        ui.anaRovPanel->btn_torpedo->setText("Torpido\nFırlat");
-        ui.anaRovPanel->lbl_servo_status->setText("Hazır");
-        ui.anaRovPanel->lbl_servo_status->setStyleSheet("color:#c0392b;font-weight:bold;font-size:14px;");
-        log_message("[ANA] Torpido Yeniden Hazırlandı!", 0);
+    if (!ana_esp_thread) {
+        log_message("[ANA] Önce bağlanın!", 0);
+        return;
     }
+    ana_esp_thread->torpedo();
+    log_message("[ANA] Torpido fırlatma komutu gönderildi.", 0);
 }
 
 void RovGUI::on_lamp_on_ana() {
@@ -896,6 +1001,8 @@ void RovGUI::reset_labels(RovPanel *panel) {
     panel->lbl_speed->setText("---");
     panel->lbl_voltage->setText("---");
     panel->lbl_battery->setText("---");
+    if (panel->lbl_humidity) panel->lbl_humidity->setText("---");
+    if (panel->lbl_dht_temp) panel->lbl_dht_temp->setText("---");
     panel->attitude_indicator->set_attitude(0, 0);
     panel->bar_alt->setValue(0);
 }

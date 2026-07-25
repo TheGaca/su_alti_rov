@@ -95,6 +95,34 @@ void EspRovThread::process_line(const QString &line) {
         } else {
             emit status_signal(line);
         }
+    } else if (line.startsWith("NEM:")) {
+        QStringList parts = line.mid(4).split(',');
+        bool okHum = false, okTemp = false;
+        float hum  = parts.size() == 2 ? parts[0].toFloat(&okHum) : 0.0f;
+        float temp = parts.size() == 2 ? parts[1].toFloat(&okTemp) : 0.0f;
+        if (okHum && okTemp) {
+            emit nem_signal(hum, temp);
+        } else {
+            emit status_signal(line);
+        }
+    } else if (line.startsWith("TORPEDO:")) {
+        bool ok = false;
+        int remaining = line.mid(8).toInt(&ok);
+        if (ok) {
+            emit torpedo_signal(remaining);
+        } else {
+            emit status_signal(line);
+        }
+    } else if (line.startsWith("WEGSH:")) {
+        QStringList parts = line.mid(6).split(',');
+        bool okYaw = false, okVis = false;
+        float yaw = parts.size() == 2 ? parts[0].toFloat(&okYaw) : 0.0f;
+        int visInt = parts.size() == 2 ? parts[1].toInt(&okVis) : 0;
+        if (okYaw && okVis) {
+            emit wegsh_signal(yaw, visInt != 0);
+        } else {
+            emit status_signal(line);
+        }
     } else {
         emit status_signal(line);
     }
@@ -119,6 +147,10 @@ void EspRovThread::arm() {
 
 void EspRovThread::disarm() {
     send_line("DISARM");
+}
+
+void EspRovThread::torpedo() {
+    send_line("TORPEDO");
 }
 
 void EspRovThread::set_motors(const std::array<int, 8> &pulses_us) {

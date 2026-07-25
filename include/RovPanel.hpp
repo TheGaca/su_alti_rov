@@ -11,6 +11,7 @@
 #include <QComboBox>
 #include <QTextEdit>
 #include <QProgressBar>
+#include <QResizeEvent>
 
 #include "AttitudeIndicator.hpp"
 #include "ColorPickerButton.hpp"
@@ -63,6 +64,8 @@ public:
     QLabel *lbl_servo_status;
     QLabel *lbl_lamp_status;
     QLabel *lbl_stabilize_status; // Ana ROV'da sabitleme (IMU) modu; Mini'de nullptr
+    QLabel *lbl_humidity;    // DHT11 nem (%) - Ana ROV'da; Mini'de nullptr
+    QLabel *lbl_dht_temp;    // DHT11 sicaklik (C) - Ana ROV'da; Mini'de nullptr
 
     // Kamera Akisi (icinde stats + video + yon butonlari + Arm/Disarm)
     QGroupBox *group_cam;
@@ -121,6 +124,15 @@ public:
 
     // Terminal (siyah arka plan, acik mavi yazi)
     QTextEdit *terminal_log;
+
+    // Mini ROV henuz Ethernet'e gecmedi (IP bilgisi bekleniyor) - gecici
+    // olarak panelin tamamini kaplayan, tiklamalari ENGELLEMEYEN (mevcut
+    // seri baglanti calismaya devam etsin diye) yari saydam "GELECEK" katmani.
+    // Sadece Mini panelde olusturulur (isMini true), Ana panelde nullptr kalir.
+    QLabel *coming_soon_overlay = nullptr;
+
+protected:
+    void resizeEvent(QResizeEvent *event) override;
 };
 
 #endif // ROVPANEL_H

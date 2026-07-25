@@ -23,7 +23,13 @@ void JoystickThread::run() {
 
         struct js_event e;
         while (read(fd, &e, sizeof(e)) > 0) {
-            e.type &= ~JS_EVENT_INIT;
+            // Cihaz acilirken cekirdek her buton/eksen icin o anki durumu
+            // JS_EVENT_INIT bayrakli "sahte" olaylarla bildirir - kullanici
+            // hicbir seye basmamis olsa bile. Bunlari gercek basisymis gibi
+            // isleyip ARM/lamba/torpido gibi aksiyonlari tetiklemek tehlikeli
+            // oldugundan (bkz. beklenmedik ARM olayi), INIT olaylarini yok say.
+            if (e.type & JS_EVENT_INIT) continue;
+
             if (e.type == JS_EVENT_BUTTON) {
                 emit button_signal(e.number, e.value);
             } else if (e.type == JS_EVENT_AXIS) {

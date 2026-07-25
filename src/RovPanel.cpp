@@ -68,6 +68,16 @@ RovPanel::RovPanel(const QString &title, bool mini, QWidget *parent)
     conn_layout->addWidget(lbl_status, 1);
     main_layout->addLayout(conn_layout);
 
+    // Ana ROV baglantisi sabit IP/port'a hardcoded (bkz. RovGUI::toggle_ana_connection()),
+    // Port/Baudrate secimi hic okunmuyor - kafa karistirmasin diye gizleniyor.
+    // Mini ROV hala gercek seri port actigi icin bu alanlar orada kaliyor.
+    if (!isMini) {
+        lbl_port->hide();
+        port_combo->hide();
+        lbl_baud->hide();
+        baud_combo->hide();
+    }
+
     // ====== Üst sıra: Yönelim (sol, geniş) | VFR+Sys (sağ kolon) ======
     QHBoxLayout *topRow = new QHBoxLayout();
     topRow->setSpacing(8);
@@ -161,7 +171,7 @@ RovPanel::RovPanel(const QString &title, bool mini, QWidget *parent)
     QLabel *ls4 = new QLabel("Lamba Durumu:");
     lbl_voltage = new QLabel("---");
     lbl_battery = new QLabel("---");
-    lbl_servo_status = new QLabel(isMini ? "Kapalı" : "Hazır");
+    lbl_servo_status = new QLabel(isMini ? "Kapalı" : "5/5"); // Ana ROV'da torpido kalan/toplam - bkz. RovGUI::update_ana_torpedo()
     lbl_lamp_status = new QLabel("Kapalı");
     lbl_voltage->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     lbl_battery->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -187,8 +197,28 @@ RovPanel::RovPanel(const QString &title, bool mini, QWidget *parent)
         lbl_stabilize_status->setObjectName("lamp_status");
         lbl_stabilize_status->setStyleSheet("color:#c0392b;font-weight:bold;font-size:14px;");
         layout_sys->addWidget(ls5, 4, 0); layout_sys->addWidget(lbl_stabilize_status, 4, 1);
+
+        // Nem+sicaklik TEK satirda (iki ayri satir yerine) - alttaki terminal
+        // log'unun sabit tam ekran pencerede yer disi kalmamasi icin dikey
+        // yer kaplamayi azaltiyoruz (bkz. terminal_log ile ilgili not).
+        QLabel *ls6 = new QLabel("Nem / Sıcaklık:");
+        QWidget *nemBox = new QWidget();
+        QHBoxLayout *nemLayout = new QHBoxLayout(nemBox);
+        nemLayout->setContentsMargins(0, 0, 0, 0);
+        nemLayout->setSpacing(6);
+        lbl_humidity = new QLabel("---");
+        lbl_dht_temp = new QLabel("---");
+        lbl_humidity->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+        lbl_dht_temp->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+        lbl_humidity->setObjectName("hud_val");
+        lbl_dht_temp->setObjectName("hud_val");
+        nemLayout->addWidget(lbl_humidity);
+        nemLayout->addWidget(lbl_dht_temp);
+        layout_sys->addWidget(ls6, 5, 0); layout_sys->addWidget(nemBox, 5, 1);
     } else {
         lbl_stabilize_status = nullptr;
+        lbl_humidity = nullptr;
+        lbl_dht_temp = nullptr;
     }
     rightCol->addWidget(group_sys);
 
@@ -482,11 +512,41 @@ RovPanel::RovPanel(const QString &title, bool mini, QWidget *parent)
     terminal_log = new QTextEdit();
     terminal_log->setReadOnly(true);
     terminal_log->setObjectName("terminal_log");
-    terminal_log->setMinimumHeight(110);
+    terminal_log->setMinimumHeight(80);
     terminal_log->setMaximumHeight(140);
-    main_layout->addWidget(terminal_log);
+    // Stretch=1: pencere sabit tam ekran boyutunda oldugu (kaydirma yok) icin,
+    // ustundeki kutular buyudukce terminal ekran disina itilip "kayboluyordu" -
+    // artik bosta kalan/paylasilabilir alanda terminale oncelik veriliyor.
+    main_layout->addWidget(terminal_log, 1);
 
     QVBoxLayout *rootL = new QVBoxLayout(this);
     rootL->setContentsMargins(0, 0, 0, 0);
     rootL->addWidget(main_group);
+
+    // Mini ROV henuz Ethernet'e gecmedi (IP bekleniyor) - panelin tamamini
+    // kaplayan, tiklamalari ENGELLEMEYEN yari saydam "GELECEK" katmani.
+    // Layout'a DAHIL EDILMEZ (main_group'un boyutunu etkilemesin diye),
+    // dogrudan bu widget'in cocugu olarak eklenip resizeEvent() ile
+    // panelin tam uzerinde tutulur.
+    if (isMini) {
+        coming_soon_overlay = new QLabel("GELECEK", this);
+        coming_soon_overlay->setAlignment(Qt::AlignCenter);
+        coming_soon_overlay->setStyleSheet(
+            "background-color: rgba(0, 0, 0, 130);"
+            "color: #ff3b3b;"
+            "font-size: 64px;"
+            "font-weight: bold;"
+        );
+        coming_soon_overlay->setAttribute(Qt::WA_TransparentForMouseEvents); // altindaki panel tiklanabilir kalsin
+        coming_soon_overlay->setGeometry(this->rect());
+        coming_soon_overlay->raise();
+    }
+}
+
+void RovPanel::resizeEvent(QResizeEvent *event) {
+    QWidget::resizeEvent(event);
+    if (coming_soon_overlay) {
+        coming_soon_overlay->setGeometry(this->rect());
+        coming_soon_overlay->raise();
+    }
 }
