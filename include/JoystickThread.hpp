@@ -18,6 +18,13 @@ signals:
     void axis_signal(int axis_id, float value);
     void status_signal(const QString &msg);
 
+    // Bagli bir kol calisirken KOPTUGUNDA yayilir (fis cekildi, pil bitti vb.).
+    // GUI bunu motorlari NOTRLEMEK icin kullanir - aksi halde heartbeat son
+    // komutu (ornegin tam ileri) tekrarlamaya devam eder ve ESP32 failsafe'i
+    // hic tetiklenmez (bkz. RovGUI::on_ana_joystick_lost). Thread cihazi
+    // arka planda yeniden acmayi denemeyi surdurur.
+    void disconnected_signal();
+
 protected:
     void run() override;
 

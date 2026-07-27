@@ -58,6 +58,7 @@ void CameraThread::run() {
                     QImage img;
                     if (img.loadFromData(jpg, "JPG")) {
                         emit image_signal(img.copy());
+                        emit jpeg_signal(jpg); // kayit icin ham JPEG (bkz. jpeg_signal aciklamasi)
                         frame_count++;
 
                         double current_time = QDateTime::currentMSecsSinceEpoch() / 1000.0;

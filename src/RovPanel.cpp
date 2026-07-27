@@ -246,6 +246,17 @@ RovPanel::RovPanel(const QString &title, bool mini, QWidget *parent)
     cam_stats_layout->addWidget(lbl_cam_bitrate);
     cam_stats_layout->addWidget(lbl_cam_res);
     cam_stats_layout->addWidget(lbl_cam_ping);
+
+    // Anlik goruntu + video kaydi (dosyalar ~/rov_media/ altina yazilir,
+    // bkz. RovGUI::on_*_snapshot / toggle_*_record)
+    btn_snapshot = new QPushButton("📷 Foto");
+    btn_snapshot->setObjectName("btn_snapshot");
+    btn_snapshot->setCursor(Qt::PointingHandCursor);
+    btn_record = new QPushButton("⏺ Kayıt");
+    btn_record->setObjectName("btn_record");
+    btn_record->setCursor(Qt::PointingHandCursor);
+    cam_stats_layout->addWidget(btn_snapshot);
+    cam_stats_layout->addWidget(btn_record);
     cam_stats_layout->addStretch();
     layout_cam->addLayout(cam_stats_layout);
 

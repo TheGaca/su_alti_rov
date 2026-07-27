@@ -17,6 +17,7 @@ public:
     RovPanel *anaRovPanel;
     RovPanel *miniRovPanel;
     QPushButton *btn_theme;
+    QPushButton *btn_settings;
 
     void setupUi(QWidget *MainWindow);
     void apply_styles(QWidget *MainWindow, bool dark = false);

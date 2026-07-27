@@ -19,9 +19,15 @@ void Ui_MainWindow::setupUi(QWidget *MainWindow) {
     btn_theme->setFixedSize(170, 34);
     btn_theme->setStyleSheet("font-size: 13px; font-weight: bold; background-color: #334155; color: white; border: none; border-radius: 4px; padding: 6px 12px;");
 
-    // Sag taraftaki tema dugmesiyle ayni genislikte bosluk birakilarak
+    btn_settings = new QPushButton("⚙ Ayarlar");
+    btn_settings->setObjectName("btn_settings");
+    btn_settings->setCursor(Qt::PointingHandCursor);
+    btn_settings->setFixedSize(120, 34);
+    btn_settings->setStyleSheet("font-size: 13px; font-weight: bold; background-color: #334155; color: white; border: none; border-radius: 4px; padding: 6px 12px;");
+
+    // Sag taraftaki dugmelerle ayni genislikte bosluk birakilarak
     // ortadaki baslik yaziyi gercekten pencere ortasina hizalanir.
-    title_layout->addSpacing(btn_theme->width());
+    title_layout->addSpacing(btn_theme->width() + btn_settings->width());
     title_layout->addStretch(1);
 
     QLabel *lbl_title = new QLabel("SuGaca");
@@ -31,6 +37,7 @@ void Ui_MainWindow::setupUi(QWidget *MainWindow) {
     title_layout->addWidget(lbl_title);
 
     title_layout->addStretch(1);
+    title_layout->addWidget(btn_settings);
     title_layout->addWidget(btn_theme);
 
     main_layout->addLayout(title_layout);

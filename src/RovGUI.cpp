@@ -1,4 +1,6 @@
 #include "RovGUI.hpp"
+#include "MotorMixer.hpp"
+#include "SettingsDialog.hpp"
 
 #include <QDateTime>
 #include <QCloseEvent>
@@ -9,43 +11,16 @@
 #include <QRegExp>
 #include <QShortcut>
 #include <QKeySequence>
+#include <QPainter>
+#include <QFontMetrics>
 
 namespace {
-constexpr int ESP_NEUTRAL_US = 1490;
-constexpr int ESP_DELTA_US = 200;
-
-// ESC'ye giden darbenin PC tarafindaki sert tavan/tabani - ESP32 firmware'indeki
-// (AnaRovBeyin.ino / sualtiesp.ino) MIN_US/MAX_US ile ayni degerler; motor
-// hizini iki katmanda da tutarli sekilde sinirlar.
-constexpr int MOTOR_MIN_US = 1295;
-constexpr int MOTOR_MAX_US = 1600;
-
-// M1..M4 = on/arka capraz yatay itki, M5..M8 = dikey itki
-// (bkz. foto/5a5bd473784e48cfed6daa1d1cb0c4e51b705469.png ve MotorDiagramWidget).
-// Isaretler ilk tahmindir: bench testinde bir motor beklenenin tersine donerse
-// asagidaki ilgili agirligi (-1 <-> +1) ters cevirmek yeterlidir.
-constexpr int W_SURGE[4]   = { +1, +1, +1, +1 };
-constexpr int W_LATERAL[4] = { +1, -1, +1, -1 };
-constexpr int W_YAW[4]     = { -1, +1, +1, -1 };
-
 // Logitech tipi kumandalarda tipik eksen numaralari. Kumandan farkli davranirsa
 // "jstest /dev/input/js0" ile gercek eksen numaralarini gor ve asagidakileri guncelle.
 constexpr int AXIS_LEFT_X  = 0; // Sol stick X  -> yanal kayma (Sol/Sağ)
 constexpr int AXIS_LEFT_Y  = 1; // Sol stick Y  -> ileri/geri
 constexpr int AXIS_RIGHT_X = 3; // Sağ stick X  -> dönüş (yaw)
 constexpr int AXIS_RIGHT_Y = 4; // Sağ stick Y  -> yukarı/aşağı (derinlik)
-
-// Sabitleme (stabilize) modu: roll/pitch (derece) / 90 * STAB_GAIN, dikey itki
-// motorlarina fark olarak eklenir (-1..1 araliginda sinirlanir). STAB_GAIN=4.0
-// ile ~22.5 derece egimde tam duzeltme (doygunluk) uygulanir. Havuzda asiri/az
-// tepki gorulurse bu degeri ayarla; yon ters gelirse isaretini cevir.
-constexpr float STAB_GAIN = 4.0f;
-
-// Otonom modda irtifa (derinlik) sabitleme: hedef-mevcut derinlik farki (metre)
-// * DEPTH_HOLD_GAIN, dikey itki olarak uygulanir (-1..1 sinirli). GAIN=2.0 ile
-// ~0.5m sapmada tam duzeltme (doygunluk). Cok yavas/hizli tepki gorulurse ayarla;
-// yon ters gelirse isaretini cevir.
-constexpr float DEPTH_HOLD_GAIN = 2.0f;
 }
 
 RovGUI::RovGUI(QWidget *parent)
@@ -61,6 +36,8 @@ RovGUI::RovGUI(QWidget *parent)
       log_file(nullptr), log_stream(nullptr),
       motor_heartbeat_timer(nullptr)
 {
+    settings = RovSettings::load();
+
     QWidget *central = new QWidget(this);
     setCentralWidget(central);
     ui.setupUi(central);
@@ -69,8 +46,8 @@ RovGUI::RovGUI(QWidget *parent)
         ana_axes_state[i] = 0.0f;
         mini_axes_state[i] = 0.0f;
     }
-    ana_last_pulses.fill(ESP_NEUTRAL_US);
-    mini_last_pulses.fill(ESP_NEUTRAL_US);
+    ana_last_pulses.fill(MotorMixer::NEUTRAL_US);
+    mini_last_pulses.fill(MotorMixer::NEUTRAL_US);
 
     // Uygulama fullscreen açıldığı için pencere çerçevesi/kapatma düğmesi görünmez;
     // Ctrl+Q veya Esc ile çıkış kısayolu (Alt+F4 zaten pencere yöneticisi tarafından desteklenir)
@@ -78,6 +55,14 @@ RovGUI::RovGUI(QWidget *parent)
     connect(quitShortcutCtrlQ, &QShortcut::activated, this, &QWidget::close);
     QShortcut *quitShortcutEsc = new QShortcut(QKeySequence(Qt::Key_Escape), this);
     connect(quitShortcutEsc, &QShortcut::activated, this, &QWidget::close);
+
+    // SPACE = ACİL DURDURMA (iki araçta birden motor nötrle + DISARM).
+    // ApplicationShortcut: odak hangi widget'ta olursa olsun çalışır; yan
+    // etkisi Space'in artık odaklı düğmeleri "tıklamaması"dır - E-STOP için
+    // bilinçli tercih.
+    QShortcut *estopShortcut = new QShortcut(QKeySequence(Qt::Key_Space), this);
+    estopShortcut->setContext(Qt::ApplicationShortcut);
+    connect(estopShortcut, &QShortcut::activated, this, &RovGUI::on_global_emergency);
 
     // Uyari mesaji süresi dolup statusBar bosalinca kirmizi stili de kaldir
     connect(statusBar(), &QStatusBar::messageChanged, this, [this](const QString &msg) {
@@ -110,19 +95,10 @@ RovGUI::RovGUI(QWidget *parent)
     connect_signals();
     log_message("Sistem ve Loglama Başlatıldı.");
 
-    // Kamera thread'lerini başlat
+    // Kamera thread'lerini ve ping süreçlerini başlat (ayarlardaki IP'lerle;
+    // ayarlar değişince open_settings() bunları yeniden başlatır)
     start_camera_threads();
-
-    // Ping işlemlerini başlat
-    cam_ping_proc = new QProcess(this);
-    connect(cam_ping_proc, &QProcess::readyReadStandardOutput,
-            this, &RovGUI::read_cam_ping);
-    cam_ping_proc->start("ping", QStringList() << "-i" << "1" << "192.168.88.2");
-
-    anarov_ping_proc = new QProcess(this);
-    connect(anarov_ping_proc, &QProcess::readyReadStandardOutput,
-            this, &RovGUI::read_anarov_ping);
-    anarov_ping_proc->start("ping", QStringList() << "-i" << "1" << "192.168.2.220");
+    start_ping_processes();
 
     // Initialize default states for quick commands on GUI startup
     // Manuel active by default, Otonom inactive
@@ -220,23 +196,77 @@ void RovGUI::connect_signals() {
 
     // Temizlik / Tema Değişimi
     connect(ui.btn_theme, &QPushButton::clicked, this, &RovGUI::toggle_theme);
+    connect(ui.btn_settings, &QPushButton::clicked, this, &RovGUI::open_settings);
+
+    // Snapshot / video kaydı
+    connect(A->btn_snapshot, &QPushButton::clicked, this, &RovGUI::on_ana_snapshot);
+    connect(A->btn_record,   &QPushButton::clicked, this, &RovGUI::toggle_ana_record);
+    connect(M->btn_snapshot, &QPushButton::clicked, this, &RovGUI::on_mini_snapshot);
+    connect(M->btn_record,   &QPushButton::clicked, this, &RovGUI::toggle_mini_record);
 }
 
 void RovGUI::start_camera_threads() {
-    // MiniROV kamera (MJPEG @ 192.168.88.2/stream)
-    cam_thread = new CameraThread("192.168.88.2", this);
+    // Ayarlar degisince yeniden cagrilabilir - once mevcutlari durdur
+    if (cam_thread)    { cam_thread->stop();    delete cam_thread;    cam_thread = nullptr; }
+    if (anarov_thread) { anarov_thread->stop(); delete anarov_thread; anarov_thread = nullptr; }
+
+    // MiniROV kamera (MJPEG @ http://<ip>/stream)
+    cam_thread = new CameraThread(settings.miniCamIp, this);
     connect(cam_thread, &CameraThread::image_signal,  this, &RovGUI::update_camera_frame);
     connect(cam_thread, &CameraThread::status_signal, this, &RovGUI::update_camera_status);
     connect(cam_thread, &CameraThread::stats_signal,  this, &RovGUI::update_camera_stats);
+    connect(cam_thread, &CameraThread::jpeg_signal,   this, &RovGUI::on_mini_jpeg);
     cam_thread->start();
 
-    // AnaROV kamera (MJPEG @ 192.168.2.220:81/stream - bkz. AnaRovKamera/AnaRovKamera.ino,
+    // AnaROV kamera (MJPEG @ http://<addr>/stream - bkz. AnaRovKamera/AnaRovKamera.ino,
     // Espressif CameraWebServer ornegi: ana sunucu 80'de, stream sunucusu 80+1=81'de acilir)
-    anarov_thread = new CameraThread("192.168.2.220:81", this);
+    anarov_thread = new CameraThread(settings.anaCamAddr, this);
     connect(anarov_thread, &CameraThread::image_signal,  this, &RovGUI::update_anarov_frame);
     connect(anarov_thread, &CameraThread::status_signal, this, &RovGUI::update_anarov_status);
     connect(anarov_thread, &CameraThread::stats_signal,  this, &RovGUI::update_anarov_stats);
+    connect(anarov_thread, &CameraThread::jpeg_signal,   this, &RovGUI::on_ana_jpeg);
     anarov_thread->start();
+}
+
+void RovGUI::start_ping_processes() {
+    // Ayarlar degisince yeniden cagrilabilir - once mevcutlari durdur
+    if (cam_ping_proc)    { cam_ping_proc->kill();    cam_ping_proc->deleteLater();    cam_ping_proc = nullptr; }
+    if (anarov_ping_proc) { anarov_ping_proc->kill(); anarov_ping_proc->deleteLater(); anarov_ping_proc = nullptr; }
+
+    cam_ping_proc = new QProcess(this);
+    connect(cam_ping_proc, &QProcess::readyReadStandardOutput,
+            this, &RovGUI::read_cam_ping);
+    cam_ping_proc->start("ping", QStringList() << "-i" << "1" << settings.miniCamIp);
+
+    anarov_ping_proc = new QProcess(this);
+    connect(anarov_ping_proc, &QProcess::readyReadStandardOutput,
+            this, &RovGUI::read_anarov_ping);
+    anarov_ping_proc->start("ping", QStringList() << "-i" << "1" << settings.anaHost);
+}
+
+void RovGUI::open_settings() {
+    SettingsDialog dlg(settings, this);
+    if (dlg.exec() != QDialog::Accepted) return;
+
+    RovSettings fresh = dlg.values();
+    bool camsChanged = fresh.miniCamIp != settings.miniCamIp ||
+                       fresh.anaCamAddr != settings.anaCamAddr ||
+                       fresh.anaHost != settings.anaHost;
+    settings = fresh;
+    settings.save();
+
+    // Kazanclar zaten settings uzerinden okundugu icin aninda etkili;
+    // kamera/ping IP degisikligi thread/surec yeniden baslatmayi gerektirir.
+    if (camsChanged) {
+        start_camera_threads();
+        start_ping_processes();
+        log_message("Ayarlar kaydedildi - kamera bağlantıları yeni IP'lerle yeniden başlatıldı.");
+    } else {
+        log_message("Ayarlar kaydedildi.");
+    }
+    if (ana_esp_thread) {
+        log_message("Not: köprü IP/port değişikliği bir sonraki bağlanmada geçerli olur.", 0);
+    }
 }
 
 void RovGUI::show_screen_warning(const QString &msg) {
@@ -259,30 +289,6 @@ void RovGUI::log_message(const QString &msg, int target) {
 }
 
 // ==================== ESP32 8 motor karisimi ====================
-std::array<int, 8> RovGUI::compute_motor_mix(float surge, float lateral, float yaw, float vertical,
-                                                  float rollCorr, float pitchCorr) {
-    std::array<int, 8> m{};
-    for (int i = 0; i < 4; ++i) {
-        float v = surge * W_SURGE[i] + lateral * W_LATERAL[i] + yaw * W_YAW[i];
-        m[i] = qBound(MOTOR_MIN_US, ESP_NEUTRAL_US + static_cast<int>(v * ESP_DELTA_US), MOTOR_MAX_US);
-    }
-    // M5=on sag, M6=on sol, M7=arka sag, M8=arka sol (bkz. MotorDiagramWidget).
-    // Sabitleme kapaliyken rollCorr/pitchCorr 0 gelir, dördü de ayni deger olur.
-    // Pitch negatif (burun asagida) oldugunda on motorlarin ARTMASI, arka
-    // motorlarin AZALMASI gerekir (burnu yukari kaldirip duzeltmek icin) -
-    // bu yuzden pitchCorr on'a eksi, arkaya arti isaretle ekleniyor.
-    float verticalUs[4] = {
-        vertical + rollCorr - pitchCorr, // M5 on-sag
-        vertical - rollCorr - pitchCorr, // M6 on-sol
-        vertical + rollCorr + pitchCorr, // M7 arka-sag
-        vertical - rollCorr + pitchCorr, // M8 arka-sol
-    };
-    for (int i = 0; i < 4; ++i) {
-        m[4 + i] = qBound(MOTOR_MIN_US, ESP_NEUTRAL_US + static_cast<int>(verticalUs[i] * ESP_DELTA_US), MOTOR_MAX_US);
-    }
-    return m;
-}
-
 void RovGUI::apply_ana_motor_mix(float surge, float lateral, float yaw, float vertical) {
     // ARM edilmeden (ana_armed=false) motor komutu gonderilmesin - ESP32
     // firmware'i zaten ARMED olmayan durumda M: komutlarini reddediyor
@@ -293,26 +299,26 @@ void RovGUI::apply_ana_motor_mix(float surge, float lateral, float yaw, float ve
     if (!ana_esp_thread || !ana_armed) return;
     float rollCorr = 0.0f, pitchCorr = 0.0f;
     if (ana_stabilize) {
-        rollCorr  = qBound(-1.0f, (ana_roll  / 90.0f) * STAB_GAIN, 1.0f);
-        pitchCorr = qBound(-1.0f, (ana_pitch / 90.0f) * STAB_GAIN, 1.0f);
+        rollCorr  = qBound(-1.0f, (ana_roll  / 90.0f) * settings.stabGain, 1.0f);
+        pitchCorr = qBound(-1.0f, (ana_pitch / 90.0f) * settings.stabGain, 1.0f);
     }
-    auto pulses = compute_motor_mix(surge, lateral, yaw, vertical, rollCorr, pitchCorr);
+    auto pulses = MotorMixer::compute(surge, lateral, yaw, vertical, rollCorr, pitchCorr);
     ana_esp_thread->set_motors(pulses);
     ana_last_pulses = pulses;
 
     // Motor diyagraminda hangi motorlara ne kadar stabilize duzeltmesi
-    // gittigini gostermek icin (bkz. compute_motor_mix'teki M5-M8 isaretleri).
+    // gittigini gostermek icin (bkz. MotorMixer::compute'taki M5-M8 isaretleri).
     std::array<int, 8> correctionUs{};
-    correctionUs[4] = static_cast<int>(( rollCorr - pitchCorr) * ESP_DELTA_US); // M5 on-sag
-    correctionUs[5] = static_cast<int>((-rollCorr - pitchCorr) * ESP_DELTA_US); // M6 on-sol
-    correctionUs[6] = static_cast<int>(( rollCorr + pitchCorr) * ESP_DELTA_US); // M7 arka-sag
-    correctionUs[7] = static_cast<int>((-rollCorr + pitchCorr) * ESP_DELTA_US); // M8 arka-sol
+    correctionUs[4] = static_cast<int>(( rollCorr - pitchCorr) * MotorMixer::DELTA_US); // M5 on-sag
+    correctionUs[5] = static_cast<int>((-rollCorr - pitchCorr) * MotorMixer::DELTA_US); // M6 on-sol
+    correctionUs[6] = static_cast<int>(( rollCorr + pitchCorr) * MotorMixer::DELTA_US); // M7 arka-sag
+    correctionUs[7] = static_cast<int>((-rollCorr + pitchCorr) * MotorMixer::DELTA_US); // M8 arka-sol
     ui.anaRovPanel->motor_diagram->set_motor_pulses(pulses, correctionUs);
 }
 
 void RovGUI::apply_mini_motor_mix(float surge, float lateral, float yaw, float vertical) {
     if (!mini_esp_thread) return;
-    auto pulses = compute_motor_mix(surge, lateral, yaw, vertical);
+    auto pulses = MotorMixer::compute(surge, lateral, yaw, vertical);
     mini_esp_thread->set_motors(pulses);
     mini_last_pulses = pulses;
     ui.miniRovPanel->motor_diagram->set_motor_pulses(pulses);
@@ -352,8 +358,8 @@ void RovGUI::toggle_ana_connection() {
     // koprusune baglaniyor - o da komutlari Serial2 uzerinden motor ESP'sine
     // iletir (bkz. EspRovThread.hpp basindaki aciklama). port_combo/baud_combo
     // artik Ana ROV icin kullanilmiyor (Mini ROV hala USB/seri, degismedi).
-    const QString anaRovHost = "192.168.2.220";
-    const quint16 anaRovBridgePort = 8888;
+    const QString anaRovHost = settings.anaHost;
+    const quint16 anaRovBridgePort = settings.anaBridgePort;
     ana_esp_thread = EspRovThread::createTcp(anaRovHost, anaRovBridgePort, this);
     connect(ana_esp_thread, &EspRovThread::status_signal, this, &RovGUI::update_ana_status);
     connect(ana_esp_thread, &EspRovThread::armed_signal,  this, &RovGUI::update_ana_armed);
@@ -464,7 +470,7 @@ void RovGUI::recompute_ana_autonomous_mix() {
     if (!ana_autonomous || !ana_esp_thread) return;
 
     float depthErr = ana_depth_target - ana_current_depth; // pozitif: hedeften daha sigda, asagi itki gerekir
-    float depthCorr = qBound(-1.0f, depthErr * DEPTH_HOLD_GAIN, 1.0f);
+    float depthCorr = qBound(-1.0f, depthErr * settings.depthHoldGain, 1.0f);
 
     apply_ana_motor_mix(0.0f, 0.0f, 0.0f, -depthCorr);
 }
@@ -541,6 +547,7 @@ void RovGUI::toggle_ana_joystick() {
     connect(ana_joy_thread, &JoystickThread::status_signal, this, &RovGUI::update_ana_joy_status);
     connect(ana_joy_thread, &JoystickThread::button_signal, this, &RovGUI::update_ana_joy_button);
     connect(ana_joy_thread, &JoystickThread::axis_signal,   this, &RovGUI::update_ana_joy_axis);
+    connect(ana_joy_thread, &JoystickThread::disconnected_signal, this, &RovGUI::on_ana_joystick_lost);
     ana_joy_thread->start();
     A->btn_joy_connect->setText("Kes");
 }
@@ -567,6 +574,7 @@ void RovGUI::toggle_mini_joystick() {
     connect(mini_joy_thread, &JoystickThread::status_signal, this, &RovGUI::update_mini_joy_status);
     connect(mini_joy_thread, &JoystickThread::button_signal, this, &RovGUI::update_mini_joy_button);
     connect(mini_joy_thread, &JoystickThread::axis_signal,   this, &RovGUI::update_mini_joy_axis);
+    connect(mini_joy_thread, &JoystickThread::disconnected_signal, this, &RovGUI::on_mini_joystick_lost);
     mini_joy_thread->start();
     M->btn_joy_connect->setText("Kes");
 }
@@ -680,10 +688,13 @@ void RovGUI::update_mini_joy_axis(int axis_id, float value) {
 
 // ==================== Kamera Frame ====================
 void RovGUI::update_camera_frame(const QImage &img) {
+    QImage disp = img.convertToFormat(QImage::Format_RGB32);
+    if (mini_recorder.isOpen()) draw_rec_badge(disp);
+    mini_last_frame = disp;
     QLabel *lbl = ui.miniRovPanel->lbl_cam_stream;
-    lbl->setPixmap(QPixmap::fromImage(img).scaled(lbl->size(),
-                                                  Qt::KeepAspectRatio,
-                                                  Qt::SmoothTransformation));
+    lbl->setPixmap(QPixmap::fromImage(disp).scaled(lbl->size(),
+                                                   Qt::KeepAspectRatio,
+                                                   Qt::SmoothTransformation));
 }
 
 void RovGUI::update_camera_status(const QString &msg) {
@@ -691,6 +702,7 @@ void RovGUI::update_camera_status(const QString &msg) {
 }
 
 void RovGUI::update_camera_stats(int fps, float kbps, int w, int h) {
+    mini_cam_fps = fps;
     RovPanel *M = ui.miniRovPanel;
     M->lbl_cam_fps->setText(QString("FPS: %1").arg(fps));
     M->lbl_cam_bitrate->setText(QString("Veri Hızı: %1 KB/s").arg(kbps, 0, 'f', 1));
@@ -698,10 +710,13 @@ void RovGUI::update_camera_stats(int fps, float kbps, int w, int h) {
 }
 
 void RovGUI::update_anarov_frame(const QImage &img) {
+    QImage disp = img.convertToFormat(QImage::Format_RGB32);
+    draw_ana_hud(disp);
+    ana_last_frame = disp; // snapshot HUD'lu kareyi alir
     QLabel *lbl = ui.anaRovPanel->lbl_cam_stream;
-    lbl->setPixmap(QPixmap::fromImage(img).scaled(lbl->size(),
-                                                  Qt::KeepAspectRatio,
-                                                  Qt::SmoothTransformation));
+    lbl->setPixmap(QPixmap::fromImage(disp).scaled(lbl->size(),
+                                                   Qt::KeepAspectRatio,
+                                                   Qt::SmoothTransformation));
 }
 
 void RovGUI::update_anarov_status(const QString &msg) {
@@ -715,10 +730,192 @@ void RovGUI::update_anarov_status(const QString &msg) {
 }
 
 void RovGUI::update_anarov_stats(int fps, float kbps, int w, int h) {
+    ana_cam_fps = fps;
     RovPanel *A = ui.anaRovPanel;
     A->lbl_cam_fps->setText(QString("FPS: %1").arg(fps));
     A->lbl_cam_bitrate->setText(QString("Veri Hızı: %1 KB/s").arg(kbps, 0, 'f', 1));
     A->lbl_cam_res->setText(QString("Çözünürlük: %1x%2").arg(w).arg(h));
+}
+
+// ==================== HUD ====================
+// Gercek ROV pilot arayuzlerindeki gibi telemetri dogrudan videonun uzerine
+// bindirilir: operatorun gozu videodan ayrilmadan derinlik/pusula/ARM durumu
+// gorunur. Goruntunun kendisine cizildigi icin snapshot'larda da yer alir
+// (video kaydina ISLENMEZ - kayit ham kamera goruntusudur, bkz. on_ana_jpeg).
+void RovGUI::draw_ana_hud(QImage &img) {
+    if (img.isNull()) return;
+    QPainter p(&img);
+    p.setRenderHint(QPainter::Antialiasing);
+
+    const int W = img.width();
+    const int H = img.height();
+    const int fontPx = qMax(11, H / 22);
+    QFont f("Monospace");
+    f.setPixelSize(fontPx);
+    f.setBold(true);
+    p.setFont(f);
+    const int pad = fontPx / 2;
+    const int lineH = fontPx + 4;
+
+    // ---- Sol ust: telemetri paneli ----
+    const QStringList lines = {
+        QString("DRN %1 m").arg(ana_current_depth, 5, 'f', 2),
+        QString("PSL %1°").arg(ana_yaw, 5, 'f', 1),
+        QString("R %1°  P %2°").arg(ana_roll, 5, 'f', 1).arg(ana_pitch, 5, 'f', 1),
+    };
+    int boxW = 0;
+    QFontMetrics fm(f);
+    for (const QString &s : lines) boxW = qMax(boxW, fm.horizontalAdvance(s));
+    p.setPen(Qt::NoPen);
+    p.setBrush(QColor(0, 0, 0, 120));
+    p.drawRect(0, 0, boxW + pad * 2, lines.size() * lineH + pad * 2);
+    p.setPen(QColor(0, 255, 140));
+    for (int i = 0; i < lines.size(); ++i) {
+        p.drawText(pad, pad + (i + 1) * lineH - 4, lines[i]);
+    }
+
+    // ---- Sol alt: durum satiri (ARM / mod / sabitleme) ----
+    const QString armTxt  = ana_armed ? "ARMED" : "DISARM";
+    const QString modeTxt = ana_autonomous ? "OTONOM" : "MANUEL";
+    const QString stabTxt = ana_stabilize ? "STAB" : "";
+    QString status = armTxt + "  " + modeTxt + (stabTxt.isEmpty() ? "" : "  " + stabTxt);
+    const int stW = fm.horizontalAdvance(status);
+    p.setPen(Qt::NoPen);
+    p.setBrush(QColor(0, 0, 0, 120));
+    p.drawRect(0, H - lineH - pad * 2, stW + pad * 2, lineH + pad * 2);
+    p.setPen(ana_armed ? QColor(255, 80, 80) : QColor(0, 255, 140));
+    p.drawText(pad, H - pad - 4, status);
+
+    // ---- Merkez artisi ----
+    p.setPen(QPen(QColor(0, 255, 140, 180), qMax(1, H / 240)));
+    const int cx = W / 2, cy = H / 2, r = qMax(8, H / 20);
+    p.drawLine(cx - r, cy, cx - r / 3, cy);
+    p.drawLine(cx + r / 3, cy, cx + r, cy);
+    p.drawLine(cx, cy - r, cx, cy - r / 3);
+    p.drawLine(cx, cy + r / 3, cx, cy + r);
+
+    // ---- Sag ust: REC ----
+    if (ana_recorder.isOpen()) draw_rec_badge(img);
+}
+
+void RovGUI::draw_rec_badge(QImage &img) {
+    if (img.isNull()) return;
+    QPainter p(&img);
+    p.setRenderHint(QPainter::Antialiasing);
+    const int H = img.height();
+    const int fontPx = qMax(11, H / 22);
+    QFont f("Monospace");
+    f.setPixelSize(fontPx);
+    f.setBold(true);
+    p.setFont(f);
+    QFontMetrics fm(f);
+    const int pad = fontPx / 2;
+    const int dotR = fontPx / 2;
+    const QString txt = "REC";
+    const int boxW = dotR * 2 + pad + fm.horizontalAdvance(txt) + pad * 2;
+    const int x = img.width() - boxW;
+    p.setPen(Qt::NoPen);
+    p.setBrush(QColor(0, 0, 0, 120));
+    p.drawRect(x, 0, boxW, fontPx + pad * 2);
+    p.setBrush(QColor(255, 40, 40));
+    p.drawEllipse(QPoint(x + pad + dotR, (fontPx + pad * 2) / 2), dotR, dotR);
+    p.setPen(QColor(255, 40, 40));
+    p.drawText(x + pad + dotR * 2 + pad, pad + fontPx - 3, txt);
+}
+
+// ==================== Snapshot / Video kaydı ====================
+QString RovGUI::media_dir() {
+    QString dir = QDir::homePath() + "/rov_media";
+    QDir().mkpath(dir);
+    return dir;
+}
+
+void RovGUI::on_ana_snapshot() {
+    if (ana_last_frame.isNull()) {
+        log_message("[ANA] Snapshot alınamadı - henüz kamera görüntüsü yok.", 0);
+        return;
+    }
+    QString path = media_dir() + "/ana_" +
+        QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss") + ".png";
+    if (ana_last_frame.save(path, "PNG")) {
+        log_message("[ANA] Snapshot kaydedildi: " + path, 0);
+    } else {
+        log_message("[ANA] Snapshot kaydedilemedi: " + path, 0);
+    }
+}
+
+void RovGUI::on_mini_snapshot() {
+    if (mini_last_frame.isNull()) {
+        log_message("[MİNİ] Snapshot alınamadı - henüz kamera görüntüsü yok.", 1);
+        return;
+    }
+    QString path = media_dir() + "/mini_" +
+        QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss") + ".png";
+    if (mini_last_frame.save(path, "PNG")) {
+        log_message("[MİNİ] Snapshot kaydedildi: " + path, 1);
+    } else {
+        log_message("[MİNİ] Snapshot kaydedilemedi: " + path, 1);
+    }
+}
+
+void RovGUI::toggle_ana_record() {
+    RovPanel *A = ui.anaRovPanel;
+    if (ana_recorder.isOpen()) {
+        int frames = ana_recorder.frameCount();
+        ana_recorder.close();
+        A->btn_record->setText("⏺ Kayıt");
+        A->btn_record->setStyleSheet("");
+        log_message(QString("[ANA] Video kaydı durduruldu (%1 kare).").arg(frames), 0);
+        return;
+    }
+    if (ana_last_frame.isNull()) {
+        log_message("[ANA] Kayıt başlatılamadı - henüz kamera görüntüsü yok.", 0);
+        return;
+    }
+    QString path = media_dir() + "/ana_" +
+        QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss") + ".avi";
+    int fps = ana_cam_fps > 0 ? ana_cam_fps : 20;
+    if (!ana_recorder.open(path, ana_last_frame.width(), ana_last_frame.height(), fps)) {
+        log_message("[ANA] Kayıt dosyası açılamadı: " + path, 0);
+        return;
+    }
+    A->btn_record->setText("⏹ Durdur");
+    A->btn_record->setStyleSheet("background-color:#dc2626;color:white;font-weight:bold;border-radius:4px;");
+    log_message("[ANA] Video kaydı başladı: " + path, 0);
+}
+
+void RovGUI::toggle_mini_record() {
+    RovPanel *M = ui.miniRovPanel;
+    if (mini_recorder.isOpen()) {
+        int frames = mini_recorder.frameCount();
+        mini_recorder.close();
+        M->btn_record->setText("⏺ Kayıt");
+        M->btn_record->setStyleSheet("");
+        log_message(QString("[MİNİ] Video kaydı durduruldu (%1 kare).").arg(frames), 1);
+        return;
+    }
+    if (mini_last_frame.isNull()) {
+        log_message("[MİNİ] Kayıt başlatılamadı - henüz kamera görüntüsü yok.", 1);
+        return;
+    }
+    QString path = media_dir() + "/mini_" +
+        QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss") + ".avi";
+    int fps = mini_cam_fps > 0 ? mini_cam_fps : 20;
+    if (!mini_recorder.open(path, mini_last_frame.width(), mini_last_frame.height(), fps)) {
+        log_message("[MİNİ] Kayıt dosyası açılamadı: " + path, 1);
+        return;
+    }
+    M->btn_record->setText("⏹ Durdur");
+    M->btn_record->setStyleSheet("background-color:#dc2626;color:white;font-weight:bold;border-radius:4px;");
+    log_message("[MİNİ] Video kaydı başladı: " + path, 1);
+}
+
+void RovGUI::on_ana_jpeg(const QByteArray &jpeg) {
+    if (ana_recorder.isOpen()) ana_recorder.addFrame(jpeg);
+}
+
+void RovGUI::on_mini_jpeg(const QByteArray &jpeg) {
+    if (mini_recorder.isOpen()) mini_recorder.addFrame(jpeg);
 }
 
 // ==================== Ping ====================
@@ -803,7 +1000,41 @@ void RovGUI::mini_dir_released() {
     apply_mini_motor_mix(0, 0, 0, 0);
 }
 
+// ==================== Kumanda kopma watchdog'u ====================
+// Kol koptugunda heartbeat (send_motor_heartbeat) son komutu tekrarlamaya
+// devam ettigi icin ESP32'nin 500ms failsafe'i HIC devreye girmez - stick
+// ileri basiliyken kol koparsa ROV surekli ileri giderdi. Bu yuzden kopma
+// aninda eksenleri sifirlayip motorlari acikca notrluyoruz.
+void RovGUI::on_ana_joystick_lost() {
+    for (int i = 0; i < 4; ++i) ana_axes_state[i] = 0.0f;
+    ana_last_pulses.fill(MotorMixer::NEUTRAL_US);
+    // Otonom mod kola bagimli degil (derinlik sabitleme calismaya devam
+    // edebilir); manuel moddaysa motorlari hemen notrle.
+    if (!ana_autonomous) {
+        apply_ana_motor_mix(0, 0, 0, 0);
+    }
+    log_message("[ANA] KUMANDA KOPTU - motorlar nötrlendi!", 0);
+    show_screen_warning("ANA ROV: Kumanda bağlantısı koptu! Motorlar nötrlendi.");
+}
+
+void RovGUI::on_mini_joystick_lost() {
+    for (int i = 0; i < 4; ++i) mini_axes_state[i] = 0.0f;
+    mini_last_pulses.fill(MotorMixer::NEUTRAL_US);
+    apply_mini_motor_mix(0, 0, 0, 0);
+    log_message("[MİNİ] KUMANDA KOPTU - motorlar nötrlendi!", 1);
+    show_screen_warning("MİNİ ROV: Kumanda bağlantısı koptu! Motorlar nötrlendi.");
+}
+
 // ==================== Hızlı Komutlar ====================
+// Space tusu: iki aracta birden acil durdurma. QShortcut, odak hangi
+// widget'ta olursa olsun (ApplicationShortcut) tusu yakalar - bu yuzden
+// Space artik odaklanmis dugmeleri "tiklamaz", her zaman E-STOP'tur.
+void RovGUI::on_global_emergency() {
+    on_emergency_ana();
+    on_emergency_mini();
+    log_message("SPACE ile ACİL DURDURMA tetiklendi (her iki araç).");
+}
+
 void RovGUI::on_emergency_ana() {
     apply_ana_motor_mix(0, 0, 0, 0);
     if (ana_esp_thread) ana_esp_thread->disarm();

@@ -14,6 +14,8 @@
 #include "EspRovThread.hpp"
 #include "JoystickThread.hpp"
 #include "CameraThread.hpp"
+#include "RovSettings.hpp"
+#include "AviMjpegWriter.hpp"
 
 class RovGUI : public QMainWindow {
     Q_OBJECT
@@ -94,18 +96,47 @@ private slots:
     void toggle_theme();
     void toggle_stabilize_mode_ana(); // Kumandadan IMU destekli dengeleme modu ac/kapa
 
+    // Ayarlar penceresini acar (IP/port + kontrol kazanclari, bkz. RovSettings)
+    void open_settings();
+
+    // Anlik goruntu (HUD'lu PNG) ve video kaydi (ham MJPEG-AVI) - dosyalar
+    // ~/rov_media/ altina zaman damgali adlarla yazilir.
+    void on_ana_snapshot();
+    void on_mini_snapshot();
+    void toggle_ana_record();
+    void toggle_mini_record();
+
+    // CameraThread'den gelen ham JPEG kareleri - kayit acikken AVI'ye yazilir
+    void on_ana_jpeg(const QByteArray &jpeg);
+    void on_mini_jpeg(const QByteArray &jpeg);
+
+    // Kumanda (joystick) cihazi koptugunda cagrilir - motorlari NOTRLER.
+    // Bu olmadan heartbeat, kol koptugu andaki son komutu (ornegin tam ileri)
+    // sonsuza dek tekrarlar ve ESP32'nin 500ms failsafe'i hic tetiklenmezdi.
+    void on_ana_joystick_lost();
+    void on_mini_joystick_lost();
+
+    // Space tusuyla iki aracta birden acil durdurma (motor notrle + DISARM)
+    void on_global_emergency();
+
 private:
     void connect_signals();
     void start_camera_threads();
+    void start_ping_processes();
     void reset_labels(RovPanel *panel);
     void set_led(QLabel *led, bool on);
 
-    // ESP32 8 motor karisimi: surge (ileri+), lateral (sag+), yaw (saga don+),
-    // vertical (yukari+) -> 8 motorun darbe genisligi (us). Bkz. MotorDiagramWidget
-    // ve foto/ dizinindeki motor semasi. Isaretler ilk tahmindir; bir motor ters
-    // donerse compute_motor_mix() icindeki ilgili agirligi ters cevirmek yeterlidir.
-    static std::array<int, 8> compute_motor_mix(float surge, float lateral, float yaw, float vertical,
-                                                 float rollCorr = 0.0f, float pitchCorr = 0.0f);
+    // Ana ROV videosunun uzerine telemetri bindirme (HUD): derinlik, pusula,
+    // roll/pitch, ARM/mod/sabitleme durumu, merkez artisi, REC gostergesi.
+    // Goruntunun kendisine cizilir; snapshot'ta da gorunur.
+    void draw_ana_hud(QImage &img);
+    // Kayit acikken sag ust koseye kirmizi REC rozeti (mini panelde HUD yok)
+    void draw_rec_badge(QImage &img);
+    static QString media_dir(); // ~/rov_media (yoksa olusturur)
+
+    // Motor karisimi hesabi MotorMixer::compute()'ta (include/MotorMixer.hpp,
+    // Qt'siz, birim testli); asagidakiler sonucu thread'e gonderip arayuzu
+    // (motor diyagrami) gunceller.
     void apply_ana_motor_mix(float surge, float lateral, float yaw, float vertical);
     void apply_mini_motor_mix(float surge, float lateral, float yaw, float vertical);
 
@@ -119,6 +150,10 @@ private:
     void recompute_ana_autonomous_mix();
 
     Ui_MainWindow ui;
+
+    // Kullanicinin degistirebildigi kalici ayarlar (IP'ler, kazanclar) -
+    // bkz. RovSettings.hpp ve open_settings()
+    RovSettings settings;
 
     // Thread'ler
     EspRovThread *ana_esp_thread;
@@ -168,6 +203,16 @@ private:
     // Ping islemleri
     QProcess *cam_ping_proc;
     QProcess *anarov_ping_proc;
+
+    // Son cozulmus kareler (snapshot ve kayit boyutlari icin) + kayitcilar.
+    // ana_last_frame HUD islenmis halidir (snapshot'ta telemetri gorunsun);
+    // videoya ise CameraThread'in ham JPEG'leri yazilir (kara kutu kaydi).
+    QImage ana_last_frame;
+    QImage mini_last_frame;
+    AviMjpegWriter ana_recorder;
+    AviMjpegWriter mini_recorder;
+    int ana_cam_fps = 0;  // son olculen FPS - kayit dosyasinin oynatma hizi icin
+    int mini_cam_fps = 0;
 
     // Kumanda/tus basili tutulurken ESP32 failsafe'ini (500ms) tazelemek icin
     // son gonderilen motor darbelerini tutar ve periyodik olarak yeniden gonderir.

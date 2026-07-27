@@ -1,5 +1,6 @@
 #include "JoystickThread.hpp"
 
+#include <cerrno>
 #include <cmath>
 #include <fcntl.h>
 #include <unistd.h>
@@ -29,7 +30,8 @@ void JoystickThread::run() {
         }
 
         struct js_event e;
-        while (read(fd, &e, sizeof(e)) > 0) {
+        ssize_t n;
+        while ((n = read(fd, &e, sizeof(e))) > 0) {
             // Cihaz acilirken cekirdek her buton/eksen icin o anki durumu
             // JS_EVENT_INIT bayrakli "sahte" olaylarla bildirir - kullanici
             // hicbir seye basmamis olsa bile. Bunlari gercek basisymis gibi
@@ -48,6 +50,20 @@ void JoystickThread::run() {
                 if (e.number < lastAxisValues.size()) lastAxisValues[e.number] = value;
                 emit axis_signal(e.number, value);
             }
+        }
+
+        // O_NONBLOCK modunda "su an olay yok" = -1 + EAGAIN, bu normaldir.
+        // Bunun DISINDAKI her durum (0 = EOF, -1 + ENODEV vb.) kolun fiziksel
+        // olarak koptugu anlamina gelir: fd'yi kapatip disconnected_signal yay
+        // (GUI motorlari notrler), sonra ust dongu 2 sn arayla yeniden acmayi
+        // dener - kol geri takilinca kaldigi yerden devam eder.
+        if (n == 0 || (n < 0 && errno != EAGAIN && errno != EWOULDBLOCK)) {
+            close(fd);
+            fd = -1;
+            lastAxisValues.fill(-2.0f); // yeniden baglaninca ilk olaylar filtrelenmesin
+            emit status_signal("Kol Bağlantısı Koptu!");
+            emit disconnected_signal();
+            continue;
         }
         QThread::msleep(10);
     }

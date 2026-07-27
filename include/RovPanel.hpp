@@ -75,6 +75,8 @@ public:
     QLabel *lbl_cam_res;
     QLabel *lbl_cam_ping;
     QLabel *lbl_cam_stream;
+    QPushButton *btn_snapshot;  // anlik goruntu (PNG, ~/rov_media/)
+    QPushButton *btn_record;    // video kaydi ac/kapa (MJPEG-AVI, ~/rov_media/)
 
     // Yon butonlari (Kamera grubunun SAGINDA)
     QWidget *dir_widget;

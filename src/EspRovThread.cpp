@@ -4,6 +4,7 @@
 #include <QTcpSocket>
 #include <QAbstractSocket>
 #include <QStringList>
+#include <QMutexLocker>
 
 EspRovThread::EspRovThread(const QString &port, int baudrate, QObject *parent)
     : EspRovThread(false, port, baudrate, parent) {}
@@ -16,59 +17,83 @@ EspRovThread::EspRovThread(bool tcpMode, const QString &hostOrPort_, int portOrB
     : QThread(parent), useTcp(tcpMode), hostOrPort(hostOrPort_), portOrBaud(portOrBaud_),
       running(true), device(nullptr) {}
 
+// Baglanti kurulamazsa ya da KOPARSA thread cikmaz: 2 sn arayla otomatik
+// yeniden baglanmayi dener (kamera thread'inin yaptigi gibi). Boylece gecici
+// bir ag kopmasi/ESP32 resetinde operatörün elle "Bağlan"a basmasi gerekmez.
 void EspRovThread::run() {
-    QSerialPort serialDev;
-    QTcpSocket tcpDev;
-    QIODevice *dev = nullptr;
+    // stop() istegine hizli tepki verebilmek icin tek uzun sleep yerine
+    // kucuk dilimlerle bekler.
+    auto retryDelay = [this]() {
+        for (int i = 0; i < 20 && running; ++i) QThread::msleep(100);
+    };
 
-    if (useTcp) {
-        tcpDev.connectToHost(hostOrPort, static_cast<quint16>(portOrBaud));
-        if (!tcpDev.waitForConnected(3000)) {
-            emit status_signal(QString("Hata: %1:%2 baglantisi kurulamadi (%3)")
-                                    .arg(hostOrPort).arg(portOrBaud).arg(tcpDev.errorString()));
-            return;
-        }
-        dev = &tcpDev;
-        emit status_signal(QString("Kopru baglantisi acildi (%1:%2)").arg(hostOrPort).arg(portOrBaud));
-    } else {
-        serialDev.setPortName(hostOrPort);
-        serialDev.setBaudRate(portOrBaud);
-        if (!serialDev.open(QIODevice::ReadWrite)) {
-            emit status_signal(QString("Hata: %1 açılamadı").arg(hostOrPort));
-            return;
-        }
-        dev = &serialDev;
-        emit status_signal(QString("ESP32 seri port bağlantısı açıldı (%1)").arg(hostOrPort));
-    }
-
-    device = dev;
-
-    QByteArray buffer;
     while (running) {
-        write_pending_lines();
+        QSerialPort serialDev;
+        QTcpSocket tcpDev;
+        QIODevice *dev = nullptr;
 
-        if (dev->waitForReadyRead(20)) {
-            buffer += dev->readAll();
-            int nl;
-            while ((nl = buffer.indexOf('\n')) != -1) {
-                QString line = QString::fromUtf8(buffer.left(nl)).trimmed();
-                buffer.remove(0, nl + 1);
-                if (!line.isEmpty()) process_line(line);
+        if (useTcp) {
+            tcpDev.connectToHost(hostOrPort, static_cast<quint16>(portOrBaud));
+            if (!tcpDev.waitForConnected(3000)) {
+                emit status_signal(QString("%1:%2 bağlantısı kurulamadı (%3) - yeniden denenecek")
+                                        .arg(hostOrPort).arg(portOrBaud).arg(tcpDev.errorString()));
+                retryDelay();
+                continue;
+            }
+            dev = &tcpDev;
+            emit status_signal(QString("Köprü bağlantısı açıldı (%1:%2)").arg(hostOrPort).arg(portOrBaud));
+        } else {
+            serialDev.setPortName(hostOrPort);
+            serialDev.setBaudRate(portOrBaud);
+            if (!serialDev.open(QIODevice::ReadWrite)) {
+                emit status_signal(QString("%1 açılamadı - yeniden denenecek").arg(hostOrPort));
+                retryDelay();
+                continue;
+            }
+            dev = &serialDev;
+            emit status_signal(QString("ESP32 seri port bağlantısı açıldı (%1)").arg(hostOrPort));
+        }
+
+        // Onceki (kopmus) oturumdan kuyrukta kalan komutlar yeni baglantiya
+        // gitmesin: bunlar eski bir surus anina ait motor darbeleri olabilir
+        // ve taze baglantida beklenmedik hareket yaratir.
+        {
+            QMutexLocker lock(&writeMutex);
+            pendingWrites.clear();
+        }
+
+        device = dev;
+        QByteArray buffer;
+        bool linkUp = true;
+
+        while (running && linkUp) {
+            write_pending_lines();
+
+            if (dev->waitForReadyRead(20)) {
+                buffer += dev->readAll();
+                int nl;
+                while ((nl = buffer.indexOf('\n')) != -1) {
+                    QString line = QString::fromUtf8(buffer.left(nl)).trimmed();
+                    buffer.remove(0, nl + 1);
+                    if (!line.isEmpty()) process_line(line);
+                }
+            }
+
+            if (useTcp && tcpDev.state() != QAbstractSocket::ConnectedState) {
+                emit status_signal("Köprü bağlantısı koptu - yeniden bağlanılıyor...");
+                linkUp = false;
+            } else if (!useTcp && serialDev.error() == QSerialPort::ResourceError) {
+                // USB kablosu cekildi/cihaz kayboldu
+                emit status_signal("Seri port koptu - yeniden bağlanılıyor...");
+                linkUp = false;
             }
         }
 
-        if (useTcp && tcpDev.state() != QAbstractSocket::ConnectedState) {
-            emit status_signal("Köprü bağlantısı koptu.");
-            break;
-        }
-    }
+        device = nullptr;
+        if (useTcp) tcpDev.close();
+        else        serialDev.close();
 
-    write_pending_lines();
-    device = nullptr;
-    if (useTcp) {
-        tcpDev.close();
-    } else {
-        serialDev.close();
+        if (running) retryDelay(); // kopma sonrasi kisa bekleyip yeniden dene
     }
 }
 

@@ -1,0 +1,16 @@
+# CMake derleme çıktıları - depoya girmemeli
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Derlenmiş nesne/çalıştırılabilir dosyalar
+*.o
+*.so
+*.a
+
+# Editör/IDE geçici dosyaları
+.vscode/
+.idea/
+*.swp

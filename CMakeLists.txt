@@ -23,6 +23,10 @@ add_executable(su_alti_rov
     src/ColorPickerButton.cpp
     src/AttitudeIndicator.cpp
     src/MotorDiagramWidget.cpp
+    src/MotorMixer.cpp
+    src/RovSettings.cpp
+    src/SettingsDialog.cpp
+    src/AviMjpegWriter.cpp
     src/RovPanel.cpp
     src/Ui_MainWindow.cpp
     src/RovGUI.cpp
@@ -33,6 +37,10 @@ add_executable(su_alti_rov
     include/ColorPickerButton.hpp
     include/AttitudeIndicator.hpp
     include/MotorDiagramWidget.hpp
+    include/MotorMixer.hpp
+    include/RovSettings.hpp
+    include/SettingsDialog.hpp
+    include/AviMjpegWriter.hpp
     include/RovPanel.hpp
     include/Ui_MainWindow.hpp
     include/RovGUI.hpp
@@ -45,3 +53,12 @@ target_link_libraries(su_alti_rov
     Qt5::Network
     Qt5::SerialPort
 )
+
+# ---- Birim testler (ctest ile calisir) ----
+# MotorMixer bilerek Qt'siz yazildi; testi de Qt gerektirmez.
+enable_testing()
+add_executable(test_motor_mixer
+    tests/test_motor_mixer.cpp
+    src/MotorMixer.cpp
+)
+add_test(NAME motor_mixer COMMAND test_motor_mixer)

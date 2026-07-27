@@ -18,6 +18,11 @@ signals:
     void status_signal(const QString &msg);
     void stats_signal(int fps, float kbps, int width, int height);
 
+    // Ayni karenin HAM JPEG baytlari (SOI..EOI) - video kaydi bunlari
+    // yeniden kodlamadan dogrudan AVI'ye yazar (bkz. AviMjpegWriter);
+    // image_signal ise ekranda gosterim/HUD icin cozulmus halidir.
+    void jpeg_signal(const QByteArray &jpeg);
+
 protected:
     void run() override;
 
