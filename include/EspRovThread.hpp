@@ -28,9 +28,6 @@ class QIODevice;
 //                                    10sn bekleme suresi ESP32 tarafinda yonetilir)
 // ESP32 taraf ates alma sonrasi "TORPEDO:kalan_sayi" satiri yollar; kalan yoksa
 // veya bekleme suresi dolmadiysa "ERR:TORPEDOEMPTY" / "ERR:TORPEDOCOOLDOWN" doner.
-// Kamera ESP'si (Motor ESP degil) WegSh goruntu analiziyle periyodik
-// "WEGSH:yaw,gorunur" (yaw -1..1, gorunur 0/1) satiri yollar - bu Motor ESP'ye
-// hic gitmez, sadece PC'nin otonom mod motor karisimina girdi olarak kullanilir.
 class EspRovThread : public QThread {
     Q_OBJECT
 public:
@@ -52,7 +49,6 @@ signals:
     void depth_signal(float meters, float vertical_speed_ms);
     void nem_signal(float humidity_pct, float temperature_c);
     void torpedo_signal(int remaining);
-    void wegsh_signal(float yaw, bool visible);
 
 protected:
     void run() override;

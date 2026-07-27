@@ -1,11 +1,18 @@
 #include "JoystickThread.hpp"
 
+#include <cmath>
 #include <fcntl.h>
 #include <unistd.h>
 #include <linux/joystick.h>
 
+// Bu esikten kucuk eksen degisiklikleri gurultu/drift sayilip yayinlanmaz
+// (bkz. JoystickThread.hpp'deki lastAxisValues aciklamasi).
+static constexpr float AXIS_CHANGE_THRESHOLD = 0.02f;
+
 JoystickThread::JoystickThread(const QString &device, QObject *parent)
-    : QThread(parent), devicePath(device), running(true) {}
+    : QThread(parent), devicePath(device), running(true) {
+    lastAxisValues.fill(-2.0f);
+}
 
 void JoystickThread::run() {
     int fd = -1;
@@ -33,7 +40,13 @@ void JoystickThread::run() {
             if (e.type == JS_EVENT_BUTTON) {
                 emit button_signal(e.number, e.value);
             } else if (e.type == JS_EVENT_AXIS) {
-                emit axis_signal(e.number, e.value / 32767.0f);
+                float value = e.value / 32767.0f;
+                if (e.number < lastAxisValues.size() &&
+                    std::fabs(value - lastAxisValues[e.number]) < AXIS_CHANGE_THRESHOLD) {
+                    continue;
+                }
+                if (e.number < lastAxisValues.size()) lastAxisValues[e.number] = value;
+                emit axis_signal(e.number, value);
             }
         }
         QThread::msleep(10);

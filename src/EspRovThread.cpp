@@ -113,16 +113,6 @@ void EspRovThread::process_line(const QString &line) {
         } else {
             emit status_signal(line);
         }
-    } else if (line.startsWith("WEGSH:")) {
-        QStringList parts = line.mid(6).split(',');
-        bool okYaw = false, okVis = false;
-        float yaw = parts.size() == 2 ? parts[0].toFloat(&okYaw) : 0.0f;
-        int visInt = parts.size() == 2 ? parts[1].toInt(&okVis) : 0;
-        if (okYaw && okVis) {
-            emit wegsh_signal(yaw, visInt != 0);
-        } else {
-            emit status_signal(line);
-        }
     } else {
         emit status_signal(line);
     }

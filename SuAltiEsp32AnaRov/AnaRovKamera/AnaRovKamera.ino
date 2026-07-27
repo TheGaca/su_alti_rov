@@ -13,7 +13,6 @@
 #include <freertos/task.h>
 
 #include "board_config.h"
-#include "WegSh.h"
 
 // ---- OTA (kablosuz kod yukleme) ayarlari ----
 // Motor karti (AnaRovBeyin.ino) OTA'siyla ayni desen: ESP32 kendi WiFi erisim
@@ -386,49 +385,6 @@ void handleBridge()
   }
 }
 
-// ==================== WegSh (kirmizi iz takibi) ====================
-// Kamera karesini periyodik olarak WegSh.h/.cpp ile analiz edip sonucu (yaw,
-// gorunurluk) dogrudan PC'ye (bridgeClient uzerinden TCP ile) telemetri
-// olarak yazar - Motor ESP/ESP-NOW'a HIC gitmez. PC bu veriyi sadece Otonom
-// modda motor karisimina katar (bkz. RovGUI.cpp); burada ayri bir mod
-// anahtarlama mantigina gerek yok, WegSh her zaman calisip raporlar.
-//
-// DIKKAT: esp_camera_fb_get()/esp_camera_fb_return() burada, kamera HTTP
-// akis gorevinden (app_httpd.cpp) BAGIMSIZ bir gorevden (bridgeTask, Core 0)
-// cagriliyor. config.fb_count=2 (PSRAM varken) bu tur birden fazla
-// tuketiciyi desteklemek icin zaten boyle ayarlanmisti, ama gercek donanimda
-// kararsizlik (kilitlenme, bozuk kare vb.) gozlenirse ilk supheli yer burasi
-// olmali.
-#define WEGSH_PERIOD_MS 200 // ~5Hz - kamera akisini/koprusunu yavaslatmayacak kadar seyrek
-
-void updateWegSh()
-{
-  static unsigned long lastWegShAt = 0;
-  if (millis() - lastWegShAt < WEGSH_PERIOD_MS) return;
-  lastWegShAt = millis();
-
-  if (!cameraServerStarted) return; // kamera henuz hazir degil
-
-  camera_fb_t *fb = esp_camera_fb_get();
-  if (!fb) return;
-
-  float yaw = 0.0f;
-  bool visible = false;
-  bool ok = wegshAnalyze(fb, yaw, visible);
-  esp_camera_fb_return(fb);
-
-  if (!ok) return; // JPEG cozme/bellek basarisiz oldu - bu turu atla, bir sonrakinde tekrar denenir
-
-  if (bridgeClient && bridgeClient.connected()) {
-    bridgeClient.print("WEGSH:");
-    bridgeClient.print(yaw, 3);
-    bridgeClient.print(",");
-    bridgeClient.print(visible ? 1 : 0);
-    bridgeClient.print("\n");
-    flashLed();
-  }
-}
-
 // handleBridge()'i ayri bir FreeRTOS gorevinde, Core 0'da calistirir - boylece
 // ESP-NOW/TCP kopru trafigi, Core 1'de calisan ana loop()'taki ArduinoOTA.handle()
 // gibi islerden bagimsiz, kesintisiz akar (kamera HTTP sunucusu zaten kendi
@@ -452,7 +408,6 @@ void bridgeTask(void *pvParameters)
       lastHeartbeatAt = millis();
       flashLed();
     }
-    updateWegSh(); // kendi icinde WEGSH_PERIOD_MS ile hiz sinirlandirilmis
     updateLed(); // flashLed() ile yakilan LED'i zamani gelince sondurur
     vTaskDelay(pdMS_TO_TICKS(2)); // digerlerine CPU birak, sikica dongulemesin
   }

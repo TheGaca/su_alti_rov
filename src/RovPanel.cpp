@@ -522,31 +522,4 @@ RovPanel::RovPanel(const QString &title, bool mini, QWidget *parent)
     QVBoxLayout *rootL = new QVBoxLayout(this);
     rootL->setContentsMargins(0, 0, 0, 0);
     rootL->addWidget(main_group);
-
-    // Mini ROV henuz Ethernet'e gecmedi (IP bekleniyor) - panelin tamamini
-    // kaplayan, tiklamalari ENGELLEMEYEN yari saydam "GELECEK" katmani.
-    // Layout'a DAHIL EDILMEZ (main_group'un boyutunu etkilemesin diye),
-    // dogrudan bu widget'in cocugu olarak eklenip resizeEvent() ile
-    // panelin tam uzerinde tutulur.
-    if (isMini) {
-        coming_soon_overlay = new QLabel("GELECEK", this);
-        coming_soon_overlay->setAlignment(Qt::AlignCenter);
-        coming_soon_overlay->setStyleSheet(
-            "background-color: rgba(0, 0, 0, 130);"
-            "color: #ff3b3b;"
-            "font-size: 64px;"
-            "font-weight: bold;"
-        );
-        coming_soon_overlay->setAttribute(Qt::WA_TransparentForMouseEvents); // altindaki panel tiklanabilir kalsin
-        coming_soon_overlay->setGeometry(this->rect());
-        coming_soon_overlay->raise();
-    }
-}
-
-void RovPanel::resizeEvent(QResizeEvent *event) {
-    QWidget::resizeEvent(event);
-    if (coming_soon_overlay) {
-        coming_soon_overlay->setGeometry(this->rect());
-        coming_soon_overlay->raise();
-    }
 }

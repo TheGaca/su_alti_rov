@@ -14,6 +14,12 @@ namespace {
 constexpr int ESP_NEUTRAL_US = 1490;
 constexpr int ESP_DELTA_US = 200;
 
+// ESC'ye giden darbenin PC tarafindaki sert tavan/tabani - ESP32 firmware'indeki
+// (AnaRovBeyin.ino / sualtiesp.ino) MIN_US/MAX_US ile ayni degerler; motor
+// hizini iki katmanda da tutarli sekilde sinirlar.
+constexpr int MOTOR_MIN_US = 1295;
+constexpr int MOTOR_MAX_US = 1600;
+
 // M1..M4 = on/arka capraz yatay itki, M5..M8 = dikey itki
 // (bkz. foto/5a5bd473784e48cfed6daa1d1cb0c4e51b705469.png ve MotorDiagramWidget).
 // Isaretler ilk tahmindir: bench testinde bir motor beklenenin tersine donerse
@@ -40,11 +46,6 @@ constexpr float STAB_GAIN = 4.0f;
 // ~0.5m sapmada tam duzeltme (doygunluk). Cok yavas/hizli tepki gorulurse ayarla;
 // yon ters gelirse isaretini cevir.
 constexpr float DEPTH_HOLD_GAIN = 2.0f;
-
-// Otonom modda WegSh (kirmizi serit takibi) izi gorurken uygulanan sabit,
-// dusuk ileri itki. Izi kaybedince (visible=false) surge 0'a duser - iz
-// gorunmuyorsa korlemesine ilerlemek yerine dur.
-constexpr float WEGSH_AUTONOMOUS_SURGE = 0.25f;
 }
 
 RovGUI::RovGUI(QWidget *parent)
@@ -56,7 +57,6 @@ RovGUI::RovGUI(QWidget *parent)
       ana_armed(false), mini_armed(false), ana_cam_connected(false),
       ana_stabilize(false), ana_roll(0.0f), ana_pitch(0.0f), ana_yaw(0.0f),
       ana_current_depth(0.0f), ana_depth_target(0.0f),
-      ana_wegsh_yaw(0.0f), ana_wegsh_visible(false),
       cam_ping_proc(nullptr), anarov_ping_proc(nullptr),
       log_file(nullptr), log_stream(nullptr),
       motor_heartbeat_timer(nullptr)
@@ -264,7 +264,7 @@ std::array<int, 8> RovGUI::compute_motor_mix(float surge, float lateral, float y
     std::array<int, 8> m{};
     for (int i = 0; i < 4; ++i) {
         float v = surge * W_SURGE[i] + lateral * W_LATERAL[i] + yaw * W_YAW[i];
-        m[i] = qBound(1000, ESP_NEUTRAL_US + static_cast<int>(v * ESP_DELTA_US), 2000);
+        m[i] = qBound(MOTOR_MIN_US, ESP_NEUTRAL_US + static_cast<int>(v * ESP_DELTA_US), MOTOR_MAX_US);
     }
     // M5=on sag, M6=on sol, M7=arka sag, M8=arka sol (bkz. MotorDiagramWidget).
     // Sabitleme kapaliyken rollCorr/pitchCorr 0 gelir, dördü de ayni deger olur.
@@ -278,7 +278,7 @@ std::array<int, 8> RovGUI::compute_motor_mix(float surge, float lateral, float y
         vertical - rollCorr + pitchCorr, // M8 arka-sol
     };
     for (int i = 0; i < 4; ++i) {
-        m[4 + i] = qBound(1000, ESP_NEUTRAL_US + static_cast<int>(verticalUs[i] * ESP_DELTA_US), 2000);
+        m[4 + i] = qBound(MOTOR_MIN_US, ESP_NEUTRAL_US + static_cast<int>(verticalUs[i] * ESP_DELTA_US), MOTOR_MAX_US);
     }
     return m;
 }
@@ -360,7 +360,6 @@ void RovGUI::toggle_ana_connection() {
     connect(ana_esp_thread, &EspRovThread::attitude_signal, this, &RovGUI::update_ana_attitude);
     connect(ana_esp_thread, &EspRovThread::depth_signal, this, &RovGUI::update_ana_depth);
     connect(ana_esp_thread, &EspRovThread::nem_signal, this, &RovGUI::update_ana_nem);
-    connect(ana_esp_thread, &EspRovThread::wegsh_signal, this, &RovGUI::update_ana_wegsh);
     connect(ana_esp_thread, &EspRovThread::torpedo_signal, this, &RovGUI::update_ana_torpedo);
     ana_esp_thread->start();
     A->btn_connect->setText("Kes");
@@ -410,8 +409,8 @@ void RovGUI::update_ana_attitude(float roll, float pitch, float yaw) {
     } else if (ana_autonomous) {
         // apply_ana_motor_mix() roll/pitch duzeltmesini (ana_stabilize acikken)
         // her cagrida kendi icinde ekliyor; otonom modda da bu IMU okumasi tek
-        // basina degisince guncel kalsin diye WegSh/derinlik girdileriyle
-        // birlikte yeniden hesaplanip gonderiyoruz.
+        // basina degisince guncel kalsin diye derinlik girdisiyle birlikte
+        // yeniden hesaplanip gonderiyoruz.
         recompute_ana_autonomous_mix();
     }
 }
@@ -432,8 +431,7 @@ void RovGUI::update_ana_depth(float meters, float vertical_speed_ms) {
 
     // Otonom modda irtifa (derinlik) sabitleme: her yeni derinlik okumasinda
     // hedeften sapmayi dikey itkiye duzeltme olarak uygula (bkz. on_autonomous_ana()
-    // - hedef oraya gecerken kilitlenir). Surge/yaw WegSh'ten gelir (bkz.
-    // recompute_ana_autonomous_mix()).
+    // - hedef oraya gecerken kilitlenir).
     if (ana_autonomous && ana_esp_thread) {
         recompute_ana_autonomous_mix();
     }
@@ -456,35 +454,19 @@ void RovGUI::update_ana_torpedo(int remaining) {
     set_led(ui.anaRovPanel->led_torpedo, torpedo_ready);
 }
 
-// Kamera ESP'sinin WegSh (kirmizi serit tespiti) analizinden gelen periyodik
-// "WEGSH:yaw,gorunur" verisi - motor komutuna DOGRUDAN degil, sadece son
-// bilinen deger olarak kaydedilip recompute_ana_autonomous_mix() araciligiyla
-// islenir (bkz. o fonksiyonun yorumu).
-void RovGUI::update_ana_wegsh(float yaw, bool visible) {
-    ana_wegsh_yaw = yaw;
-    ana_wegsh_visible = visible;
-    if (ana_autonomous && ana_esp_thread) {
-        recompute_ana_autonomous_mix();
-    }
-}
-
-// Otonom moddaki tek M: komutunu ureten ortak yer: WegSh'in yaw kararini
-// (Kamera ESP, goruntu isleme) mevcut derinlik-hold duzeltmesiyle (Motor ESP,
-// basinc sensoru) birlestirir. ATT:/DEPTH:/WEGSH: satirlarindan hangisi
-// gelirse gelsin, son bilinen degerlerle burasi cagrilir - boylece uc ayri
-// guncelleme yerinde ayni mantik tekrarlanmaz ve Motor ESP'ye cakisan iki
-// ayri komut kaynagi gitmez (roll/pitch duzeltmesi apply_ana_motor_mix()
-// icinde, ana_stabilize acikken, ayrica ekleniyor).
+// Otonom moddaki tek M: komutunu ureten ortak yer: mevcut derinlik-hold
+// duzeltmesini (Motor ESP, basinc sensoru) motor karisimina uygular. ATT:/
+// DEPTH: satirlarindan hangisi gelirse gelsin, son bilinen degerlerle burasi
+// cagrilir - boylece ayri guncelleme yerlerinde ayni mantik tekrarlanmaz ve
+// Motor ESP'ye cakisan iki ayri komut kaynagi gitmez (roll/pitch duzeltmesi
+// apply_ana_motor_mix() icinde, ana_stabilize acikken, ayrica ekleniyor).
 void RovGUI::recompute_ana_autonomous_mix() {
     if (!ana_autonomous || !ana_esp_thread) return;
-
-    float surge = ana_wegsh_visible ? WEGSH_AUTONOMOUS_SURGE : 0.0f;
-    float yaw = ana_wegsh_visible ? ana_wegsh_yaw : 0.0f;
 
     float depthErr = ana_depth_target - ana_current_depth; // pozitif: hedeften daha sigda, asagi itki gerekir
     float depthCorr = qBound(-1.0f, depthErr * DEPTH_HOLD_GAIN, 1.0f);
 
-    apply_ana_motor_mix(surge, 0.0f, yaw, -depthCorr);
+    apply_ana_motor_mix(0.0f, 0.0f, 0.0f, -depthCorr);
 }
 
 // ==================== Mini ROV Bağlantı (ESP32 seri port) ====================
@@ -887,10 +869,8 @@ void RovGUI::on_autonomous_ana() {
 
     // Otonom moda gecerken elde kalan son manuel komutu notrle: yoksa heartbeat
     // (bkz. send_motor_heartbeat) eski manuel hareketi otonom modda da göndermeye
-    // devam eder. WegSh henuz taze bir "gorunur" verisi vermediyse surge/yaw
-    // guvenli varsayilan olan 0'dir (bkz. recompute_ana_autonomous_mix());
-    // dikey eksen bir sonraki derinlik okumasinda depth-hold tarafindan,
-    // yon ise bir sonraki WEGSH: satirinda WegSh tarafindan devralinacak.
+    // devam eder. Surge/yaw otonom modda hep 0'dir; dikey eksen bir sonraki
+    // derinlik okumasinda depth-hold tarafindan devralinacak.
     apply_ana_motor_mix(0, 0, 0, 0);
     log_message(QString("[ANA] Otonom moda geçildi - sabitleme açıldı, hedef derinlik: %1m")
                      .arg(ana_depth_target, 0, 'f', 2), 0);

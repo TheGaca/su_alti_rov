@@ -11,7 +11,6 @@
 #include <QComboBox>
 #include <QTextEdit>
 #include <QProgressBar>
-#include <QResizeEvent>
 
 #include "AttitudeIndicator.hpp"
 #include "ColorPickerButton.hpp"
@@ -124,15 +123,6 @@ public:
 
     // Terminal (siyah arka plan, acik mavi yazi)
     QTextEdit *terminal_log;
-
-    // Mini ROV henuz Ethernet'e gecmedi (IP bilgisi bekleniyor) - gecici
-    // olarak panelin tamamini kaplayan, tiklamalari ENGELLEMEYEN (mevcut
-    // seri baglanti calismaya devam etsin diye) yari saydam "GELECEK" katmani.
-    // Sadece Mini panelde olusturulur (isMini true), Ana panelde nullptr kalir.
-    QLabel *coming_soon_overlay = nullptr;
-
-protected:
-    void resizeEvent(QResizeEvent *event) override;
 };
 
 #endif // ROVPANEL_H

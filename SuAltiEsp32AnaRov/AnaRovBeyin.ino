@@ -13,7 +13,7 @@
  * denizde zaten USB baglanmayacak, sadece guc (VIN/GND) gider:
  *   "ARM"                     -> ESC'leri ARM eder (2sn 850us tutar, sonra notre gecer)
  *   "DISARM"                  -> Tum pinlerden PWM sinyalini tamamen keser (ESC durur)
- *   "M:p1,p2,p3,p4,p5,p6,p7,p8" -> motor 1..8 icin darbe genisligi (us, 850-1850)
+ *   "M:p1,p2,p3,p4,p5,p6,p7,p8" -> motor 1..8 icin darbe genisligi (us, 1295-1600)
  * Cihaz durum bildirimi icin "READY", "ARMING", "ARMED", "DISARMED", "ERR:..." satirlari yollar.
  * IMU takiliysa 100ms'de bir "ATT:roll,pitch,yaw" (derece) satiri da yollanir.
  * Basinc sensoru takiliysa 200ms'de bir "DEPTH:metre,dikey_hiz_buyuklugu_m/s"
@@ -26,8 +26,8 @@
  * Guvenlik: ARMED durumdayken 500ms boyunca yeni "M:" komutu gelmezse
  * (baglanti kopmasi ihtimaline karsi) tum motorlar otomatik notre (1490us) cekilir.
  *
- * PWM darbe sinirlari (ESC): MIN_US=850us (tam geri), NEUTRAL_US=1490us (notr/dur),
- * MAX_US=1850us (tam ileri). "M:" ile gelen hedef darbeler dogrudan uygulanmaz;
+ * PWM darbe sinirlari (ESC): MIN_US=1295us (tam geri), NEUTRAL_US=1490us (notr/dur),
+ * MAX_US=1600us (tam ileri). "M:" ile gelen hedef darbeler dogrudan uygulanmaz;
  * ani tam-ileri<->tam-geri gibi sicramalarda ESC'lerin takilmasini/stall olmasini
  * onlemek icin motorPulse, updateMotorSlew() tarafindan MOTOR_SLEW_STEP_US
  * adimlarla (varsayilan: 20ms'de 40us, yani ~500ms'de tam MIN_US<->MAX_US) hedefe
@@ -124,8 +124,8 @@ static const uint8_t ESPNOW_LMK[16] = {'S','u','A','l','t','i','R','o','v','L','
 #define PWM_FREQ_HZ   50
 #define PWM_RES       16
 #define NEUTRAL_US    1490
-#define MIN_US        850
-#define MAX_US        1850
+#define MIN_US        1295
+#define MAX_US        1600
 #define ARM_HOLD_MS   2000
 #define FAILSAFE_MS   500
 #define BOOT_SETTLE_MS 2000 // acilistan sonra bu sure boyunca ESP-NOW'dan gelen komutlar yok
@@ -495,7 +495,14 @@ void handleMotorCommand(const String &line) {
 
 void handleLine(const String &line) {
     if (line == "ARM") {
+        // Onceden state==DISARMED disinda gelen ARM satiri sessizce yok
+        // sayiliyordu; PC tarafinda kumanda kaynakli GUI kasmasi yuzunden
+        // operator ilk basisin geri bildirimini gec gorup ikinci kez basarsa,
+        // bu sessizlik "arm calismadi" sanisina yol aciyordu. Simdi durum acikca
+        // bildiriliyor (bkz. EspRovThread::process_line -> status_signal).
         if (state == DISARMED) startArming();
+        else if (state == ARMING) sendStatus("ERR:ALREADYARMING");
+        else sendStatus("ERR:ALREADYARMED");
     } else if (line == "DISARM") {
         disarmNow();
     } else if (line.startsWith("M:")) {
