@@ -130,6 +130,16 @@ void EspRovThread::process_line(const QString &line) {
         } else {
             emit status_signal(line);
         }
+    } else if (line.startsWith("BAT:")) {
+        QStringList parts = line.mid(4).split(',');
+        bool okV = false, okP = false;
+        float volts = parts.size() == 2 ? parts[0].toFloat(&okV) : 0.0f;
+        int pct     = parts.size() == 2 ? parts[1].toInt(&okP) : 0;
+        if (okV && okP) {
+            emit battery_signal(volts, pct);
+        } else {
+            emit status_signal(line);
+        }
     } else if (line.startsWith("TORPEDO:")) {
         bool ok = false;
         int remaining = line.mid(8).toInt(&ok);

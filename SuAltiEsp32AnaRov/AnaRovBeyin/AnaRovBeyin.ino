@@ -37,10 +37,16 @@
  *   Kirmizi (V+)    -> ESP32 kartinin 5V/VIN pini (3.3V DEGIL, sensor 5V ister)
  *   Siyah (GND)     -> GND
  *   Sinyal (0.5-4.5V) -> ESP32 ADC 3.3V'u gecemez! Once gerilim bolucuden gecir:
- *       Sinyal --[10k]-- GPIO34 --[20k]-- GND   (bolucu orani = 20/(10+20) = 2/3)
+ *       Sinyal --[10k]-- GPIO39 (VN) --[20k]-- GND   (bolucu orani = 20/(10+20) = 2/3)
+ *   DIKKAT: 5V hatti VN pinine ASLA dogrudan degmemeli; 5V sadece sensorun
+ *   V+ beslemesine gider, VN'e yalnizca bolucuden cikan sinyal baglanir.
  *   ONEMLI: ESP32 acilirken (setup icinde) sensor HAVADA/SUYA GIRMEMIS olmali;
  *   o andaki basinc "yuzey/atmosfer" referansi olarak kalibre edilir. Sudayken
  *   acarsan derinlik yanlis (sifirdan farkli baslar) okunur.
+ *
+ * Pil voltaj olcumu (12V pil, GPIO34): 1sn'de bir "BAT:volt,yuzde" satiri
+ * yollanir. 12V ASLA dogrudan pine baglanmaz, bolucu sart (bkz. Pil bolumu):
+ *   Pil(+) --[100k]-- GPIO34 --[33k]-- GND
  *
  * OTA (kablosuz kod yukleme): ESP32 kendi WiFi erisim noktasini (AP) acar;
  * disarida bir router/internet GEREKMEZ, bilgisayarindan dogrudan OTA_AP_SSID
@@ -208,6 +214,36 @@ unsigned long lastNemAt = 0;
 float humidityPct = 0.0f;
 float dhtTempC = 0.0f;
 
+// ==================== Pil (12V) Voltaj Olcumu ====================
+// 12V pil GPIO'ya ASLA dogrudan baglanmaz (3.3V siniri) - gerilim bolucu sart:
+//   Pil(+) --[100k]-- GPIO34 --[33k]-- GND     Pil(-) sistem GND'siyle ortak.
+// Oran 33/133: dolu pilde (12.6V) pinde ~3.13V olusur, bolucu en fazla ~13.3V
+// olcebilir - 12.6V'u asabilen bir pil (ors. sarjdaki kursun-asit) baglanacaksa
+// alt direnc kucultulmeli. Bolucu yuksek direncli oldugu icin (pili ~0.1mA ile
+// bosaltir, takili kalabilir) ADC okumasi gurultuye acik - GPIO34-GND arasina
+// 100nF kondansator koymak okumayi belirgin stabilize eder (onerilir).
+// GPIO34: derinlik sensoru GPIO39'a (VN) tasininca bosalan input-only ADC1 pini.
+#define BAT_ADC_PIN       34
+#define BAT_PERIOD_MS     1000
+#define BAT_ADC_SAMPLES   32     // ESP32 ADC gurultulu; ortalama alarak stabilize edilir
+#define BAT_DIVIDER_RATIO (33.0f / (100.0f + 33.0f))
+#define BAT_CAL           1.0f   // kalibrasyon: (multimetreyle olculen) / (BAT: satirindaki deger)
+#define BAT_V_FULL        12.6f  // %100 sayilan gerilim (3S lityum dolu; pil tipine gore ayarla)
+#define BAT_V_EMPTY       9.0f   // %0 sayilan gerilim (3S lityum bos - bu altina inmemeli)
+
+unsigned long lastBatAt = 0;
+
+float batReadVolts() {
+    // analogRead yerine analogReadMilliVolts: her cipe fabrikada islenmis
+    // ADC kalibrasyonunu kullanir - "3.3V referans" varsayimindaki hatayi ve
+    // ADC dogrusalsizliginin buyuk kismini kendisi duzeltir (PilTest.ino
+    // bench-test sketch'iyle ayni yontem, ikisi ayni degeri gosterir).
+    long sum = 0;
+    for (int i = 0; i < BAT_ADC_SAMPLES; i++) sum += analogReadMilliVolts(BAT_ADC_PIN);
+    float vAtPin = (sum / (float)BAT_ADC_SAMPLES) / 1000.0f;
+    return vAtPin / BAT_DIVIDER_RATIO * BAT_CAL;
+}
+
 // ==================== ESP-NOW aktivite LED'i ====================
 // Kamera ESP'sine (PC'ye) her veri gonderildiginde kisa bir sure yanip
 // soner - Kamera ESP'deki ayni mantigin (GPIO2 uzerindeki Ethernet LED'i)
@@ -229,7 +265,7 @@ void updateLed() {
 }
 
 // ==================== Basinc/Derinlik Sensoru ====================
-#define DEPTH_ADC_PIN      34   // input-only pin, baska hicbir seyle cakismaz
+#define DEPTH_ADC_PIN      39   // VN pini: input-only ADC1, baska hicbir seyle cakismaz
 #define DEPTH_PERIOD_MS    200
 #define DEPTH_ADC_SAMPLES  32   // ESP32 ADC gurultulu; ortalama alarak stabilize edilir
 
@@ -659,6 +695,8 @@ void setup() {
     analogSetPinAttenuation(DEPTH_ADC_PIN, ADC_11db); // 0-3.3V tam araligi kullan
     depthCalibrateSurface();
 
+    analogSetPinAttenuation(BAT_ADC_PIN, ADC_11db); // pil bolucusu de 0-3.3V araliginda okunur
+
     dht.begin();
 
     sendStatus((imuReady ? String("SUALTIESP32 READY (IMU OK) MAC=") : String("SUALTIESP32 READY (IMU YOK) MAC=")) + WiFi.softAPmacAddress());
@@ -734,5 +772,16 @@ void loop() {
             dhtTempC = t;
             sendStatusQuiet("NEM:" + String(humidityPct, 1) + "," + String(dhtTempC, 1));
         }
+    }
+
+    if (millis() - lastBatAt >= BAT_PERIOD_MS) {
+        lastBatAt = millis();
+        float v = batReadVolts();
+        // Yuzde, BAT_V_EMPTY..BAT_V_FULL arasinin dogrusal orani (lityum
+        // desarj egrisi tam dogrusal degildir ama gosterge icin yeterli).
+        int pct = (int)((v - BAT_V_EMPTY) / (BAT_V_FULL - BAT_V_EMPTY) * 100.0f + 0.5f);
+        if (pct < 0) pct = 0;
+        if (pct > 100) pct = 100;
+        sendStatusQuiet("BAT:" + String(v, 2) + "," + String(pct));
     }
 }

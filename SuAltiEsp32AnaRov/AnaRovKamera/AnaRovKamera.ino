@@ -38,15 +38,20 @@
 //
 // SCK'yi GPIO32'ye tasimayi denedik ama W5500 hic cevap vermedi ("reset
 // timeout" / "reset w5500 failed") - SPI'da en zamanlama-hassas sinyal SCK
-// oldugu icin bu pinde/kabloda bir sorun oldugu anlasildi. Bunun yerine SCK,
-// daha once MOSI olarak sorunsuz calistigi kanitlanmis GPIO13'e alindi; MOSI
-// da GPIO32'ye tasindi (MOSI, CS gibi SCK kadar zamanlama-kritik degil).
+// oldugu icin bu pinde/kabloda bir sorun oldugu anlasildi. MOSI GPIO32'ye
+// tasindi (MOSI, CS gibi SCK kadar zamanlama-kritik degil).
+//
+// SCK/MISO atamasi FIILI kablolamaya gore: SCK=GPIO14, MISO=GPIO13. Bunlar
+// kodda ters tanimliyken W5500 surum kaydi hep 0x00 okunuyordu ("version
+// mismatched, expected 0x04, got 0x00") - saat sinyali cipin MISO bacagina
+// gidiyor, cevap da SCK bacagindan okunmaya calisiliyordu. GPIO14 ayni
+// zamanda ESP32'nin dogal HSPI saat pinidir, SCK icin uygun secim.
 #define ETH_CS   33
 #define ETH_IRQ  -1
 #define ETH_RST  -1
 
-#define ETH_SCK  13
-#define ETH_MISO 14
+#define ETH_SCK  14
+#define ETH_MISO 13
 #define ETH_MOSI 32
 
 // ======================

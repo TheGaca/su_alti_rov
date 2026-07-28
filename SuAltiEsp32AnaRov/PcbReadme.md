@@ -15,7 +15,8 @@
 | 32 | Motor 8 |
 | 21 | BNO055 SDA |
 | 22 | BNO055 SCL |
-| 34 | Derinlik sensörü sinyal (ADC) |
+| 39 (VN) | Derinlik sensörü sinyal (ADC, 10k/20k bölücüden sonra) |
+| 34 | Pil voltajı (ADC; Pil+ --[100k]-- GPIO34 --[33k]-- GND bölücüden sonra) |
 | 18 | Torpido |
 | 19 | Torpido |
 | 23 | Torpido |

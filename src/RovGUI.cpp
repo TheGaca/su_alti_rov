@@ -366,6 +366,7 @@ void RovGUI::toggle_ana_connection() {
     connect(ana_esp_thread, &EspRovThread::attitude_signal, this, &RovGUI::update_ana_attitude);
     connect(ana_esp_thread, &EspRovThread::depth_signal, this, &RovGUI::update_ana_depth);
     connect(ana_esp_thread, &EspRovThread::nem_signal, this, &RovGUI::update_ana_nem);
+    connect(ana_esp_thread, &EspRovThread::battery_signal, this, &RovGUI::update_ana_battery);
     connect(ana_esp_thread, &EspRovThread::torpedo_signal, this, &RovGUI::update_ana_torpedo);
     ana_esp_thread->start();
     A->btn_connect->setText("Kes");
@@ -449,6 +450,16 @@ void RovGUI::update_ana_nem(float humidity_pct, float temperature_c) {
     RovPanel *A = ui.anaRovPanel;
     if (A->lbl_humidity) A->lbl_humidity->setText(QString::number(humidity_pct, 'f', 1) + "%");
     if (A->lbl_dht_temp) A->lbl_dht_temp->setText(QString::number(temperature_c, 'f', 1) + "°C");
+}
+
+// ESP32'nin GPIO34'teki gerilim bolucuden okudugu pil durumu ("BAT:volt,yuzde"
+// satiri, bkz. AnaRovBeyin.ino Pil bolumu). %20 ve altinda operatorun gozunden
+// kacmasin diye kirmizi gosterilir.
+void RovGUI::update_ana_battery(float volts, int percent) {
+    RovPanel *A = ui.anaRovPanel;
+    A->lbl_voltage->setText(QString::number(volts, 'f', 2) + " V");
+    A->lbl_battery->setText(QString::number(percent) + "%");
+    A->lbl_battery->setStyleSheet(percent <= 20 ? "color:#dc2626;font-weight:bold;" : "");
 }
 
 // ESP32'nin "TORPEDO:kalan" satirina karsilik gelir - hangi torpidonun

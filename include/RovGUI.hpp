@@ -37,6 +37,7 @@ private slots:
     void update_ana_attitude(float roll, float pitch, float yaw);
     void update_ana_depth(float meters, float vertical_speed_ms);
     void update_ana_nem(float humidity_pct, float temperature_c);
+    void update_ana_battery(float volts, int percent);
     void update_ana_torpedo(int remaining);
 
     // Mini ROV baglanti (ESP32 seri port)

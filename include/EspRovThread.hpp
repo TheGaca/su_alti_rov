@@ -24,6 +24,7 @@ class QIODevice;
 // ESP32 ayrica IMU (BNO055) varsa periyodik "ATT:roll,pitch,yaw" (derece) satiri yollar.
 // Basinc sensoru takiliysa "DEPTH:metre,dikey_hiz_m/s" satiri da yollar.
 // DHT11 nem/sicaklik sensoru takiliysa "NEM:nem_yuzde,sicaklik_C" satiri da yollar.
+// Pil olcum bolucusu takiliysa "BAT:volt,yuzde" satiri da yollar.
 //   "TORPEDO"                    -> siradaki torpidoyu ates alir (kalan sayi ve
 //                                    10sn bekleme suresi ESP32 tarafinda yonetilir)
 // ESP32 taraf ates alma sonrasi "TORPEDO:kalan_sayi" satiri yollar; kalan yoksa
@@ -48,6 +49,7 @@ signals:
     void attitude_signal(float roll, float pitch, float yaw);
     void depth_signal(float meters, float vertical_speed_ms);
     void nem_signal(float humidity_pct, float temperature_c);
+    void battery_signal(float volts, int percent);
     void torpedo_signal(int remaining);
 
 protected:
