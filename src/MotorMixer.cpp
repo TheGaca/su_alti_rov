@@ -9,16 +9,17 @@ constexpr int W_SURGE[4]   = { +1, +1, +1, +1 };
 constexpr int W_LATERAL[4] = { +1, -1, +1, -1 };
 constexpr int W_YAW[4]     = { -1, +1, +1, -1 };
 
-int toPulse(float v) {
-    return std::clamp(NEUTRAL_US + static_cast<int>(v * DELTA_US), MIN_US, MAX_US);
+int toPulse(float v, int neutralUs, int minUs, int maxUs) {
+    return std::clamp(neutralUs + static_cast<int>(v * DELTA_US), minUs, maxUs);
 }
 } // namespace
 
 std::array<int, 8> compute(float surge, float lateral, float yaw, float vertical,
-                           float rollCorr, float pitchCorr) {
+                           float rollCorr, float pitchCorr, const std::array<int, 8> &neutralUs,
+                           int minUs, int maxUs) {
     std::array<int, 8> m{};
     for (int i = 0; i < 4; ++i) {
-        m[i] = toPulse(surge * W_SURGE[i] + lateral * W_LATERAL[i] + yaw * W_YAW[i]);
+        m[i] = toPulse(surge * W_SURGE[i] + lateral * W_LATERAL[i] + yaw * W_YAW[i], neutralUs[i], minUs, maxUs);
     }
     // M5=on sag, M6=on sol, M7=arka sag, M8=arka sol (bkz. MotorDiagramWidget).
     // Sabitleme kapaliyken rollCorr/pitchCorr 0 gelir, dördü de ayni deger olur.
@@ -32,7 +33,7 @@ std::array<int, 8> compute(float surge, float lateral, float yaw, float vertical
         vertical - rollCorr + pitchCorr, // M8 arka-sol
     };
     for (int i = 0; i < 4; ++i) {
-        m[4 + i] = toPulse(verticalV[i]);
+        m[4 + i] = toPulse(verticalV[i], neutralUs[4 + i], minUs, maxUs);
     }
     return m;
 }

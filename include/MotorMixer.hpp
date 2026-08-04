@@ -14,7 +14,7 @@
 // agirligi (-1 <-> +1) ters cevirmek yeterlidir.
 namespace MotorMixer {
 
-constexpr int NEUTRAL_US = 1490;
+constexpr int NEUTRAL_US = 1487;
 constexpr int DELTA_US   = 200;
 
 // ESC'ye giden darbenin PC tarafindaki sert tavan/tabani - ESP32 firmware'indeki
@@ -23,11 +23,15 @@ constexpr int DELTA_US   = 200;
 constexpr int MIN_US = 1295;
 constexpr int MAX_US = 1600;
 
-// surge (ileri+), lateral (sag+), yaw (saga don+), vertical (yukari+) -> 8 darbe.
-// rollCorr/pitchCorr: IMU stabilize duzeltmeleri (-1..1), sadece dikey motorlara
-// (M5-M8) eklenir; 0 gecilirse dort dikey motor ayni degeri alir.
+constexpr std::array<int, 8> DEFAULT_NEUTRAL_US = {
+    NEUTRAL_US, NEUTRAL_US, NEUTRAL_US, NEUTRAL_US,
+    NEUTRAL_US, NEUTRAL_US, NEUTRAL_US, NEUTRAL_US,
+};
+
 std::array<int, 8> compute(float surge, float lateral, float yaw, float vertical,
-                           float rollCorr = 0.0f, float pitchCorr = 0.0f);
+                           float rollCorr = 0.0f, float pitchCorr = 0.0f,
+                           const std::array<int, 8> &neutralUs = DEFAULT_NEUTRAL_US,
+                           int minUs = MIN_US, int maxUs = MAX_US);
 
 } // namespace MotorMixer
 

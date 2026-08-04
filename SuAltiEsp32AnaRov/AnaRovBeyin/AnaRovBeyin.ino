@@ -14,6 +14,11 @@
  *   "ARM"                     -> ESC'leri ARM eder (2sn 850us tutar, sonra notre gecer)
  *   "DISARM"                  -> Tum pinlerden PWM sinyalini tamamen keser (ESC durur)
  *   "M:p1,p2,p3,p4,p5,p6,p7,p8" -> motor 1..8 icin darbe genisligi (us, 1295-1600)
+ *   "TORPEDO"                  -> siradaki (henuz atilmamis) torpidoyu ates alir
+ *   "TORPEDO:0"/"TORPEDO:1"/"TORPEDO:2" -> belirli torpidoyu ates alir (bkz. fireTorpedo())
+ *   "TCFG:min1,ntr1,max1,min2,ntr2,max2,min3,ntr3,max3" -> torpido darbelerini (arm/notr/ates, us) canli
+ *                                 gunceller (bkz. handleTorpedoConfig(), GUI
+ *                                 Ayarlar penceresi); basarili olursa "TCFG:OK" doner
  * Cihaz durum bildirimi icin "READY", "ARMING", "ARMED", "DISARMED", "ERR:..." satirlari yollar.
  * IMU takiliysa 100ms'de bir "ATT:roll,pitch,yaw" (derece) satiri da yollanir.
  * Basinc sensoru takiliysa 200ms'de bir "DEPTH:metre,dikey_hiz_buyuklugu_m/s"
@@ -24,9 +29,9 @@
  * donanimda yok.
  *
  * Guvenlik: ARMED durumdayken 500ms boyunca yeni "M:" komutu gelmezse
- * (baglanti kopmasi ihtimaline karsi) tum motorlar otomatik notre (1490us) cekilir.
+ * (baglanti kopmasi ihtimaline karsi) tum motorlar otomatik notre (1487us) cekilir.
  *
- * PWM darbe sinirlari (ESC): MIN_US=1295us (tam geri), NEUTRAL_US=1490us (notr/dur),
+ * PWM darbe sinirlari (ESC): MIN_US=1295us (tam geri), NEUTRAL_US=1487us (notr/dur),
  * MAX_US=1600us (tam ileri). "M:" ile gelen hedef darbeler dogrudan uygulanmaz;
  * ani tam-ileri<->tam-geri gibi sicramalarda ESC'lerin takilmasini/stall olmasini
  * onlemek icin motorPulse, updateMotorSlew() tarafindan MOTOR_SLEW_STEP_US
@@ -129,7 +134,7 @@ static const uint8_t ESPNOW_LMK[16] = {'S','u','A','l','t','i','R','o','v','L','
 
 #define PWM_FREQ_HZ   50
 #define PWM_RES       16
-#define NEUTRAL_US    1490
+#define NEUTRAL_US    1487
 #define MIN_US        1295
 #define MAX_US        1600
 #define ARM_HOLD_MS   2000
@@ -150,54 +155,181 @@ static const uint8_t ESPNOW_LMK[16] = {'S','u','A','l','t','i','R','o','v','L','
 
 const int motorPins[8] = {13, 4, 14, 27, 26, 25, 33, 32};
 
+enum RovState { DISARMED, ARMING, ARMED };
+RovState state = DISARMED;
+
 // ==================== Torpido pinleri ====================
-// 18/19/23 PcbReadme'de zaten "Torpido" olarak kablolu ama kodda hic
-// kullanilmamisti. 16/17 ESP-NOW'a gecince bosalan (eskiden Serial2/UART
-// bridge) guvenli pinler - toplam 5 torpido pini bu ikisiyle tamamlaniyor.
-// setup() icinde hepsi aciktan LOW (pasif) yazilarak baslatilir.
+// Ana 8 motordan ayri, kendi ozel motorlarina/ESC'lerine sahipler - bu yuzden
+// duz digitalWrite HIGH/LOW yerine onlar da ana motorlar gibi PWM (ledc) ile
+// suruluyor. RX2/GPIO16, D18, D23 kullaniliyor - Serial2/UART koprusu
+// ESP-NOW'a gectigi icin RX2/TX2 (16/17) bosta, torpido icin kullanilabilir.
 //
-// Ates alma sirali: "TORPEDO" komutu her geldiginde torpedoPins[torpedoIndex]
-// kisa bir sure HIGH'a cekilir (TORPEDO_PULSE_MS), sonra torpedoIndex bir
-// artar - hangi torpidonun dolu/bos oldugunu operatorun elle takip etmesine
-// gerek kalmaz. Ard arda yanlislikla ates almayi onlemek icin ates alma
-// sonrasi TORPEDO_COOLDOWN_MS boyunca yeni komut reddedilir (ERR:TORPEDOCOOLDOWN).
-// Kalan torpido sayisi her ates almada "TORPEDO:kalan" olarak PC'ye bildirilir.
-#define TORPEDO_PULSE_MS    1000  // pin bu kadar sure HIGH tutulur - mekanizmaya gore ayarlanabilir
-#define TORPEDO_COOLDOWN_MS 10000 // ates alma sonrasi bir sonrakine kadar bekleme suresi
+// Ates alma: "TORPEDO:N" (N=0,1,2) komutu belirli torpedoPins[N]'i
+// torpedoFireUs[N] darbesine ceker ve TORPEDO_PULSE_MS boyunca tutar, sonra
+// torpedoNeutralUs[N]'e doner; "TORPEDO" (indekssiz) ilk atilmamis torpidoyu
+// secer. Ard arda
+// yanlislikla ates almayi onlemek icin ates alma sonrasi TORPEDO_COOLDOWN_MS
+// boyunca yeni komut reddedilir (ERR:TORPEDOCOOLDOWN). Kalan torpido sayisi
+// her ates almada "TORPEDO:kalan" olarak PC'ye bildirilir.
+#define TORPEDO_PULSE_MS     3000  // pin bu kadar sure torpedoFireUs'ta tutulur
+#define TORPEDO_COOLDOWN_MS  0
 
-const int torpedoPins[5] = {18, 19, 23, 16, 17};
-int torpedoIndex = 0;                // siradaki (henuz atilmamis) torpido, 0-4
-int torpedoesRemaining = 5;
+// Torpido darbeleri (us) - onceden #define sabitlerdi, artik PC'den ("TCFG:min,
+// neutral,max" - bkz. handleTorpedoConfig()) canli guncellenebilen degiskenler.
+// Varsayilanlar eski sabit degerlerle BIREBIR AYNI: GUI'nin RovSettings::torpedoMinUs/
+// torpedoNeutralUs/torpedoMaxUs alanlariyla da eslesmeli (bkz. RovSettings.hpp) -
+// GUI baglanip TCFG gondermeden once ESP32 zaten bu degerlerle calisir.
+uint16_t torpedoArmLowUs[3] = {1476, 1487, 1487};
+uint16_t torpedoNeutralUs[3] = {1487, 1487, 1487};
+uint16_t torpedoFireUs[3] = {1642, 1642, 1642};
+
+const int torpedoPins[3] = {16, 18, 23}; // RX2(GPIO16), D18, D23 -> TORPIDO1..3
+bool torpedoFired[3] = {false, false, false};
+int torpedoesRemaining = 3;
 unsigned long torpedoCooldownUntil = 0;
-int torpedoFiringPin = -1;           // su an HIGH tutulan pin (-1 = yok)
+int torpedoFiringPin = -1;
+int torpedoFiringIndex = -1;
 unsigned long torpedoPulseOffAt = 0;
+bool torpedoArmLowActive = false;    // startTorpedoArmSequence() dusuk darbeyi tutuyor mu
+unsigned long torpedoArmLowUntil = 0;
+bool torpedoAttached[3] = {false, false, false};
 
-void fireTorpedo() {
+// Ana motorlardaki usToDuty()'den ayri tutuluyor cunku torpedoFireUs (varsayilan
+// 1642) ana ESC'lerin MAX_US (1600) sinirinin biraz ustunde - torpido motorlari
+// ayri/ozel oldugu icin ana motor darbe araligiyla sinirlanmamali.
+uint32_t torpedoUsToDuty(uint16_t pulse_us) {
+    if (pulse_us < 1000) pulse_us = 1000;
+    if (pulse_us > 2000) pulse_us = 2000;
+    uint32_t period_us = 1000000UL / PWM_FREQ_HZ;
+    uint32_t max_duty = (1UL << PWM_RES) - 1;
+    return (uint32_t)(((uint64_t)pulse_us * max_duty) / period_us);
+}
+
+int nextAvailableTorpedo() {
+    for (int i = 0; i < 3; i++) if (!torpedoFired[i]) return i;
+    return -1;
+}
+
+void fireTorpedo(int idx) {
     unsigned long now = millis();
-    if (torpedoesRemaining <= 0) {
-        sendStatus("ERR:TORPEDOEMPTY");
+    if (state != ARMED) {
+        sendStatus("ERR:NOTARMED");
+        return;
+    }
+    if (idx < 0 || idx > 2) {
+        sendStatus("ERR:BADFORMAT");
         return;
     }
     if (now < torpedoCooldownUntil) {
         sendStatus("ERR:TORPEDOCOOLDOWN");
         return;
     }
-    torpedoFiringPin = torpedoPins[torpedoIndex];
-    digitalWrite(torpedoFiringPin, HIGH);
+    torpedoFiringPin = torpedoPins[idx];
+    torpedoFiringIndex = idx;
+    ledcWrite(torpedoFiringPin, torpedoUsToDuty(torpedoFireUs[idx]));
     torpedoPulseOffAt = now + TORPEDO_PULSE_MS;
-    torpedoIndex++;
-    torpedoesRemaining--;
+    torpedoFired[idx] = true;
+    if (torpedoesRemaining > 0) torpedoesRemaining--;
     torpedoCooldownUntil = now + TORPEDO_COOLDOWN_MS;
     sendStatus("TORPEDO:" + String(torpedoesRemaining));
 }
 
+void reverseTorpedo(int idx) {
+    if (state != ARMED) {
+        sendStatus("ERR:NOTARMED");
+        return;
+    }
+    if (idx < 0 || idx > 2) {
+        sendStatus("ERR:BADFORMAT");
+        return;
+    }
+    if (torpedoFiringPin != -1) {
+        sendStatus("ERR:TORPEDOCOOLDOWN");
+        return;
+    }
+    int revPulse = 2 * (int)torpedoNeutralUs[idx] - (int)torpedoFireUs[idx];
+    torpedoFiringPin = torpedoPins[idx];
+    torpedoFiringIndex = idx;
+    ledcWrite(torpedoFiringPin, torpedoUsToDuty(revPulse));
+    torpedoPulseOffAt = millis() + TORPEDO_PULSE_MS;
+}
+
 // loop() icinden her turda cagirilir - pulse suresi dolan torpido pinini
-// (delay() kullanmadan, failsafe/heartbeat'i bloklamadan) LOW'a geri ceker.
+// (delay() kullanmadan, failsafe/heartbeat'i bloklamadan) torpedoNeutralUs'a geri ceker.
 void updateTorpedoPulse() {
     if (torpedoFiringPin != -1 && millis() >= torpedoPulseOffAt) {
-        digitalWrite(torpedoFiringPin, LOW);
+        ledcWrite(torpedoFiringPin, torpedoUsToDuty(torpedoNeutralUs[torpedoFiringIndex]));
         torpedoFiringPin = -1;
+        torpedoFiringIndex = -1;
     }
+}
+
+// Torpido ESC'lerini torpedoArmLowUs'a ceker (delay() YOK - serviceTorpedoArm()
+// ARM_HOLD_MS sonra torpedoNeutralUs'a geri cekene kadar bekletir). Acilista
+// (setup()) VE ana 8 ESC arm islemini bitirdiginde (finishArming()) cagirilir:
+// 8 ESC'nin ayni anda cektigi arm/baslangic akimi ortak guc hattinda gerilim
+// dususu yaratip torpido ESC'lerini arm durumundan cikarabiliyor - bu yuzden
+// ana ESC'ler arm'i tamamladiginda torpido ESC'leri de guvenlik icin yeniden
+// arm sirasindan gecirilir.
+void startTorpedoArmSequence() {
+    if (torpedoFiringPin != -1) return; // ates alan bir torpido varken dokunma
+    for (int i = 0; i < 3; i++) {
+        if (!torpedoAttached[i]) {
+            ledcAttach(torpedoPins[i], PWM_FREQ_HZ, PWM_RES);
+            torpedoAttached[i] = true;
+        }
+        ledcWrite(torpedoPins[i], torpedoUsToDuty(torpedoArmLowUs[i]));
+    }
+    torpedoArmLowUntil = millis() + ARM_HOLD_MS;
+    torpedoArmLowActive = true;
+}
+
+void detachTorpedos() {
+    for (int i = 0; i < 3; i++) {
+        ledcDetach(torpedoPins[i]);
+        torpedoAttached[i] = false;
+    }
+    torpedoFiringPin = -1;
+    torpedoFiringIndex = -1;
+    torpedoArmLowActive = false;
+}
+
+// loop() icinden her turda cagirilir - startTorpedoArmSequence()'in basladigi
+// dusuk-darbe bekletmesini ARM_HOLD_MS sonunda torpedoNeutralUs'a tamamlar.
+// fireTorpedo() bu bekleme penceresi icinde cagrilirsa ates alan pin atlanir -
+// aksi halde bu fonksiyon TORPEDO_PULSE_MS henuz dolmadan ates darbesini
+// notre cekip atisi yarida keserdi.
+void serviceTorpedoArm() {
+    if (torpedoArmLowActive && millis() >= torpedoArmLowUntil) {
+        for (int i = 0; i < 3; i++) {
+            if (torpedoPins[i] == torpedoFiringPin) continue;
+            ledcWrite(torpedoPins[i], torpedoUsToDuty(torpedoNeutralUs[i]));
+        }
+        torpedoArmLowActive = false;
+    }
+}
+
+void handleTorpedoConfig(const String &line) {
+    int vals[9];
+    int idx = 0;
+    int start = 5;
+    while (idx < 9) {
+        int comma = line.indexOf(',', start);
+        String tok = (comma == -1) ? line.substring(start) : line.substring(start, comma);
+        vals[idx++] = tok.toInt();
+        if (comma == -1) break;
+        start = comma + 1;
+    }
+    if (idx != 9) {
+        sendStatus("ERR:BADFORMAT");
+        return;
+    }
+    for (int i = 0; i < 3; i++) {
+        torpedoArmLowUs[i]  = (uint16_t)vals[i * 3];
+        torpedoNeutralUs[i] = (uint16_t)vals[i * 3 + 1];
+        torpedoFireUs[i]    = (uint16_t)vals[i * 3 + 2];
+    }
+    sendStatus("TCFG:OK");
 }
 
 // ==================== DHT11 Nem/Sicaklik Sensoru ====================
@@ -227,7 +359,17 @@ float dhtTempC = 0.0f;
 #define BAT_PERIOD_MS     1000
 #define BAT_ADC_SAMPLES   32     // ESP32 ADC gurultulu; ortalama alarak stabilize edilir
 #define BAT_DIVIDER_RATIO (33.0f / (100.0f + 33.0f))
-#define BAT_CAL           1.0f   // kalibrasyon: (multimetreyle olculen) / (BAT: satirindaki deger)
+// Kalibrasyon carpani: (multimetreyle olculen) / (BAT_CAL=1 iken gosterilen).
+// Iki olcum noktasi AYNI carpani vermedi (28.07.2026: dolu 12.65V'ta okuma
+// 0.14V eksik, 12.35V'ta 0.08V eksik) - sebep bolucu orani degil, ADC siniri:
+// bolucu dolu pilde pine ~3.1V dusuruyor, ESP32 ADC'sinin dogru olctugu bolge
+// ise (11dB zayiflatmada) ~2.45V'a kadar. Tepeye yaklastikca okuma sikisip
+// oldugundan dusuk cikiyor; tek carpan bu egriligi tam duzeltemez. Carpan tipik
+// calisma bolgesine (12.3-12.5V) gore secildi - tam dolu pilde ~0.06V dusuk
+// gosterir, kabul edilebilir. KALICI COZUM: alt direnci 33k -> 22k yap (dolu
+// pilde pin ~2.3V'a iner, ADC hep dogru bolgede kalir), BAT_DIVIDER_RATIO'yu
+// (22/122) yap ve BAT_CAL'i tek multimetre olcumuyle yeniden ayarla.
+#define BAT_CAL           1.0063f // = 12.35 / 12.27 (28.07.2026 ikinci olcum)
 #define BAT_V_FULL        12.6f  // %100 sayilan gerilim (3S lityum dolu; pil tipine gore ayarla)
 #define BAT_V_EMPTY       9.0f   // %0 sayilan gerilim (3S lityum bos - bu altina inmemeli)
 
@@ -414,8 +556,6 @@ void imuUpdate() {
     yawDeg = event.orientation.x; // yaw tek basina okundugu icin coupling sorunu yok
 }
 
-enum RovState { DISARMED, ARMING, ARMED };
-RovState state = DISARMED;
 unsigned long armStartedAt = 0;
 unsigned long lastCommandAt = 0;
 unsigned long lastSlewAt = 0;
@@ -484,11 +624,13 @@ void finishArming() {
     allTargetsTo(NEUTRAL_US);
     lastCommandAt = millis();
     state = ARMED;
+    startTorpedoArmSequence(); // 8 ESC'nin arm akimiyla gerilim dususu torpido ESC'lerini etkilemis olabilir, yeniden arm et
     sendStatus("ARMED");
 }
 
 void disarmNow() {
     detachMotors(); // pinlere hic sinyal gitmez
+    detachTorpedos(); // torpido ESC'lerine de sinyal gitmez - DISARM artik gercek bir kill-switch
     // Donanima yazmadan (ledcWrite detach sonrasi gecersiz) sadece durum
     // dizilerini sifirla; sonraki ARM'da slew eski hedeften baslamasin.
     for (int i = 0; i < 8; i++) motorPulse[i] = NEUTRAL_US;
@@ -544,7 +686,22 @@ void handleLine(const String &line) {
     } else if (line.startsWith("M:")) {
         handleMotorCommand(line);
     } else if (line == "TORPEDO") {
-        fireTorpedo();
+        int idx = nextAvailableTorpedo();
+        fireTorpedo(idx == -1 ? 0 : idx);
+    } else if (line.startsWith("TORPEDOREV:")) {
+        reverseTorpedo(line.substring(11).toInt());
+    } else if (line.startsWith("TORPEDO:")) {
+        fireTorpedo(line.substring(8).toInt());
+    } else if (line.startsWith("TCFG:")) {
+        handleTorpedoConfig(line);
+    } else if (line == "TORPEDORESET") {
+        if (state != DISARMED) {
+            sendStatus("ERR:NOTDISARMED");
+        } else {
+            for (int i = 0; i < 3; i++) torpedoFired[i] = false;
+            torpedoesRemaining = 3;
+            sendStatus("TORPEDO:3");
+        }
     } else {
         sendStatus("ERR:UNKNOWN");
     }
@@ -668,12 +825,14 @@ void setup() {
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, LOW);
 
-    // Torpido pinleri - hicbir komut mantigi yok, sadece pasif/LOW baslatiliyor
-    // ki acilista/yanlislikla aktif olmasinlar.
-    for (int i = 0; i < 5; i++) {
-        pinMode(torpedoPins[i], OUTPUT);
-        digitalWrite(torpedoPins[i], LOW);
-    }
+    // Torpido pinleri - ana motorlar gibi PWM (ledc) ile suruluyor. ESC'lerin
+    // arm olabilmesi icin guc verilir verilmez once dusuk darbe (torpedoArmLowUs,
+    // varsayilan torpedoNeutralUs'a yakin - bkz. tanimindaki not) gonderilip
+    // ARM_HOLD_MS bekletilir (ana motorlarin startArming()'indeki arma sirasiyla
+    // ayni mantik, bkz. startTorpedoArmSequence()/serviceTorpedoArm()). delay()
+    // ile bloklamak yerine loop()'ta serviceTorpedoArm() ile tamamlanir
+    // (setupOTA/setupEspNow'u geciktirmesin diye).
+    startTorpedoArmSequence();
 
     // ESP-NOW, sendStatus() (dolayisiyla asagidaki imuInit()/depthCalibrateSurface()
     // gibi sendStatus() cagiran her sey) kullanilmadan ONCE hazir olmali - aksi
@@ -700,7 +859,7 @@ void setup() {
     dht.begin();
 
     sendStatus((imuReady ? String("SUALTIESP32 READY (IMU OK) MAC=") : String("SUALTIESP32 READY (IMU YOK) MAC=")) + WiFi.softAPmacAddress());
-    sendStatus("TORPEDO:" + String(torpedoesRemaining)); // GUI acilista "5/5" gorsun diye
+    sendStatus("TORPEDO:" + String(torpedoesRemaining)); // GUI acilista "3/3" gorsun diye
 
     bootSettleUntil = millis() + BOOT_SETTLE_MS;
 }
@@ -709,7 +868,8 @@ void loop() {
     ArduinoOTA.handle();
     updateLed(); // flashLed() ile yakilan LED'i zamani gelince sondurur
     updateEspNowLinkStatus(); // baglanti VAR/YOK degistiginde konsola yazar
-    updateTorpedoPulse(); // pulse suresi dolan torpido pinini LOW'a geri ceker
+    updateTorpedoPulse(); // pulse suresi dolan torpido pinini torpedoNeutralUs'a geri ceker
+    serviceTorpedoArm(); // startTorpedoArmSequence()'in dusuk-darbe bekletmesini tamamlar
 
     // Komutlar artik SADECE kamera ESP'sinden (AnaRovKamera.ino) ESP-NOW ile
     // geliyor - USB (Serial) dinlenmiyor, sadece debug/durum ciktisi icin acik

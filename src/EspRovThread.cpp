@@ -89,6 +89,16 @@ void EspRovThread::run() {
             }
         }
 
+        // Donguden cikmadan hemen once kuyruga eklenmis olabilecek son
+        // komutu (ors. stop()'un enqueue ettigi "DISARM") flush et. Aksi
+        // halde: dongu icindeki write_pending_lines() BASTA cagriliyor;
+        // stop() running'i tam waitForReadyRead(20) sirasinda false yaparsa
+        // dongu bir sonraki write_pending_lines()'a hic ugramadan biter ve
+        // DISARM soket/port kapanmadan ONCE hic gonderilmezdi - uygulama
+        // kapatilirken ESC'lerin armed kalmasi riski buradan geliyordu.
+        write_pending_lines();
+        if (dev) dev->waitForBytesWritten(200);
+
         device = nullptr;
         if (useTcp) tcpDev.close();
         else        serialDev.close();
@@ -176,6 +186,26 @@ void EspRovThread::disarm() {
 
 void EspRovThread::torpedo() {
     send_line("TORPEDO");
+}
+
+void EspRovThread::torpedo(int index) {
+    send_line("TORPEDO:" + QString::number(index));
+}
+
+void EspRovThread::torpedo_reverse(int index) {
+    send_line("TORPEDOREV:" + QString::number(index));
+}
+
+void EspRovThread::torpedo_reset() {
+    send_line("TORPEDORESET");
+}
+
+void EspRovThread::torpedo_config(const std::array<int, 3> &min_us, const std::array<int, 3> &neutral_us, const std::array<int, 3> &max_us) {
+    QStringList parts;
+    for (int i = 0; i < 3; ++i) {
+        parts << QString::number(min_us[i]) << QString::number(neutral_us[i]) << QString::number(max_us[i]);
+    }
+    send_line("TCFG:" + parts.join(','));
 }
 
 void EspRovThread::set_motors(const std::array<int, 8> &pulses_us) {

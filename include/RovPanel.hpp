@@ -101,11 +101,15 @@ public:
     QPushButton *btn_autonomous;    // Otonom
     QPushButton *btn_manual;        // Manuel
     QPushButton *btn_minirov_launch;// MiniROV Birak
-    QPushButton *btn_torpedo;       // Torpido Firlat
+    QPushButton *btn_torpedo1;      // Torpido 1 (A)
+    QPushButton *btn_torpedo2;      // Torpido 2 (B)
+    QPushButton *btn_torpedo3;      // Torpido 3 (X)
     QLabel *led_autonomous;
     QLabel *led_manual;
     QLabel *led_minirov;
-    QLabel *led_torpedo;
+    QLabel *led_torpedo1;
+    QLabel *led_torpedo2;
+    QLabel *led_torpedo3;
     QLabel *lbl_color_title;
     QLabel *color_box;              // Renk secici mor kutu
     QPushButton *color_btn;         // Color picker button

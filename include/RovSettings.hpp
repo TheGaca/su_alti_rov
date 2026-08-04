@@ -2,6 +2,8 @@
 #define ROVSETTINGS_H
 
 #include <QString>
+#include <array>
+#include "MotorMixer.hpp"
 
 // Kullanicinin degistirebildigi, QSettings ile kalici saklanan calisma
 // ayarlari. Eskiden koda gomulu sabitlerdi (IP'ler RovGUI.cpp'de,
@@ -28,6 +30,26 @@ struct RovSettings {
     // Derinlik sabitleme: hedef-mevcut farki (metre) * depthHoldGain dikey
     // itki (-1..1 sinirli). 2.0 ile ~0.5m sapmada doygunluk.
     float depthHoldGain = 2.0f;
+
+    // Motor notr/min/max darbeleri (us) - MotorMixer::compute()'a gecilir
+    // (bkz. RovGUI::apply_ana_motor_mix/apply_mini_motor_mix). Onceden koda
+    // gomulu MotorMixer::NEUTRAL_US/MIN_US/MAX_US sabitleriydi; bench'te
+    // ESC'ye gore ince ayar gerektigi icin Ayarlar penceresinden canli
+    // degistirilebilir yapildi. NOT: ESP32 firmware'i (AnaRovBeyin.ino/
+    // sualtiesp.ino) gelen "M:" darbelerini KENDI sabit MIN_US/MAX_US'una
+    // gore de kirpar - buradaki minUs/maxUs firmware'inkinden GENIS
+    // secilirse firmware zaten sinirlar (zararsiz), DAR secilirse ekstra
+    // (yumusak) bir sinir eklemis olursun.
+    std::array<int, 8> motorNeutralUs = {
+        MotorMixer::NEUTRAL_US, MotorMixer::NEUTRAL_US, MotorMixer::NEUTRAL_US, MotorMixer::NEUTRAL_US,
+        MotorMixer::NEUTRAL_US, MotorMixer::NEUTRAL_US, MotorMixer::NEUTRAL_US, MotorMixer::NEUTRAL_US,
+    };
+    int minUs = MotorMixer::MIN_US;
+    int maxUs = MotorMixer::MAX_US;
+
+    std::array<int, 3> torpedoMinUs = {1476, 1487, 1487};
+    std::array<int, 3> torpedoNeutralUs = {1487, 1487, 1487};
+    std::array<int, 3> torpedoMaxUs = {1642, 1642, 1642};
 
     static RovSettings load();
     void save() const;

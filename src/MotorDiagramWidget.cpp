@@ -8,7 +8,7 @@
 #include <cstdlib>
 
 namespace {
-constexpr int NEUTRAL_US = 1490;
+constexpr std::array<int, 8> DEFAULT_NEUTRAL_US = {1487, 1487, 1487, 1487, 1487, 1487, 1487, 1487};
 constexpr int MIN_US = 1000;
 constexpr int MAX_US = 2000;
 
@@ -24,8 +24,8 @@ const MotorPos kMotorPositions[8] = {
 }
 
 MotorDiagramWidget::MotorDiagramWidget(QWidget *parent)
-    : QWidget(parent) {
-    pulses.fill(NEUTRAL_US);
+    : QWidget(parent), neutralUs(DEFAULT_NEUTRAL_US) {
+    pulses = neutralUs;
     setMinimumSize(150, 150);
     setMaximumSize(220, 220);
 }
@@ -34,6 +34,11 @@ void MotorDiagramWidget::set_motor_pulses(const std::array<int, 8> &pulses_us,
                                            const std::array<int, 8> &correction_us) {
     pulses = pulses_us;
     correction = correction_us;
+    update();
+}
+
+void MotorDiagramWidget::set_neutral_us(const std::array<int, 8> &neutral_us) {
+    neutralUs = neutral_us;
     update();
 }
 
@@ -69,12 +74,13 @@ void MotorDiagramWidget::paintEvent(QPaintEvent *) {
 
     for (const MotorPos &mp : kMotorPositions) {
         int pulse = pulses[mp.number - 1];
+        int neutral = neutralUs[mp.number - 1];
         QColor color;
-        if (pulse > NEUTRAL_US + 15) {
-            double t = std::min(1.0, double(pulse - NEUTRAL_US) / double(MAX_US - NEUTRAL_US));
+        if (pulse > neutral + 15) {
+            double t = std::min(1.0, double(pulse - neutral) / double(MAX_US - neutral));
             color = QColor(30, static_cast<int>(140 + 90 * t), 70); // notrden ileriye: yesil
-        } else if (pulse < NEUTRAL_US - 15) {
-            double t = std::min(1.0, double(NEUTRAL_US - pulse) / double(NEUTRAL_US - MIN_US));
+        } else if (pulse < neutral - 15) {
+            double t = std::min(1.0, double(neutral - pulse) / double(neutral - MIN_US));
             color = QColor(static_cast<int>(200 + 40 * t), static_cast<int>(110 - 40 * t), 30); // geri: turuncu/kirmizi
         } else {
             color = QColor(150, 154, 160); // notr: gri
@@ -95,7 +101,7 @@ void MotorDiagramWidget::paintEvent(QPaintEvent *) {
         // ekler - buyuklugu duzeltmenin siddetine gore olceklenir.
         int corr = correction[mp.number - 1];
         if (corr != 0) {
-            double mag = std::min(1.0, std::abs(corr) / double(MAX_US - NEUTRAL_US));
+            double mag = std::min(1.0, std::abs(corr) / double(MAX_US - neutral));
             qreal haloR = r * (1.25 + 0.5 * mag);
             QColor halo(80, 200, 255, static_cast<int>(60 + 90 * mag)); // seffaf camgobegi
             painter.setBrush(halo);

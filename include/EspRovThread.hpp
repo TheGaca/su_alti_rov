@@ -27,8 +27,13 @@ class QIODevice;
 // Pil olcum bolucusu takiliysa "BAT:volt,yuzde" satiri da yollar.
 //   "TORPEDO"                    -> siradaki torpidoyu ates alir (kalan sayi ve
 //                                    10sn bekleme suresi ESP32 tarafinda yonetilir)
+//   "TORPEDO:0"/"TORPEDO:1"/"TORPEDO:2" -> belirli torpidoyu ates alir
 // ESP32 taraf ates alma sonrasi "TORPEDO:kalan_sayi" satiri yollar; kalan yoksa
 // veya bekleme suresi dolmadiysa "ERR:TORPEDOEMPTY" / "ERR:TORPEDOCOOLDOWN" doner.
+//   "TCFG:min1,ntr1,max1,min2,ntr2,max2,min3,ntr3,max3" -> 3 torpido ESC'sinin
+//                                    darbelerini (arm/notr/ates, us) canli gunceller
+//                                    (bkz. torpedo_config()); ESP32 basarili olursa
+//                                    "TCFG:OK" doner. Sadece Ana ROV'da anlamli.
 class EspRovThread : public QThread {
     Q_OBJECT
 public:
@@ -42,6 +47,10 @@ public:
     void disarm();
     void set_motors(const std::array<int, 8> &pulses_us);
     void torpedo();
+    void torpedo(int index);
+    void torpedo_reverse(int index);
+    void torpedo_reset();
+    void torpedo_config(const std::array<int, 3> &min_us, const std::array<int, 3> &neutral_us, const std::array<int, 3> &max_us);
 
 signals:
     void status_signal(const QString &msg);

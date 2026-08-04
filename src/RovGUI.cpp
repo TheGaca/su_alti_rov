@@ -21,6 +21,14 @@ constexpr int AXIS_LEFT_X  = 0; // Sol stick X  -> yanal kayma (Sol/Sağ)
 constexpr int AXIS_LEFT_Y  = 1; // Sol stick Y  -> ileri/geri
 constexpr int AXIS_RIGHT_X = 3; // Sağ stick X  -> dönüş (yaw)
 constexpr int AXIS_RIGHT_Y = 4; // Sağ stick Y  -> yukarı/aşağı (derinlik)
+
+// Yön butonları bırakıldığında motorların çekileceği durma darbesi.
+// settings.motorNeutralUs'tan (joystick/otonom merkezi, Ayarlar penceresinden
+// canlı değiştirilebilir) BİLEREK ayrı tutuluyor: buton bırakılınca
+// motorların tam durmayıp hafif dönmeye devam etmesi (bkz.
+// ana_dir_released()/mini_dir_released()) bench'te gözlendi, bu değer
+// sadece o durum için ayrıca ayarlanabilsin diye.
+constexpr int BUTTON_STOP_US = 1478;
 }
 
 RovGUI::RovGUI(QWidget *parent)
@@ -28,7 +36,7 @@ RovGUI::RovGUI(QWidget *parent)
       ana_esp_thread(nullptr), mini_esp_thread(nullptr),
       ana_joy_thread(nullptr), mini_joy_thread(nullptr),
       cam_thread(nullptr), anarov_thread(nullptr),
-      ana_lamp_on(false), mini_lamp_on(false), ana_autonomous(false), torpedo_ready(true), minirov_launched(false), dark_mode(false),
+      ana_lamp_on(false), mini_lamp_on(false), ana_autonomous(false), minirov_launched(false), dark_mode(false),
       ana_armed(false), mini_armed(false), ana_cam_connected(false),
       ana_stabilize(false), ana_roll(0.0f), ana_pitch(0.0f), ana_yaw(0.0f),
       ana_current_depth(0.0f), ana_depth_target(0.0f),
@@ -46,8 +54,11 @@ RovGUI::RovGUI(QWidget *parent)
         ana_axes_state[i] = 0.0f;
         mini_axes_state[i] = 0.0f;
     }
-    ana_last_pulses.fill(MotorMixer::NEUTRAL_US);
-    mini_last_pulses.fill(MotorMixer::NEUTRAL_US);
+    for (int i = 0; i < 3; ++i) ana_torpedo_fired[i] = false;
+    ana_last_pulses = settings.motorNeutralUs;
+    mini_last_pulses = settings.motorNeutralUs;
+    ui.anaRovPanel->motor_diagram->set_neutral_us(settings.motorNeutralUs);
+    ui.miniRovPanel->motor_diagram->set_neutral_us(settings.motorNeutralUs);
 
     // Uygulama fullscreen açıldığı için pencere çerçevesi/kapatma düğmesi görünmez;
     // Ctrl+Q veya Esc ile çıkış kısayolu (Alt+F4 zaten pencere yöneticisi tarafından desteklenir)
@@ -105,7 +116,9 @@ RovGUI::RovGUI(QWidget *parent)
     set_led(ui.anaRovPanel->led_manual, true);
     set_led(ui.anaRovPanel->led_autonomous, false);
     if (ui.anaRovPanel->led_minirov) set_led(ui.anaRovPanel->led_minirov, false);
-    if (ui.anaRovPanel->led_torpedo) set_led(ui.anaRovPanel->led_torpedo, false);
+    if (ui.anaRovPanel->led_torpedo1) set_led(ui.anaRovPanel->led_torpedo1, false);
+    if (ui.anaRovPanel->led_torpedo2) set_led(ui.anaRovPanel->led_torpedo2, false);
+    if (ui.anaRovPanel->led_torpedo3) set_led(ui.anaRovPanel->led_torpedo3, false);
     set_led(ui.anaRovPanel->led_lamp_on, false);
     set_led(ui.anaRovPanel->led_lamp_off, true);
 
@@ -149,7 +162,13 @@ void RovGUI::closeEvent(QCloseEvent *event) {
     if (resBtn != QMessageBox::Yes) {
         event->ignore();
     } else {
-        log_message("Uygulama Kapatılıyor...");
+        // ~RovGUI() zaten ana_esp_thread/mini_esp_thread->stop() uzerinden
+        // disarm() gonderiyor (bkz. EspRovThread::stop()), ama burada da
+        // acikca cagirmak niyeti nettesir ve komutu bir an once kuyruga
+        // sokar - motorlar kapanis sirasinda armed KALMASIN diye.
+        if (ana_esp_thread)  ana_esp_thread->disarm();
+        if (mini_esp_thread) mini_esp_thread->disarm();
+        log_message("Uygulama Kapatılıyor - motorlar DISARM ediliyor...");
         event->accept();
     }
 }
@@ -188,7 +207,9 @@ void RovGUI::connect_signals() {
     connect(A->btn_autonomous,     &QPushButton::clicked, this, &RovGUI::on_autonomous_ana);
     connect(A->btn_manual,         &QPushButton::clicked, this, &RovGUI::on_manual_ana);
     connect(A->btn_minirov_launch, &QPushButton::clicked, this, &RovGUI::on_minirov_launch);
-    connect(A->btn_torpedo,        &QPushButton::clicked, this, &RovGUI::on_torpedo_fire);
+    connect(A->btn_torpedo1,       &QPushButton::clicked, this, [this]() { on_torpedo_fire(0); });
+    connect(A->btn_torpedo2,       &QPushButton::clicked, this, [this]() { on_torpedo_fire(1); });
+    connect(A->btn_torpedo3,       &QPushButton::clicked, this, [this]() { on_torpedo_fire(2); });
     connect(A->btn_lamp_on,        &QPushButton::clicked, this, &RovGUI::on_lamp_on_ana);
     connect(A->btn_lamp_off,       &QPushButton::clicked, this, &RovGUI::on_lamp_off_ana);
     connect(M->btn_lamp_on,        &QPushButton::clicked, this, &RovGUI::on_lamp_on_mini);
@@ -246,6 +267,12 @@ void RovGUI::start_ping_processes() {
 
 void RovGUI::open_settings() {
     SettingsDialog dlg(settings, this);
+    connect(&dlg, &SettingsDialog::torpedo_reset_requested, this, [this]() {
+        if (!ana_esp_thread) { log_message("[ANA] Önce bağlanın!", 0); return; }
+        ana_esp_thread->torpedo_reset();
+        for (int i = 0; i < 3; ++i) ana_torpedo_fired[i] = false;
+        log_message("[ANA] Torpido sayacı sıfırlama komutu gönderildi.", 0);
+    });
     if (dlg.exec() != QDialog::Accepted) return;
 
     RovSettings fresh = dlg.values();
@@ -254,6 +281,14 @@ void RovGUI::open_settings() {
                        fresh.anaHost != settings.anaHost;
     settings = fresh;
     settings.save();
+    ui.anaRovPanel->motor_diagram->set_neutral_us(settings.motorNeutralUs);
+    ui.miniRovPanel->motor_diagram->set_neutral_us(settings.motorNeutralUs);
+
+    // Torpido darbeleri ESP32'de calisiyor (ana motor min/max/notr gibi
+    // GUI'de degil) - bagliysa degisikligi hemen gonder, ARM beklemeye gerek yok.
+    if (ana_esp_thread) {
+        ana_esp_thread->torpedo_config(settings.torpedoMinUs, settings.torpedoNeutralUs, settings.torpedoMaxUs);
+    }
 
     // Kazanclar zaten settings uzerinden okundugu icin aninda etkili;
     // kamera/ping IP degisikligi thread/surec yeniden baslatmayi gerektirir.
@@ -302,7 +337,8 @@ void RovGUI::apply_ana_motor_mix(float surge, float lateral, float yaw, float ve
         rollCorr  = qBound(-1.0f, (ana_roll  / 90.0f) * settings.stabGain, 1.0f);
         pitchCorr = qBound(-1.0f, (ana_pitch / 90.0f) * settings.stabGain, 1.0f);
     }
-    auto pulses = MotorMixer::compute(surge, lateral, yaw, vertical, rollCorr, pitchCorr);
+    auto pulses = MotorMixer::compute(surge, lateral, yaw, vertical, rollCorr, pitchCorr,
+                                       settings.motorNeutralUs, settings.minUs, settings.maxUs);
     ana_esp_thread->set_motors(pulses);
     ana_last_pulses = pulses;
 
@@ -318,7 +354,8 @@ void RovGUI::apply_ana_motor_mix(float surge, float lateral, float yaw, float ve
 
 void RovGUI::apply_mini_motor_mix(float surge, float lateral, float yaw, float vertical) {
     if (!mini_esp_thread) return;
-    auto pulses = MotorMixer::compute(surge, lateral, yaw, vertical);
+    auto pulses = MotorMixer::compute(surge, lateral, yaw, vertical, 0.0f, 0.0f,
+                                       settings.motorNeutralUs, settings.minUs, settings.maxUs);
     mini_esp_thread->set_motors(pulses);
     mini_last_pulses = pulses;
     ui.miniRovPanel->motor_diagram->set_motor_pulses(pulses);
@@ -386,6 +423,11 @@ void RovGUI::update_ana_armed(bool armed) {
         A->btn_stabilize->setText("DISARM Et");
         A->btn_stabilize->setStyleSheet("background-color:#dc2626;color:white;font-weight:bold;border:1px solid #991b1b;border-radius:4px;font-size:16px;");
         log_message("[ANA] ARMED - ESC'ler hazır.", 0);
+        // Ayarlar penceresinden degistirilmis torpido darbelerini (bkz.
+        // RovSettings::torpedoMinUs/torpedoNeutralUs/torpedoMaxUs) her ARM'da
+        // ESP32'ye tazeler - baglanti ARM'dan once koptuysa/ESP32 resetlendiyse
+        // kendi varsayilanlarina donmus olabilir.
+        if (ana_esp_thread) ana_esp_thread->torpedo_config(settings.torpedoMinUs, settings.torpedoNeutralUs, settings.torpedoMaxUs);
     } else {
         A->btn_stabilize->setText("ARM Et");
         A->btn_stabilize->setStyleSheet("");
@@ -464,11 +506,15 @@ void RovGUI::update_ana_battery(float volts, int percent) {
 
 // ESP32'nin "TORPEDO:kalan" satirina karsilik gelir - hangi torpidonun
 // dolu/bos oldugunu operatorun elle takip etmesine gerek kalmasin diye
-// "Torpido Durumu" "Hazır" yerine "kalan/5" seklinde gosterilir.
+// "Torpido Durumu" "Hazır" yerine "kalan/3" seklinde gosterilir.
 void RovGUI::update_ana_torpedo(int remaining) {
-    torpedo_ready = remaining > 0;
-    ui.anaRovPanel->lbl_servo_status->setText(QString("%1/5").arg(remaining));
-    set_led(ui.anaRovPanel->led_torpedo, torpedo_ready);
+    ui.anaRovPanel->lbl_servo_status->setText(QString("%1/3").arg(remaining));
+    if (remaining == 3) {
+        for (int i = 0; i < 3; ++i) ana_torpedo_fired[i] = false;
+        set_led(ui.anaRovPanel->led_torpedo1, true);
+        set_led(ui.anaRovPanel->led_torpedo2, true);
+        set_led(ui.anaRovPanel->led_torpedo3, true);
+    }
 }
 
 // Otonom moddaki tek M: komutunu ureten ortak yer: mevcut derinlik-hold
@@ -609,14 +655,15 @@ void RovGUI::update_ana_joy_button(int btn_id, int state) {
                   QStringList(ana_pressed_buttons.values()).join(", ");
     ui.anaRovPanel->lbl_pad_buttons->setText("Basılan Tuş: " + lst);
 
-    // Buton bazlı aksiyon: A=lamba aç, B=lamba kapat, Y=torpido, X=miniROV bırak,
-    // LB=sabitleme modu hızlı aç/kapa, RB=otonom, Back=manuel, Start=ARM/DISARM,
-    // L3=acil durdurma
+    // Buton bazlı aksiyon: A/B/X=torpido 1/2/3 (Y basılıyken=ters), Y tek
+    // başına bir şey yapmaz (torpido modifier'ı), LB=sabitleme modu hızlı
+    // aç/kapa, RB=otonom, Back=manuel, Start=ARM/DISARM, L3=acil durdurma
+    // (lamba aç/kapa ve miniROV bırak artık sadece ekrandaki butonlarla yapılır)
     if (state && ana_esp_thread) {
-        if (name == "A")          on_lamp_on_ana();
-        else if (name == "B")     on_lamp_off_ana();
-        else if (name == "Y")     on_torpedo_fire();
-        else if (name == "X")     on_minirov_launch();
+        bool yHeld = ana_pressed_buttons.contains("Y");
+        if (name == "A")          yHeld ? on_torpedo_reverse(0) : on_torpedo_fire(0);
+        else if (name == "B")     yHeld ? on_torpedo_reverse(1) : on_torpedo_fire(1);
+        else if (name == "X")     yHeld ? on_torpedo_reverse(2) : on_torpedo_fire(2);
         else if (name == "LB")    toggle_stabilize_mode_ana();
         else if (name == "RB")    on_autonomous_ana();
         else if (name == "Back")  on_manual_ana();
@@ -797,16 +844,108 @@ void RovGUI::draw_ana_hud(QImage &img) {
     p.setPen(ana_armed ? QColor(255, 80, 80) : QColor(0, 255, 140));
     p.drawText(pad, H - pad - 4, status);
 
-    // ---- Merkez artisi ----
-    p.setPen(QPen(QColor(0, 255, 140, 180), qMax(1, H / 240)));
-    const int cx = W / 2, cy = H / 2, r = qMax(8, H / 20);
-    p.drawLine(cx - r, cy, cx - r / 3, cy);
-    p.drawLine(cx + r / 3, cy, cx + r, cy);
-    p.drawLine(cx, cy - r, cx, cy - r / 3);
-    p.drawLine(cx, cy + r / 3, cx, cy + r);
+    // ---- Torpido nisangahi (merkez artisi yerine) ----
+    p.end(); // draw_torpedo_reticle kendi QPainter'ini acar
+    draw_torpedo_reticle(img);
 
     // ---- Sag ust: REC ----
     if (ana_recorder.isOpen()) draw_rec_badge(img);
+}
+
+// Torpido atis nisangahi.
+//
+// Fiziksel dizilim (kalibrasyon sabitleri):
+//   - On kapak cami: 120x120 mm (yukari-asagi ve sagdan-sola), kamera bu
+//     alanin tam ortasinda. Kamera goruntusunun tamami bu 120x120 mm'lik
+//     alana 1:1 karsilik geldigi kabul edilir (frame kenarlari = cam
+//     kenarlari), yani pxPerMm = frame_boyutu / 120.
+//   - Torpido tup ici genisligi 55 mm; tup yatayda kameranin optik
+//     eksenine tam ortalanmis oldugundan torpido her zaman goruntunun
+//     dikey merkez cizgisi boyunca duser (yatay ofset yok).
+//   - Torpido tupunun alt kenari, cam ust kenarinin 76 mm ustundedir
+//     (goruntu disinda) - yani torpido serbest dustukten sonra goruntude
+//     ilk kez cam ust kenarinda (y=0) belirir.
+void RovGUI::draw_torpedo_reticle(QImage &img) {
+    if (img.isNull()) return;
+    QPainter p(&img);
+    p.setRenderHint(QPainter::Antialiasing);
+
+    const int W = img.width();
+    const int H = img.height();
+    const int cx = W / 2;
+    const int cy = H / 2;
+
+    const double pxPerMmX = W / 120.0;
+    const double pxPerMmY = H / 120.0;
+
+    const QColor lineCol(0, 255, 140, 200);   // gorus eksenleri (HUD yesili)
+    const QColor gateCol(255, 170, 0, 230);   // torpido kapisi (turuncu)
+    const int thin  = qMax(1, H / 480);
+    const int thick = qMax(2, H / 240);
+
+    QFont f("Monospace");
+    const int fontPx = qMax(9, H / 45);
+    f.setPixelSize(fontPx);
+    p.setFont(f);
+    QFontMetrics fm(f);
+
+    // ---- Ana eksenler: dusey = torpido dusme hatti, yatay = kamera
+    // optik ekseni ----
+    p.setPen(QPen(lineCol, thin));
+    p.drawLine(cx, 0, cx, H);
+    p.drawLine(0, cy, W, cy);
+
+    // ---- Dikey mm cetveli (0 mm = cam ust kenari ... 120 mm = cam alt
+    // kenari), 10 mm'de kisa, 20 mm'de uzun+etiketli cizgi ----
+    for (int mm = 0; mm <= 120; mm += 10) {
+        const int y = qRound(mm * pxPerMmY);
+        const bool major = (mm % 20 == 0);
+        const int halfLen = qRound((major ? 10.0 : 5.0) * pxPerMmX);
+        p.setPen(QPen(lineCol, major ? thick : thin));
+        p.drawLine(cx - halfLen, y, cx + halfLen, y);
+        if (major) {
+            const QString lbl = QString::number(mm);
+            // Ust/alt kenarlarda etiket disari taşmasın diye dikey konum
+            // gorunur alana sıkıştırılır (0 ve 120 mm cizgileri tam
+            // kenarda oldugundan).
+            const int labelY = qBound(fontPx, y + fontPx / 3, H - 4);
+            p.setPen(lineCol);
+            p.drawText(cx + halfLen + 4, labelY, lbl);
+        }
+    }
+
+    // ---- Yatay mm cetveli, merkezden +-60 mm, 10/20 mm araliklarla ----
+    for (int mm = -60; mm <= 60; mm += 10) {
+        if (mm == 0) continue;
+        const int x = cx + qRound(mm * pxPerMmX);
+        const bool major = (mm % 20 == 0);
+        const int halfLen = qRound((major ? 10.0 : 5.0) * pxPerMmY);
+        p.setPen(QPen(lineCol, major ? thick : thin));
+        p.drawLine(x, cy - halfLen, x, cy + halfLen);
+    }
+
+    // ---- Torpido dusus kapisi: tup ici genislik 55 mm, cam ust
+    // kenarinda (y=0) merkeze ortalanmis kose ayraclari. Tupun kendisi
+    // bu noktanin 76 mm ustunde (goruntu disinda) oldugundan, torpido
+    // goruntude ilk kez bu genislikte belirir. ----
+    const int gateHalfW = qRound((55.0 / 2.0) * pxPerMmX);
+    const int gateH = qRound(14.0 * pxPerMmY);
+    p.setPen(QPen(gateCol, thick));
+    p.drawLine(cx - gateHalfW, 0, cx - gateHalfW, gateH);
+    p.drawLine(cx - gateHalfW, gateH, cx - gateHalfW + gateH / 3, gateH);
+    p.drawLine(cx + gateHalfW, 0, cx + gateHalfW, gateH);
+    p.drawLine(cx + gateHalfW, gateH, cx + gateHalfW - gateH / 3, gateH);
+
+    const QString gateLbl = "TORPIDO 55mm  (tup +76mm yukarda)";
+    const int gateLblW = fm.horizontalAdvance(gateLbl);
+    p.setPen(gateCol);
+    p.drawText(cx - gateLblW / 2, gateH + fontPx + 2, gateLbl);
+
+    // ---- Merkez nokta (kamera optik merkezi) ----
+    p.setPen(Qt::NoPen);
+    p.setBrush(lineCol);
+    const int dotR = qMax(2, H / 200);
+    p.drawEllipse(QPoint(cx, cy), dotR, dotR);
 }
 
 void RovGUI::draw_rec_badge(QImage &img) {
@@ -974,11 +1113,17 @@ void RovGUI::ana_dir_pressed() {
 }
 
 void RovGUI::ana_dir_released() {
-    if (!ana_esp_thread) return;
+    if (!ana_esp_thread || !ana_armed) return;
     if (ana_autonomous) return;
     QPushButton *b = qobject_cast<QPushButton*>(sender());
     if (!b) return;
-    apply_ana_motor_mix(0, 0, 0, 0);
+    // apply_ana_motor_mix(0,0,0,0) yerine dogrudan BUTTON_STOP_US gonderiliyor -
+    // MotorMixer::NEUTRAL_US (joystick/otonom merkezi) ile karistirilmasin diye.
+    std::array<int, 8> pulses;
+    pulses.fill(BUTTON_STOP_US);
+    ana_esp_thread->set_motors(pulses);
+    ana_last_pulses = pulses;
+    ui.anaRovPanel->motor_diagram->set_motor_pulses(pulses);
 }
 
 void RovGUI::mini_dir_pressed() {
@@ -1008,7 +1153,13 @@ void RovGUI::mini_dir_released() {
     if (!minirov_launched) return;
     QPushButton *b = qobject_cast<QPushButton*>(sender());
     if (!b) return;
-    apply_mini_motor_mix(0, 0, 0, 0);
+    // apply_mini_motor_mix(0,0,0,0) yerine dogrudan BUTTON_STOP_US gonderiliyor -
+    // MotorMixer::NEUTRAL_US (joystick merkezi) ile karistirilmasin diye.
+    std::array<int, 8> pulses;
+    pulses.fill(BUTTON_STOP_US);
+    mini_esp_thread->set_motors(pulses);
+    mini_last_pulses = pulses;
+    ui.miniRovPanel->motor_diagram->set_motor_pulses(pulses);
 }
 
 // ==================== Kumanda kopma watchdog'u ====================
@@ -1018,7 +1169,7 @@ void RovGUI::mini_dir_released() {
 // aninda eksenleri sifirlayip motorlari acikca notrluyoruz.
 void RovGUI::on_ana_joystick_lost() {
     for (int i = 0; i < 4; ++i) ana_axes_state[i] = 0.0f;
-    ana_last_pulses.fill(MotorMixer::NEUTRAL_US);
+    ana_last_pulses = settings.motorNeutralUs;
     // Otonom mod kola bagimli degil (derinlik sabitleme calismaya devam
     // edebilir); manuel moddaysa motorlari hemen notrle.
     if (!ana_autonomous) {
@@ -1030,7 +1181,7 @@ void RovGUI::on_ana_joystick_lost() {
 
 void RovGUI::on_mini_joystick_lost() {
     for (int i = 0; i < 4; ++i) mini_axes_state[i] = 0.0f;
-    mini_last_pulses.fill(MotorMixer::NEUTRAL_US);
+    mini_last_pulses = settings.motorNeutralUs;
     apply_mini_motor_mix(0, 0, 0, 0);
     log_message("[MİNİ] KUMANDA KOPTU - motorlar nötrlendi!", 1);
     show_screen_warning("MİNİ ROV: Kumanda bağlantısı koptu! Motorlar nötrlendi.");
@@ -1164,17 +1315,31 @@ void RovGUI::on_minirov_launch() {
     log_message("[ANA] MiniROV Bırakıldı! (not: ayrı bırakma donanımı bu ESP32 kartında tanımlı değil, sadece arayüz durumu güncellendi)", 0);
 }
 
-// Gercek ates alma isini (sirali secim, kalan sayi, 10sn bekleme) artik ESP32
-// yapiyor (bkz. AnaRovBeyin.ino fireTorpedo()) - burada sadece komut
-// gonderiyoruz; sonuc (kalan sayi veya ERR:TORPEDOEMPTY/COOLDOWN)
-// update_ana_torpedo()/update_ana_status() uzerinden geri doner.
-void RovGUI::on_torpedo_fire() {
+// Gercek ates alma isini (kalan sayi, 10sn bekleme) artik ESP32 yapiyor
+// (bkz. AnaRovBeyin.ino fireTorpedo()) - burada sadece komut gonderiyoruz;
+// sonuc (kalan sayi veya ERR:TORPEDOEMPTY/COOLDOWN) update_ana_torpedo()/
+// update_ana_status() uzerinden geri doner.
+void RovGUI::on_torpedo_fire(int index) {
     if (!ana_esp_thread) {
         log_message("[ANA] Önce bağlanın!", 0);
         return;
     }
-    ana_esp_thread->torpedo();
-    log_message("[ANA] Torpido fırlatma komutu gönderildi.", 0);
+    ana_torpedo_fired[index] = true;
+    QLabel *led = index == 0 ? ui.anaRovPanel->led_torpedo1
+                 : index == 1 ? ui.anaRovPanel->led_torpedo2
+                              : ui.anaRovPanel->led_torpedo3;
+    set_led(led, false);
+    ana_esp_thread->torpedo(index);
+    log_message(QString("[ANA] Torpido %1 fırlatma komutu gönderildi.").arg(index + 1), 0);
+}
+
+void RovGUI::on_torpedo_reverse(int index) {
+    if (!ana_esp_thread) {
+        log_message("[ANA] Önce bağlanın!", 0);
+        return;
+    }
+    ana_esp_thread->torpedo_reverse(index);
+    log_message(QString("[ANA] Torpido %1 geri komutu gönderildi.").arg(index + 1), 0);
 }
 
 void RovGUI::on_lamp_on_ana() {
@@ -1267,11 +1432,13 @@ void RovGUI::set_led(QLabel *led, bool on) {
     // Dynamically style the corresponding button for feedback
     RovPanel *panel = nullptr;
     if (led == ui.anaRovPanel->led_autonomous || led == ui.anaRovPanel->led_manual ||
-        led == ui.anaRovPanel->led_minirov || led == ui.anaRovPanel->led_torpedo ||
+        led == ui.anaRovPanel->led_minirov ||
+        led == ui.anaRovPanel->led_torpedo1 || led == ui.anaRovPanel->led_torpedo2 ||
+        led == ui.anaRovPanel->led_torpedo3 ||
         led == ui.anaRovPanel->led_lamp_on || led == ui.anaRovPanel->led_lamp_off) {
         panel = ui.anaRovPanel;
     } else if (led == ui.miniRovPanel->led_autonomous || led == ui.miniRovPanel->led_manual ||
-               led == ui.miniRovPanel->led_minirov || led == ui.miniRovPanel->led_torpedo ||
+               led == ui.miniRovPanel->led_minirov ||
                led == ui.miniRovPanel->led_lamp_on || led == ui.miniRovPanel->led_lamp_off) {
         panel = ui.miniRovPanel;
     }
@@ -1295,8 +1462,12 @@ void RovGUI::set_led(QLabel *led, bool on) {
             }
         } else if (led == panel->led_minirov && panel->btn_minirov_launch) {
             panel->btn_minirov_launch->setStyleSheet(on ? activeStyle : inactiveStyle);
-        } else if (led == panel->led_torpedo && panel->btn_torpedo) {
-            panel->btn_torpedo->setStyleSheet(on ? activeStyle : inactiveStyle);
+        } else if (led == panel->led_torpedo1 && panel->btn_torpedo1) {
+            panel->btn_torpedo1->setStyleSheet(on ? activeStyle : inactiveStyle);
+        } else if (led == panel->led_torpedo2 && panel->btn_torpedo2) {
+            panel->btn_torpedo2->setStyleSheet(on ? activeStyle : inactiveStyle);
+        } else if (led == panel->led_torpedo3 && panel->btn_torpedo3) {
+            panel->btn_torpedo3->setStyleSheet(on ? activeStyle : inactiveStyle);
         } else if (led == panel->led_lamp_on) {
             panel->btn_lamp_on->setStyleSheet(on ? lampOnActiveStyle : inactiveStyle);
         } else if (led == panel->led_lamp_off) {

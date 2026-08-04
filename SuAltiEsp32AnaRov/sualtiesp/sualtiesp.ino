@@ -24,9 +24,9 @@
  * donanimda yok.
  *
  * Guvenlik: ARMED durumdayken 500ms boyunca yeni "M:" komutu gelmezse
- * (baglanti kopmasi ihtimaline karsi) tum motorlar otomatik notre (1490us) cekilir.
+ * (baglanti kopmasi ihtimaline karsi) tum motorlar otomatik notre (1487us) cekilir.
  *
- * PWM darbe sinirlari (ESC): MIN_US=1295us (tam geri), NEUTRAL_US=1490us (notr/dur),
+ * PWM darbe sinirlari (ESC): MIN_US=1295us (tam geri), NEUTRAL_US=1487us (notr/dur),
  * MAX_US=1600us (tam ileri). "M:" ile gelen hedef darbeler dogrudan uygulanmaz;
  * ani tam-ileri<->tam-geri gibi sicramalarda ESC'lerin takilmasini/stall olmasini
  * onlemek icin motorPulse, updateMotorSlew() tarafindan MOTOR_SLEW_STEP_US
@@ -90,7 +90,7 @@
 
 #define PWM_FREQ_HZ   50
 #define PWM_RES       16
-#define NEUTRAL_US    1490
+#define NEUTRAL_US    1487
 #define MIN_US        1295
 #define MAX_US        1600
 #define ARM_HOLD_MS   2000

@@ -22,12 +22,15 @@ public:
     void set_motor_pulses(const std::array<int, 8> &pulses_us,
                            const std::array<int, 8> &correction_us = {});
 
+    void set_neutral_us(const std::array<int, 8> &neutral_us);
+
 protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
     std::array<int, 8> pulses;
     std::array<int, 8> correction{};
+    std::array<int, 8> neutralUs;
 };
 
 #endif // MOTORDIAGRAMWIDGET_H

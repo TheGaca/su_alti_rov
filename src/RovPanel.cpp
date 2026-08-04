@@ -171,7 +171,7 @@ RovPanel::RovPanel(const QString &title, bool mini, QWidget *parent)
     QLabel *ls4 = new QLabel("Lamba Durumu:");
     lbl_voltage = new QLabel("---");
     lbl_battery = new QLabel("---");
-    lbl_servo_status = new QLabel(isMini ? "Kapalı" : "5/5"); // Ana ROV'da torpido kalan/toplam - bkz. RovGUI::update_ana_torpedo()
+    lbl_servo_status = new QLabel(isMini ? "Kapalı" : "3/3"); // Ana ROV'da torpido kalan/toplam - bkz. RovGUI::update_ana_torpedo()
     lbl_lamp_status = new QLabel("Kapalı");
     lbl_voltage->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     lbl_battery->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -398,17 +398,23 @@ RovPanel::RovPanel(const QString &title, bool mini, QWidget *parent)
     if (!isMini) {
         addCmd(btn_autonomous, "Otonom", led_autonomous, "(RB)");
         addCmd(btn_manual,     "Manuel", led_manual, "(Back)");
-        addCmd(btn_minirov_launch, "MiniROV\nBırak", led_minirov, "(X)");
-        addCmd(btn_torpedo,        "Torpido\nFırlat", led_torpedo, "(Y)");
+        addCmd(btn_minirov_launch, "MiniROV\nBırak", led_minirov, "");
+        addCmd(btn_torpedo1, "Torpido 1", led_torpedo1, "(A)");
+        addCmd(btn_torpedo2, "Torpido 2", led_torpedo2, "(B)");
+        addCmd(btn_torpedo3, "Torpido 3", led_torpedo3, "(X)");
     } else {
         btn_autonomous = nullptr;
         btn_manual = nullptr;
         btn_minirov_launch = nullptr;
-        btn_torpedo = nullptr;
+        btn_torpedo1 = nullptr;
+        btn_torpedo2 = nullptr;
+        btn_torpedo3 = nullptr;
         led_autonomous = nullptr;
         led_manual = nullptr;
         led_minirov = nullptr;
-        led_torpedo = nullptr;
+        led_torpedo1 = nullptr;
+        led_torpedo2 = nullptr;
+        led_torpedo3 = nullptr;
     }
 
     // Symmetrical Right Side Column for Renk + Lamba

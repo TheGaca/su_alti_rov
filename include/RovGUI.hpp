@@ -89,7 +89,8 @@ private slots:
     void on_autonomous_ana();
     void on_manual_ana();
     void on_minirov_launch();
-    void on_torpedo_fire();
+    void on_torpedo_fire(int index);
+    void on_torpedo_reverse(int index);
     void on_lamp_on_ana();
     void on_lamp_off_ana();
     void on_lamp_on_mini();
@@ -128,9 +129,13 @@ private:
     void set_led(QLabel *led, bool on);
 
     // Ana ROV videosunun uzerine telemetri bindirme (HUD): derinlik, pusula,
-    // roll/pitch, ARM/mod/sabitleme durumu, merkez artisi, REC gostergesi.
+    // roll/pitch, ARM/mod/sabitleme durumu, torpido nisangahi, REC gostergesi.
     // Goruntunun kendisine cizilir; snapshot'ta da gorunur.
     void draw_ana_hud(QImage &img);
+    // Torpido atis nisangahi: cam 120x120mm ve kare goruntuyle 1:1 kabul
+    // edilir (bkz. tanim yoruma draw_torpedo_reticle icinde). Merkez artisi
+    // yerine kullanilir.
+    void draw_torpedo_reticle(QImage &img);
     // Kayit acikken sag ust koseye kirmizi REC rozeti (mini panelde HUD yok)
     void draw_rec_badge(QImage &img);
     static QString media_dir(); // ~/rov_media (yoksa olusturur)
@@ -175,7 +180,7 @@ private:
     bool ana_lamp_on;
     bool mini_lamp_on;
     bool ana_autonomous;
-    bool torpedo_ready;
+    bool ana_torpedo_fired[3];
     bool minirov_launched;
     bool dark_mode;
     bool ana_armed;
