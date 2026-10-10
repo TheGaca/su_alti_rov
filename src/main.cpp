@@ -5,11 +5,12 @@
 #include <cstdlib>
 
 int main(int argc, char *argv[]) {
-    // Ağ ayarlarını yapılandır (sudo gerektirir; çalışmazsa atla)
-    // Eğer ağ arayüz adı farklıysa burayı düzenle
+    // MiniROV ve AnaROV kamera ağları için iki adresi de ekle.
+    // Mevcut adresleri temizleme: enp46s0 DHCP adresini koruyabilir.
+    // Eğer ağ arayüz adı farklıysa buradaki enp46s0 değerlerini düzenle.
     int ret;
-    ret = system("sudo -n ip addr flush dev enp46s0 2>/dev/null");
-    ret = system("sudo -n ip addr add 192.168.88.1/24 dev enp46s0 2>/dev/null");
+    ret = system("sudo -n ip addr replace 192.168.88.1/24 dev enp46s0 2>/dev/null");
+    ret = system("sudo -n ip addr replace 192.168.2.10/24 dev enp46s0 2>/dev/null");
     ret = system("sudo -n ip link set enp46s0 up 2>/dev/null");
     (void)ret; // sessiz tut
 

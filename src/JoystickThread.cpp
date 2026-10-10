@@ -1,6 +1,7 @@
 #include "JoystickThread.hpp"
 
 #include <cerrno>
+#include <algorithm>
 #include <cmath>
 #include <fcntl.h>
 #include <unistd.h>
@@ -9,6 +10,18 @@
 // Bu esikten kucuk eksen degisiklikleri gurultu/drift sayilip yayinlanmaz
 // (bkz. JoystickThread.hpp'deki lastAxisValues aciklamasi).
 static constexpr float AXIS_CHANGE_THRESHOLD = 0.02f;
+static constexpr float AXIS_DEADZONE = 0.08f;
+
+static float remove_axis_deadzone(float value) {
+    value = std::clamp(value, -1.0f, 1.0f);
+    const float magnitude = std::fabs(value);
+    if (magnitude <= AXIS_DEADZONE) return 0.0f;
+
+    // Olu olu merkez cevresindeki kucuk drift'i sifirla, deadzone disinda
+    // kumandanin tam araligini (-1..1) koru.
+    const float scaled = (magnitude - AXIS_DEADZONE) / (1.0f - AXIS_DEADZONE);
+    return std::copysign(scaled, value);
+}
 
 JoystickThread::JoystickThread(const QString &device, QObject *parent)
     : QThread(parent), devicePath(device), running(true) {
@@ -42,7 +55,7 @@ void JoystickThread::run() {
             if (e.type == JS_EVENT_BUTTON) {
                 emit button_signal(e.number, e.value);
             } else if (e.type == JS_EVENT_AXIS) {
-                float value = e.value / 32767.0f;
+                float value = remove_axis_deadzone(e.value / 32767.0f);
                 if (e.number < lastAxisValues.size() &&
                     std::fabs(value - lastAxisValues[e.number]) < AXIS_CHANGE_THRESHOLD) {
                     continue;

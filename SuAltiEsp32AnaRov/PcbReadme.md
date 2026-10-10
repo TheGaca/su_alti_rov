@@ -104,7 +104,7 @@ ve kamera akışı bundan etkilenmez, aynı kalıyor).
 |---|---|
 | Kanal | 1 (her iki kartta da `ESPNOW_CHANNEL` ile sabit) |
 | Şifreleme | Açık (PMK/LMK, her iki kartta birebir aynı sabit anahtar) |
-| Motor ESP MAC | B8:D6:1A:41:CD:B1 |
+| Motor ESP MAC | B4:BF:E9:1A:F7:31 |
 | Kamera ESP MAC | C0:49:EF:30:E9:8D |
 
 MAC adresleri her iki kartın `setup()`'unda geçici olarak eklenen

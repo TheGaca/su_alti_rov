@@ -22,14 +22,14 @@ int main() {
     // Notr girdi -> tum motorlar notr darbede
     {
         auto m = compute(0, 0, 0, 0);
-        for (int i = 0; i < 8; ++i) CHECK(m[i] == NEUTRAL_US);
+        for (int i = 0; i < 8; ++i) CHECK(m[i] == DEFAULT_NEUTRAL_US[i]);
     }
 
     // Tam ileri surge: 4 yatay motor ayni yonde artar, dikeyler notr kalir
     {
         auto m = compute(1, 0, 0, 0);
         for (int i = 0; i < 4; ++i) CHECK(m[i] == MAX_US); // 1490+200=1690 -> 1600'e kirpilir
-        for (int i = 4; i < 8; ++i) CHECK(m[i] == NEUTRAL_US);
+        for (int i = 4; i < 8; ++i) CHECK(m[i] == DEFAULT_NEUTRAL_US[i]);
     }
 
     // Tam geri surge: yatay motorlar taban sinirina kirpilir (1490-200=1290 < 1295)
@@ -68,7 +68,7 @@ int main() {
     // sol motorlara (M6, M8) eksi eklenir
     {
         auto m = compute(0, 0, 0, 0, 0.25f, 0.0f);
-        CHECK(m[4] > NEUTRAL_US); // M5 on-sag
+        CHECK(m[4] > DEFAULT_NEUTRAL_US[4]); // M5 on-sag
         CHECK(m[5] < NEUTRAL_US); // M6 on-sol
         CHECK(m[6] > NEUTRAL_US); // M7 arka-sag
         CHECK(m[7] < NEUTRAL_US); // M8 arka-sol
@@ -80,7 +80,7 @@ int main() {
     // arka motorlari (M7, M8) artirir
     {
         auto m = compute(0, 0, 0, 0, 0.0f, 0.25f);
-        CHECK(m[4] < NEUTRAL_US); // M5 on-sag
+        CHECK(m[4] < DEFAULT_NEUTRAL_US[4]); // M5 on-sag
         CHECK(m[5] < NEUTRAL_US); // M6 on-sol
         CHECK(m[6] > NEUTRAL_US); // M7 arka-sag
         CHECK(m[7] > NEUTRAL_US); // M8 arka-sol

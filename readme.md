@@ -114,18 +114,20 @@ kendi donanımı farklıysa pin sayısını/yerleşimini bu dosyaya göre uyarla
 
 ## 5. Ağ Arayüzü Adını Kontrol Et (Kameralar İçin)
 
-`main.cpp` içinde `enp46s0` arayüz adı var. Senin sisteminde farklı olabilir. Bu sadece MiniROV'un
-MJPEG kamera akışına (IP ağı üzerinden) erişim için kullanılıyor, motor kontrolüyle ilgisi yok.
+`main.cpp` içinde `enp46s0` arayüz adı var. Senin sisteminde farklı olabilir. Uygulama bu arayüze
+MiniROV için `192.168.88.1/24`, AnaROV kamera için `192.168.2.10/24` adreslerini ekler.
+Mevcut DHCP adresleri korunur. Bu ayarlar kamera ve ağ erişimi içindir, motor kontrolünden bağımsızdır.
 
 ```bash
 ip link show
 ```
 
-Çıktıda Ethernet portunu bul (`enp...`, `eth0`, `eno1` gibi). Farklıysa `src/main.cpp`'de üç yerde değiştir:
+Çıktıda Ethernet portunu bul (`enp...`, `eth0`, `eno1` gibi). Farklıysa `src/main.cpp` içindeki
+`enp46s0` değerlerini kendi arayüz adınla değiştir:
 
 ```cpp
-ret = system("sudo -n ip addr flush dev ENP_KENDI 2>/dev/null");
-ret = system("sudo -n ip addr add 192.168.88.1/24 dev ENP_KENDI 2>/dev/null");
+ret = system("sudo -n ip addr replace 192.168.88.1/24 dev ENP_KENDI 2>/dev/null");
+ret = system("sudo -n ip addr replace 192.168.2.10/24 dev ENP_KENDI 2>/dev/null");
 ret = system("sudo -n ip link set ENP_KENDI up 2>/dev/null");
 ```
 
@@ -207,15 +209,16 @@ sudo usermod -a -G input $USER
 | Kaynak | Adres | Protokol |
 |--------|-------|----------|
 | MiniROV kamera | `http://192.168.88.2/stream` | MJPEG over HTTP |
-| AnaROV kamera | `ws://192.168.1.116:85` | WebSocket (binary JPEG) |
+| AnaROV kamera | `http://192.168.2.220:81/stream` | MJPEG over HTTP |
+| AnaROV motor komut köprüsü | `192.168.2.220:8888` | TCP |
 
-IP'ler farklıysa `src/PixhawkGUI.cpp` içinde `start_camera_threads()` fonksiyonundaki adresleri düzenle.
+IP'ler farklıysa uygulamanın Ayarlar penceresinden kamera ve köprü adreslerini düzenle.
 
 **Hızlı test:**
 
 ```bash
- sudo ip addr flush dev enp46s0
- sudo ip addr add 192.168.88.1/24 dev enp46s0
+ sudo ip addr replace 192.168.88.1/24 dev enp46s0
+ sudo ip addr replace 192.168.2.10/24 dev enp46s0
  sudo ip link set enp46s0 up
  ping 192.168.88.2
 ```
@@ -354,12 +357,13 @@ groups | grep input
 
 **Kamera görüntüsü gelmiyor:**
 ```bash
-# MiniROV'a ping at
+# AnaROV kamera ve MiniROV'a ping at
+ping -c 3 192.168.2.220
 ping -c 3 192.168.88.2
 
 # Ağ arayüzü ayarlanmış mı?
 ip addr show enp46s0
-# inet 192.168.88.1/24 görmeli
+# inet 192.168.2.10/24 ve 192.168.88.1/24 görmeli
 ```
 
 **FPS düşük / takılıyor:**

@@ -25,7 +25,7 @@ constexpr int MAX_US = 1600;
 
 constexpr std::array<int, 8> DEFAULT_NEUTRAL_US = {
     NEUTRAL_US, NEUTRAL_US, NEUTRAL_US, NEUTRAL_US,
-    NEUTRAL_US, NEUTRAL_US, NEUTRAL_US, NEUTRAL_US,
+    1465, NEUTRAL_US, NEUTRAL_US, NEUTRAL_US,
 };
 
 std::array<int, 8> compute(float surge, float lateral, float yaw, float vertical,

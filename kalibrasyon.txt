@@ -1,0 +1,45 @@
+# AnaROV kalibrasyon kayıtları — test-arayuz.py tarafından oluşturulur.
+# Bu dosya ölçüm/ayar çıktısıdır; firmware'i kendiliğinden değiştirmez.
+# Motor 5 değerleri kullanıcı tarafından gönderildi; diğer motor değerleri varsayılandır.
+# Değerler ESC darbe genişliğidir (mikrosaniye, us).
+# Kalibrasyon tamamlanınca dosyayı gönder; güncellenecek başlıca dosyalar:
+#   SuAltiEsp32AnaRov/AnaRovBeyin/AnaRovBeyin.ino
+#   include/MotorMixer.hpp ve include/RovSettings.hpp
+# Firmware motor sınırları: 1295..1600 us. Torpido darbeleri 1000..2000 us.
+
+# --- Motorlar ---
+motor1_min=1295
+motor1_neutral=1487
+motor1_max=1600
+motor2_min=1295
+motor2_neutral=1487
+motor2_max=1600
+motor3_min=1295
+motor3_neutral=1487
+motor3_max=1600
+motor4_min=1295
+motor4_neutral=1487
+motor4_max=1600
+motor5_min=1295
+motor5_neutral=1465
+motor5_max=1600
+motor6_min=1295
+motor6_neutral=1487
+motor6_max=1600
+motor7_min=1295
+motor7_neutral=1487
+motor7_max=1600
+motor8_min=1295
+motor8_neutral=1487
+motor8_max=1600
+
+# --- Torpidolar ---
+torpedo1_min=1476
+torpedo1_neutral=1487
+torpedo1_max=1642
+torpedo2_min=1487
+torpedo2_neutral=1487
+torpedo2_max=1642
+torpedo3_min=1487
+torpedo3_neutral=1487
+torpedo3_max=1642

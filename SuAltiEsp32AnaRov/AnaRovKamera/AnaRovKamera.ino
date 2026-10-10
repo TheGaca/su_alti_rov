@@ -74,7 +74,7 @@
 // icindeki "Serial.println(WiFi.macAddress())" satiriyla kendi MAC'ini USB
 // Serial Monitor'a bastirir; Motor ESP'nin bastirdigi MAC'i buraya yazip bu
 // karti YENIDEN flasla. SIFIRLARLA birakilirsa ESP-NOW calismaz.
-uint8_t motorEspMac[6] = {0xB8, 0xD6, 0x1A, 0x41, 0xCD, 0xB1};
+uint8_t motorEspMac[6] = {0xB4, 0xBF, 0xE9, 0x1A, 0xF7, 0x31};
 
 // ESP-NOW yerlesik sifrelemesi (PMK/LMK) - motor ESP'deki degerlerle birebir
 // ayni olmali (16 bayt).

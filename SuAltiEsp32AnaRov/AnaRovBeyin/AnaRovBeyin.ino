@@ -137,6 +137,12 @@ static const uint8_t ESPNOW_LMK[16] = {'S','u','A','l','t','i','R','o','v','L','
 #define NEUTRAL_US    1487
 #define MIN_US        1295
 #define MAX_US        1600
+// ESC'ler birbirinden farkli notr darbelerine sahip olabilir. Motor 5
+// kalibrasyonu: min=1295, notr=1465, max=1600 us.
+static const uint16_t MOTOR_NEUTRAL_US[8] = {
+    NEUTRAL_US, NEUTRAL_US, NEUTRAL_US, NEUTRAL_US,
+    1465, NEUTRAL_US, NEUTRAL_US, NEUTRAL_US,
+};
 #define ARM_HOLD_MS   2000
 #define FAILSAFE_MS   500
 #define BOOT_SETTLE_MS 2000 // acilistan sonra bu sure boyunca ESP-NOW'dan gelen komutlar yok
@@ -596,6 +602,14 @@ void allTargetsTo(uint16_t pulse_us) {
     for (int i = 0; i < 8; i++) motorTarget[i] = pulse_us;
 }
 
+void allMotorsToNeutral() {
+    for (int i = 0; i < 8; i++) writeMotor(i, MOTOR_NEUTRAL_US[i]);
+}
+
+void allTargetsToNeutral() {
+    for (int i = 0; i < 8; i++) motorTarget[i] = MOTOR_NEUTRAL_US[i];
+}
+
 // motorPulse'u motorTarget'a MOTOR_SLEW_STEP_US adimlarla yaklastirir; boylece
 // M: komutuyla gelen ani tam-ileri<->tam-geri gibi hedef degisiklikleri
 // motorlara tek adimda degil kademeli uygulanir.
@@ -620,8 +634,8 @@ void startArming() {
 }
 
 void finishArming() {
-    allMotorsTo(NEUTRAL_US);
-    allTargetsTo(NEUTRAL_US);
+    allMotorsToNeutral();
+    allTargetsToNeutral();
     lastCommandAt = millis();
     state = ARMED;
     startTorpedoArmSequence(); // 8 ESC'nin arm akimiyla gerilim dususu torpido ESC'lerini etkilemis olabilir, yeniden arm et
@@ -633,8 +647,8 @@ void disarmNow() {
     detachTorpedos(); // torpido ESC'lerine de sinyal gitmez - DISARM artik gercek bir kill-switch
     // Donanima yazmadan (ledcWrite detach sonrasi gecersiz) sadece durum
     // dizilerini sifirla; sonraki ARM'da slew eski hedeften baslamasin.
-    for (int i = 0; i < 8; i++) motorPulse[i] = NEUTRAL_US;
-    allTargetsTo(NEUTRAL_US);
+    for (int i = 0; i < 8; i++) motorPulse[i] = MOTOR_NEUTRAL_US[i];
+    allTargetsToNeutral();
     state = DISARMED;
     sendStatus("DISARMED");
 }
@@ -820,7 +834,7 @@ void setupOTA() {
 
 void setup() {
     Serial.begin(115200);
-    for (int i = 0; i < 8; i++) motorPulse[i] = NEUTRAL_US;
+    for (int i = 0; i < 8; i++) motorPulse[i] = MOTOR_NEUTRAL_US[i];
 
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, LOW);
@@ -895,8 +909,8 @@ void loop() {
     }
 
     if (state == ARMED && millis() - lastCommandAt > FAILSAFE_MS) {
-        allMotorsTo(NEUTRAL_US);
-        allTargetsTo(NEUTRAL_US); // hedefi de sifirla, yoksa baglanti donunce eski komuta ani sicrar
+        allMotorsToNeutral();
+        allTargetsToNeutral(); // hedefi de sifirla, yoksa baglanti donunce eski komuta ani sicrar
     }
 
     if (state == ARMED) {

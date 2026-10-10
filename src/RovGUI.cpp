@@ -431,6 +431,10 @@ void RovGUI::update_ana_armed(bool armed) {
     } else {
         A->btn_stabilize->setText("ARM Et");
         A->btn_stabilize->setStyleSheet("");
+        // DISARMED durumunda diagramda onceki komutun renkleri kalmasin;
+        // gorunen motor cikislari artik nortr kabul edilir.
+        ana_last_pulses = settings.motorNeutralUs;
+        A->motor_diagram->set_motor_pulses(ana_last_pulses);
         log_message("[ANA] DISARMED - motorlara sinyal kesildi.", 0);
     }
 }

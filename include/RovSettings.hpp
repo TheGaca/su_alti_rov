@@ -42,7 +42,7 @@ struct RovSettings {
     // (yumusak) bir sinir eklemis olursun.
     std::array<int, 8> motorNeutralUs = {
         MotorMixer::NEUTRAL_US, MotorMixer::NEUTRAL_US, MotorMixer::NEUTRAL_US, MotorMixer::NEUTRAL_US,
-        MotorMixer::NEUTRAL_US, MotorMixer::NEUTRAL_US, MotorMixer::NEUTRAL_US, MotorMixer::NEUTRAL_US,
+        1465, MotorMixer::NEUTRAL_US, MotorMixer::NEUTRAL_US, MotorMixer::NEUTRAL_US,
     };
     int minUs = MotorMixer::MIN_US;
     int maxUs = MotorMixer::MAX_US;
